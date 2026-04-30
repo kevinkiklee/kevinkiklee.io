@@ -57,16 +57,30 @@ optional — the site degrades cleanly when each is absent.
 
 ## Project layout
 
-- `src/content/posts/` — MDX posts (`YYYY-MM-DD-slug.mdx`)
-- `src/content/tags.json` — tag allowlist (the schema rejects unknown tags)
-- `src/components/`, `src/layouts/`, `src/pages/` — Astro components
-- `src/lib/` — pure helpers + Vitest tests
-- `src/styles/` — global CSS layered as `reset, tokens, base, components, prose, utilities`
-- `vercel.ts` — typed Vercel routes config (CSP, cache headers, crons)
-- `astro.config.ts` — integrations, sitemap serializer, env schema
+```text
+src/
+  components/       # .astro components (BaseHead, Header, PostCard, …)
+  content/
+    posts/          # MDX posts: YYYY-MM-DD-slug.mdx
+    projects/       # projects.yaml
+    tags.json       # tag allowlist (Zod refines against this)
+  integrations/     # custom Astro integrations (image-sitemap)
+  layouts/          # BaseLayout, PostLayout
+  lib/              # pure helpers + colocated *.test.ts (vitest)
+  pages/            # routes incl. /api/og.tsx, rss.xml.ts, feed.json.ts
+  styles/           # layered: reset → tokens → base → components → prose → utilities
+astro.config.ts     # integrations + sitemap serializer + envField schema
+vercel.ts           # typed CSP, cache headers, crons
+```
+
+Other top-level directories:
+
+- `docs/superpowers/` — design spec + implementation plan
+- `scripts/` — `new-post.ts`, `new-project.ts`, `subset-fonts.ts`,
+  `sitemap-index.ts`
 - `.github/workflows/` — `ci.yml` (typecheck, lint, build, link-check,
   Lighthouse), `size.yml` (6 KB / chunk gzip budget)
-- `docs/superpowers/` — design spec + implementation plan
+- `fonts/` — JetBrains Mono source TTFs (subset to WOFF2 in `public/fonts`)
 
 ## Authoring
 

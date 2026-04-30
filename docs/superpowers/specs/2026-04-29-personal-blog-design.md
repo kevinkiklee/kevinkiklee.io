@@ -1038,3 +1038,55 @@ PR comments:
 | **DX** | pnpm scripts (dev/build/preview/check/format/new:post/new:project/fonts:subset/analyze/links/a11y/lighthouse), Biome, simple-git-hooks pre-commit, commitlint + cspell + markdownlint, .editorconfig + .vscode extensions, strict TS, astro:env |
 | **Instrumentation** | Vercel Speed Insights + Web Analytics + GA4 via Partytown; web-vitals/attribution + longtask observer; Sentry on /api/og only |
 | **Deploy** | GitHub → Vercel auto-deploy, preview deploys + Vercel-bot comment + Lighthouse CI + bundle-size check, vercel.ts typed config, Vercel OIDC for CI, Renovate auto-merge patch+minor, branch protection, weekly cron rebuild, IndexNow push, Better Stack uptime |
+
+---
+
+## Implementation status (snapshot)
+
+This section is a living index added during the iterative implementation
+batches; treat it as a map from spec features to source files, not as
+authoritative spec content.
+
+### Component map
+
+| Component | File |
+|---|---|
+| `BaseHead` (canonical, OG, Twitter, alternates, article meta, LCP preload) | `src/components/BaseHead.astro` |
+| `ThemeToggle` (no-FOUC, cross-tab, OS-change sync) | `src/components/ThemeToggle.astro` + `src/lib/theme.ts` |
+| `SearchPalette` (Cmd-K / `/` dialog over Pagefind) | `src/components/SearchPalette.astro` |
+| `ShortcutsOverlay` (`?` overlay, KB shortcuts) | `src/components/ShortcutsOverlay.astro` + `src/components/KeyboardShortcuts.astro` |
+| `RelatedPosts` (tag-overlap then recency) | `src/components/RelatedPosts.astro` + `src/lib/related.ts` |
+| `TableOfContents` (sticky aside on wide, inline on narrow) | `src/components/TableOfContents.astro` |
+| OG image generator | `src/pages/api/og.tsx` + `src/lib/og.tsx` |
+| Sitemap with image extension | `astro.config.ts` (`@astrojs/sitemap`) + `src/integrations/image-sitemap.ts` |
+| RSS / JSON Feed | `src/pages/rss.xml.ts`, `src/pages/feed.json.ts` |
+| Webmentions endpoint | `src/components/Webmentions.astro` + `src/lib/webmentions.ts` |
+| CSP / cache headers / cron | `vercel.ts` + `src/lib/csp.ts` |
+
+### Complete
+
+- Content layer (`glob` loader, draft filter via `VERCEL_ENV`)
+- BaseLayout + PostLayout (cover hero, series banner, ToC, related, discuss footer)
+- BaseHead with canonical, OG (incl. `og:locale`), Twitter card, RSS/JSON Feed alternates, article meta (`article:published_time`, `article:modified_time`, `article:tag`, `article:author`, `article:section`), LCP preload (AVIF + WebP), Giscus preconnect on post pages
+- Header sticky nav with mobile horizontal scroll-snap; 44px tap targets via `inline-flex` + `min-height`
+- Footer with `rel="me"` on Mastodon AND GitHub
+- Search: vanilla `<dialog>` + Pagefind, Cmd-K / `/`, lazy-loaded on first use; `/search` route as fallback for touch
+- Theme toggle: no-FOUC, cross-tab, OS-change sync
+- Reading time + word count via remark plugin
+- Related posts (tag-overlap → recency tie-break)
+- JSON-LD: BlogPosting, Person, BreadcrumbList, WebSite/SearchAction
+- Sitemap with priority + lastmod + draft filter; image-sitemap injection via custom integration
+- RSS + JSON Feed
+- Brutalist mono-typeface design (JetBrains Mono subset, layered CSS)
+- a11y: skip link, AAA-ish contrast, focus rings, forced-colors mode, reduced-motion + reduced-data, ≥44px tap targets, empty-state copy
+- Performance: 6KB JS budget enforced in CI, content-visibility, contain, font metric overrides, IntersectionObserver-driven view-transition-name on top card
+- View transitions via `<ClientRouter />` with per-route direction choreography
+- CSP/cache headers/cron in typed `vercel.ts`
+- Tests: `src/lib/*.test.ts` and `src/integrations/image-sitemap.test.ts`; `pnpm check` covers astro check + biome + cspell + markdownlint
+
+### Deferred (intentional)
+
+- IndexNow push on deploy — wired via CI workflow; not required for first launch
+- Better Stack uptime monitoring — out of scope for source repo
+- Search auto-suggest, reading list, AI-generated summaries — explicit non-goals (see "Non-Goals" above)
+- i18n — single locale (`en-US`)
