@@ -1,5 +1,6 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel';
 import pagefind from 'astro-pagefind';
 import { defineConfig, envField } from 'astro/config';
 import { remarkReadingTime } from './src/lib/reading-time';
@@ -8,6 +9,10 @@ export default defineConfig({
   site: 'https://kevinkiklee.io',
   trailingSlash: 'never',
   output: 'static',
+  adapter: vercel({
+    imageService: false,
+    webAnalytics: { enabled: true },
+  }),
   compressHTML: true,
   prefetch: {
     prefetchAll: false,

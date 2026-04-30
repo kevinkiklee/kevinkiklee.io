@@ -28,6 +28,7 @@
     "@astrojs/partytown": "^2.0.0",
     "@astrojs/rss": "^4.0.0",
     "@astrojs/sitemap": "^3.0.0",
+    "@astrojs/vercel": "^9.0.5",
     "@vercel/analytics": "^1.4.0",
     "@vercel/og": "^0.6.0",
     "@vercel/speed-insights": "^1.1.0",
@@ -65,7 +66,13 @@
     "commit-msg": "pnpm exec commitlint --edit $1"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,astro}": ["biome format --write", "biome lint"],
-    "*.{md,mdx}": ["cspell --no-progress", "markdownlint-cli2"]
+    "*.{ts,tsx,js,jsx,astro}": [
+      "biome format --write",
+      "biome lint"
+    ],
+    "*.{md,mdx}": [
+      "cspell --no-progress",
+      "markdownlint-cli2"
+    ]
   }
 }
