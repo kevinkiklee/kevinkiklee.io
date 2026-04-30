@@ -17,12 +17,6 @@ const projects = (await getCollection('projects'))
   description="Field notes from a Chrome DevRel — AI, web platform, and tangents."
 >
   <JsonLd slot="head" data={buildWebSite()} />
-  <section class="hero">
-    <p class="prompt">$ whoami</p>
-    <h1>// FIELD NOTES</h1>
-    <p class="tag">DEVREL @ GOOGLE CHROME · AI · WEB PLATFORM · TANGENTS</p>
-  </section>
-
   <section aria-labelledby="latest">
     <h2 id="latest" class="section-title">[ LATEST POSTS ]</h2>
     {posts.map((post, i) => <PostCard post={post} index={i} />)}
@@ -41,10 +35,6 @@ const projects = (await getCollection('projects'))
 </BaseLayout>
 
 <style>
-  .hero { padding: var(--space-7) 0 var(--space-6); border-bottom: 2px solid var(--rule); margin-bottom: var(--space-6); }
-  .prompt { color: var(--fg-subtle); font-size: var(--text-sm); }
-  .hero h1 { font-size: var(--text-2xl); letter-spacing: 0.02em; text-transform: uppercase; margin: var(--space-2) 0; }
-  .tag { font-size: var(--text-xs); letter-spacing: 0.08em; color: var(--fg-muted); }
   .section-title { font-size: var(--text-base); letter-spacing: 0.06em; margin: var(--space-7) 0 var(--space-4); }
   .grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
   .more { margin-top: var(--space-5); font-size: var(--text-xs); }
