@@ -4,5 +4,5 @@ module.exports = {
   words: [],
   dictionaryDefinitions: [{ name: 'project-words', path: './cspell-words.txt', addWords: true }],
   dictionaries: ['project-words'],
-  ignorePaths: ['dist', '.astro', 'node_modules', 'pnpm-lock.yaml'],
+  ignorePaths: ['dist', '.astro', 'node_modules', 'pnpm-lock.yaml', 'docs/'],
 };
