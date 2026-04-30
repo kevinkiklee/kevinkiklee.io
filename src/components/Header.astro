@@ -20,6 +20,14 @@ function isCurrent(href: string) {
         {links.map((l) => (
           <li><a href={l.href} aria-current={isCurrent(l.href) ? 'page' : undefined}>{l.label}</a></li>
         ))}
+        <li>
+          <a
+            href="/search"
+            id="search-trigger"
+            aria-keyshortcuts="Slash Meta+K"
+            aria-current={isCurrent('/search') ? 'page' : undefined}
+          >[ / SEARCH ]</a>
+        </li>
       </ul>
     </nav>
     <ThemeToggle />
@@ -66,3 +74,15 @@ function isCurrent(href: string) {
     nav ul { gap: var(--space-4); }
   }
 </style>
+
+<script>
+  // Desktop: hijack the search nav link to open the global Cmd-K palette.
+  // Mobile (coarse pointer): fall through to /search route, since the palette
+  // is a poor fit for touch + on-screen keyboard.
+  // If JS is disabled entirely, the link still navigates to /search.
+  document.getElementById('search-trigger')?.addEventListener('click', (e) => {
+    if (window.matchMedia?.('(pointer: coarse)').matches) return;
+    e.preventDefault();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '/' }));
+  });
+</script>

@@ -1,7 +1,7 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
-import { defineConfig, envField } from 'astro/config';
 import pagefind from 'astro-pagefind';
+import { defineConfig, envField } from 'astro/config';
 import { remarkReadingTime } from './src/lib/reading-time';
 
 export default defineConfig({
@@ -27,6 +27,12 @@ export default defineConfig({
   vite: {
     build: {
       cssCodeSplit: true,
+      rollupOptions: {
+        // Pagefind ships its own runtime under /pagefind/ in the dist root.
+        // We deliberately load it dynamically from the public path so the
+        // bundler must NOT try to resolve it at build time.
+        external: [/^\/pagefind\/.*/],
+      },
     },
   },
   integrations: [
