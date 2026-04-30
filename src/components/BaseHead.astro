@@ -9,6 +9,7 @@ interface Props {
   publishedTime?: Date | undefined;
   modifiedTime?: Date | undefined;
   tags?: string[] | undefined;
+  lcpImage?: { srcset: string; sizes: string } | undefined;
 }
 const {
   title,
@@ -18,6 +19,7 @@ const {
   publishedTime,
   modifiedTime,
   tags = [],
+  lcpImage,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
@@ -59,3 +61,12 @@ const mastodonProfile = MASTODON_INSTANCE_URL ?? 'https://mastodon.social/@kevin
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
 <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
 <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png" />
+
+{lcpImage && (
+  <link
+    rel="preload"
+    as="image"
+    imagesrcset={lcpImage.srcset}
+    imagesizes={lcpImage.sizes}
+  />
+)}

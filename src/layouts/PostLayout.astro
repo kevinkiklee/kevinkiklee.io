@@ -1,4 +1,5 @@
 ---
+import { getImage } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import DiscussFooter from '~/components/DiscussFooter.astro';
 import JsonLd from '~/components/JsonLd.astro';
@@ -19,6 +20,25 @@ const ogImageUrl = new URL(`/api/og?slug=${post.id}`, Astro.site).toString();
 const authorUrl = new URL('/about', Astro.site).toString();
 const homeUrl = new URL('/', Astro.site).toString();
 const postsUrl = new URL('/posts', Astro.site).toString();
+
+// If the post has a cover image, preload the responsive srcset so the LCP
+// element loads in parallel with the HTML parse. Falls back to undefined
+// for posts without a cover (most of them, including hello-world).
+let lcpImage: { srcset: string; sizes: string } | undefined;
+if (post.data.cover) {
+  const optimized = await getImage({
+    src: post.data.cover.src,
+    widths: [480, 768, 1024, 1536],
+    sizes: '(min-width: 768px) 720px, 100vw',
+    format: 'webp',
+  });
+  if (optimized.srcSet?.attribute) {
+    lcpImage = {
+      srcset: optimized.srcSet.attribute,
+      sizes: '(min-width: 768px) 720px, 100vw',
+    };
+  }
+}
 
 const jsonLd = [
   buildBlogPosting({
@@ -48,6 +68,7 @@ const jsonLd = [
   publishedTime={pubDate}
   modifiedTime={updatedDate}
   {tags}
+  {lcpImage}
 >
   <JsonLd slot="head" data={jsonLd} />
   <article class="post">
