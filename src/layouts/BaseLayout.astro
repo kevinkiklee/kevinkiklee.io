@@ -37,11 +37,17 @@ const { title, description = '', ...rest } = Astro.props;
     <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
     <script is:inline>
       (function () {
-        var stored = localStorage.getItem('theme');
-        var prefers = matchMedia('(prefers-color-scheme: dark)').matches;
-        var t = stored || (prefers ? 'dark' : 'light');
-        document.documentElement.dataset.theme = t;
-        document.documentElement.style.background = t === 'dark' ? '#0a0a0a' : '#f5f4ee';
+        function apply() {
+          var stored = localStorage.getItem('theme');
+          var prefers = matchMedia('(prefers-color-scheme: dark)').matches;
+          var t = stored || (prefers ? 'dark' : 'light');
+          document.documentElement.dataset.theme = t;
+          document.documentElement.style.background = t === 'dark' ? '#0a0a0a' : '#f5f4ee';
+        }
+        apply();
+        // ClientRouter swaps <html> attributes against the server-rendered
+        // doc, which has no data-theme — re-apply after every transition.
+        document.addEventListener('astro:after-swap', apply);
       })();
     </script>
     <PrerenderRules />
