@@ -69,7 +69,18 @@ function isCurrent(href: string) {
     font-size: var(--text-xs);
     letter-spacing: 0.08em;
   }
-  nav a { padding: var(--space-2) 0; }
+  /*
+   * Tap targets: WCAG 2.5.5 / 2.5.8 wants ≥24px; Apple HIG wants ≥44px.
+   * inline-flex + min-height gives us a consistent 44px regardless of
+   * the rendered text height (the [ / SEARCH ] link in particular has
+   * no descenders and was previously ~28px tall on mobile).
+   */
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--space-2) 0;
+  }
   nav a[aria-current='page'] { border-bottom: 2px solid var(--fg); }
   @media (max-width: 640px) {
     .row { gap: var(--space-3); justify-content: flex-start; }
