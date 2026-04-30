@@ -52,7 +52,7 @@ const jsonLd = [
   <JsonLd slot="head" data={jsonLd} />
   <article class="post">
     <header>
-      <h1>{title}</h1>
+      <h1 style={`view-transition-name: post-title-${post.id};`}>{title}</h1>
       <PostMeta {pubDate} {updatedDate} {tags} {minutesRead} />
     </header>
     <div class="prose">

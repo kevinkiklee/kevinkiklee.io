@@ -12,12 +12,42 @@ const num = String(index + 1).padStart(2, '0');
 ---
 <article class="post-card" style={`--i:${index}`}>
   <a href={`/posts/${post.id}`}>
-    <h3>[{num}] {title.toUpperCase()}</h3>
+    <h3 data-slug={post.id}>[{num}] {title.toUpperCase()}</h3>
     <PostMeta pubDate={pubDate} tags={tags} />
     <p>{description}</p>
     <span class="cta">→ READ POST</span>
   </a>
 </article>
+
+<script>
+  // Only the topmost in-viewport post-card carries view-transition-name.
+  // Idempotent: PostCard may render many times per page, but the script is
+  // hoisted once globally by Astro. Guard prevents re-init on re-runs.
+  if (!(window as unknown as { __postCardVTInit?: boolean }).__postCardVTInit) {
+    (window as unknown as { __postCardVTInit?: boolean }).__postCardVTInit = true;
+
+    const setup = () => {
+      const cards = Array.from(document.querySelectorAll<HTMLElement>('.post-card h3[data-slug]'));
+      if (cards.length === 0) return;
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const el = entry.target as HTMLElement;
+            const slug = el.dataset.slug;
+            if (!slug) continue;
+            el.style.viewTransitionName = entry.isIntersecting ? `post-title-${slug}` : '';
+          }
+        },
+        { threshold: 0.5 },
+      );
+      for (const c of cards) io.observe(c);
+    };
+
+    setup();
+    // Re-run after view-transition swaps so newly mounted cards get observed.
+    document.addEventListener('astro:after-swap', setup);
+  }
+</script>
 
 <style>
   .post-card {
