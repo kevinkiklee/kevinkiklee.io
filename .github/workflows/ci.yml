@@ -1,0 +1,88 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: 'pnpm' }
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Cache .astro
+        uses: actions/cache@v4
+        with:
+          path: .astro
+          key: astro-${{ hashFiles('src/content/**', 'astro.config.ts') }}
+      - name: Type check
+        run: pnpm astro check
+      - name: Lint
+        run: pnpm biome ci .
+      - name: Spell
+        run: pnpm exec cspell '**/*.{md,mdx}' --no-progress
+      - name: Markdown lint
+        run: pnpm exec markdownlint-cli2 '**/*.{md,mdx}'
+      - name: Test
+        run: pnpm test
+      - name: Build
+        run: pnpm build
+      - name: Upload bundle stats
+        uses: actions/upload-artifact@v4
+        with: { name: stats-html, path: stats.html, if-no-files-found: ignore }
+
+  link-check:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lycheeverse/lychee-action@v2
+        with: { args: --no-progress dist/ }
+
+  lighthouse:
+    if: github.event_name == 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for Vercel preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
+        id: vercel
+        with: { token: '${{ secrets.GITHUB_TOKEN }}', max_timeout: 600 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: npm install -g @lhci/cli@0.15.1
+      - run: lhci autorun --collect.url=${{ steps.vercel.outputs.url }} --collect.url=${{ steps.vercel.outputs.url }}/posts
+
+  indexnow:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: 'pnpm' }
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Build (for sitemap)
+        run: pnpm build
+      - name: Ping IndexNow
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: pnpm exec tsx scripts/indexnow.ts
