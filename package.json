@@ -1,0 +1,55 @@
+{
+  "name": "kevinkiklee-io",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24.0.0" },
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check && biome ci . && cspell '**/*.{md,mdx}' --no-progress && markdownlint-cli2 '**/*.{md,mdx}'",
+    "format": "biome format --write .",
+    "fonts:subset": "tsx scripts/subset-fonts.ts",
+    "new:post": "tsx scripts/new-post.ts",
+    "new:project": "tsx scripts/new-project.ts",
+    "analyze": "open stats.html",
+    "links:check": "lychee --no-progress dist/",
+    "a11y:check": "axe http://localhost:4321 --exit",
+    "lighthouse": "lhci collect --url=http://localhost:4321"
+  },
+  "dependencies": {
+    "astro": "^5.0.0",
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/rss": "^4.0.0",
+    "@astrojs/sitemap": "^3.0.0",
+    "@astrojs/partytown": "^2.0.0",
+    "astro-pagefind": "^1.6.0",
+    "pagefind": "^1.1.0",
+    "@vercel/og": "^0.6.0",
+    "@vercel/analytics": "^1.4.0",
+    "@vercel/speed-insights": "^1.1.0",
+    "web-vitals": "^4.2.0",
+    "satori": "^0.12.0",
+    "yaml": "^2.6.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@commitlint/cli": "19.6.0",
+    "@commitlint/config-conventional": "19.6.0",
+    "@lhci/cli": "0.14.0",
+    "@types/node": "22.9.0",
+    "axe-core": "4.10.0",
+    "cspell": "8.16.0",
+    "lychee": "*",
+    "markdownlint-cli2": "0.15.0",
+    "rollup-plugin-visualizer": "5.12.0",
+    "simple-git-hooks": "2.11.1",
+    "tsx": "4.19.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged",
+    "commit-msg": "pnpm exec commitlint --edit $1"
+  }
+}

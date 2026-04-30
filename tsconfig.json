@@ -1,0 +1,17 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "verbatimModuleSyntax": false,
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
+    "jsxImportSource": "astro",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
+  }
+}
