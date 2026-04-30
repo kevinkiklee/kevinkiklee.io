@@ -160,8 +160,10 @@
       try {
         // Pagefind index is only generated in production builds.
         // In `astro dev` this 404s and we render an "unavailable in dev" hint.
-        // @ts-expect-error /pagefind/pagefind.js is generated at build time by astro-pagefind.
-        const mod = (await import(/* @vite-ignore */ '/pagefind/pagefind.js')) as PagefindModule;
+        // The URL is built at runtime to prevent Vite from statically resolving
+        // the import at transform time (which would surface as a dev-overlay error).
+        const pagefindUrl = `${window.location.origin}/pagefind/pagefind.js`;
+        const mod = (await import(/* @vite-ignore */ pagefindUrl)) as PagefindModule;
         await mod.options({ baseUrl: '/' });
         pagefindLoaded = mod;
         return mod;
