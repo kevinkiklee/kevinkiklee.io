@@ -14,8 +14,6 @@ export const CSP = [
     "'unsafe-inline'",
     // Vercel Web Analytics + Speed Insights beacons.
     'https://*.vercel-insights.com',
-    // Giscus comment widget script (loaded only on post pages).
-    'https://giscus.app',
     // Google Tag Manager + GA4 (proxied via Partytown).
     'https://www.googletagmanager.com',
     'https://www.google-analytics.com',
@@ -28,23 +26,18 @@ export const CSP = [
     "'self'",
     // Astro emits scoped style attributes; we allow inline styles globally.
     "'unsafe-inline'",
-    // Giscus injects its own stylesheet inside the iframe wrapper.
-    'https://giscus.app',
   ].join(' '),
   [
     'img-src',
     "'self'",
     // OG previews and inline base64 thumbnails.
     'data:',
-    // Giscus loads avatars under varied subdomains (e.g. cdn.giscus.app).
-    'https://*.giscus.app',
     // Gravatar avatars used by Webmention.io comment authors.
     'https://*.gravatar.com',
-    // GitHub avatars (Giscus + webmentions from GH issues).
+    // GitHub avatars used by webmentions from GH-authored replies.
     'https://avatars.githubusercontent.com',
   ].join(' '),
-  // Giscus iframe origin.
-  'frame-src https://giscus.app',
+  // No frame-src needed — we don't embed any third-party iframes.
   [
     'connect-src',
     "'self'",

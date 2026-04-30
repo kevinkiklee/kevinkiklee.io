@@ -14,7 +14,6 @@ interface Props {
   lcpImage?:
     | { sizes: string; avifSrcset?: string | undefined; webpSrcset?: string | undefined }
     | undefined;
-  preconnectGiscus?: boolean | undefined;
 }
 const {
   title,
@@ -26,7 +25,6 @@ const {
   modifiedTime,
   tags = [],
   lcpImage,
-  preconnectGiscus = false,
 } = Astro.props;
 
 const canonical = canonicalProp ?? new URL(Astro.url.pathname, Astro.site).toString();
@@ -97,10 +95,3 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
     imagesizes={lcpImage.sizes}
   />
 )}
-{/*
- * Giscus preconnect: only emitted on post pages (PostLayout passes
- * preconnectGiscus). The IntersectionObserver in Giscus.astro will still
- * lazy-load the script itself near the bottom of the page, but the TLS
- * handshake is already warm by then. Saves ~100–300ms of perceived latency.
- */}
-{preconnectGiscus && <link rel="preconnect" href="https://giscus.app" crossorigin />}

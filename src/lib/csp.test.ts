@@ -11,10 +11,14 @@ describe('CSP header', () => {
   });
 
   it('whitelists known third parties', () => {
-    expect(CSP).toContain('https://giscus.app');
     expect(CSP).toContain('https://*.vercel-insights.com');
     expect(CSP).toContain('https://webmention.io');
     expect(CSP).toContain('https://*.google-analytics.com');
+  });
+
+  it('does not allow giscus origins (Giscus removed in favour of Mastodon-only)', () => {
+    expect(CSP).not.toContain('giscus.app');
+    expect(CSP).not.toContain('frame-src');
   });
 
   it('has no empty directive (a stray "; ;" or trailing ";")', () => {
@@ -46,7 +50,7 @@ describe('CSP header', () => {
 
   it('matches a stable shape (snapshot)', () => {
     expect(CSP).toMatchInlineSnapshot(
-      `"default-src 'self'; script-src 'self' 'unsafe-inline' https://*.vercel-insights.com https://giscus.app https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://giscus.app; img-src 'self' data: https://*.giscus.app https://*.gravatar.com https://avatars.githubusercontent.com; frame-src https://giscus.app; connect-src 'self' https://*.vercel-insights.com https://*.google-analytics.com https://webmention.io; font-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"`,
+      `"default-src 'self'; script-src 'self' 'unsafe-inline' https://*.vercel-insights.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.gravatar.com https://avatars.githubusercontent.com; connect-src 'self' https://*.vercel-insights.com https://*.google-analytics.com https://webmention.io; font-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"`,
     );
   });
 });
