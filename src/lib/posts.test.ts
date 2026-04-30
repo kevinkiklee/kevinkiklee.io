@@ -9,6 +9,39 @@ describe('sortByDateDesc', () => {
     const b = { data: { pubDate: new Date('2026-04-01') } } as any;
     expect(sortByDateDesc([a, b])[0]).toBe(b);
   });
+
+  it('returns [] for an empty input', () => {
+    expect(sortByDateDesc([])).toEqual([]);
+  });
+
+  it('does not mutate the input array', () => {
+    // biome-ignore lint/suspicious/noExplicitAny: test fixture
+    const a = { data: { pubDate: new Date('2026-01-01') } } as any;
+    // biome-ignore lint/suspicious/noExplicitAny: test fixture
+    const b = { data: { pubDate: new Date('2026-04-01') } } as any;
+    const input = [a, b];
+    sortByDateDesc(input);
+    expect(input).toEqual([a, b]);
+  });
+
+  it('returns a single-element array unchanged', () => {
+    // biome-ignore lint/suspicious/noExplicitAny: test fixture
+    const a = { data: { pubDate: new Date('2026-01-01') } } as any;
+    expect(sortByDateDesc([a])).toEqual([a]);
+  });
+
+  it('preserves relative order for posts with identical pubDate (stable enough for our use)', () => {
+    const date = new Date('2026-04-01');
+    // biome-ignore lint/suspicious/noExplicitAny: test fixture
+    const a = { id: 'a', data: { pubDate: date } } as any;
+    // biome-ignore lint/suspicious/noExplicitAny: test fixture
+    const b = { id: 'b', data: { pubDate: date } } as any;
+    // biome-ignore lint/suspicious/noExplicitAny: test fixture
+    const c = { id: 'c', data: { pubDate: date } } as any;
+    const out = sortByDateDesc([a, b, c]);
+    // Array.prototype.sort is required to be stable since ES2019.
+    expect(out.map((p) => p.id)).toEqual(['a', 'b', 'c']);
+  });
 });
 
 describe('tagCounts', () => {
@@ -20,6 +53,21 @@ describe('tagCounts', () => {
       // biome-ignore lint/suspicious/noExplicitAny: test fixture
     ] as any;
     expect(tagCounts(posts)).toEqual({ ai: 2, devrel: 1 });
+  });
+
+  it('returns {} for empty input', () => {
+    expect(tagCounts([])).toEqual({});
+  });
+
+  it('counts duplicate tags within a single post separately', () => {
+    // The schema does not de-dupe tags within a post, so the helper should
+    // honour multiplicity. (We rely on author discipline; this guards
+    // against accidental "smart" de-duping creeping in.)
+    const posts = [
+      { data: { tags: ['ai', 'ai', 'web'] } },
+      // biome-ignore lint/suspicious/noExplicitAny: test fixture
+    ] as any;
+    expect(tagCounts(posts)).toEqual({ ai: 2, web: 1 });
   });
 });
 

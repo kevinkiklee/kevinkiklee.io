@@ -50,6 +50,25 @@ describe('buildBlogPosting', () => {
     expect('wordCount' in ld).toBe(false);
     expect('timeRequired' in ld).toBe(false);
   });
+
+  it('omits wordCount when wordCount=0 (treats falsy as missing)', () => {
+    // Documents the spread-with-`&&`-guard behaviour. wordCount=0 is falsy
+    // and so is intentionally elided rather than emitted as 0; a 0-word
+    // post is meaningless to schema.org consumers.
+    const ld = buildBlogPosting({
+      url: 'https://kevinkiklee.io/posts/x',
+      title: 'Title',
+      description: 'desc',
+      pubDate: new Date('2026-04-12'),
+      tags: [],
+      imageUrl: 'https://kevinkiklee.io/og.png',
+      wordCount: 0,
+      minutesRead: 0,
+      authorUrl: 'https://kevinkiklee.io/about',
+    });
+    expect('wordCount' in ld).toBe(false);
+    expect('timeRequired' in ld).toBe(false);
+  });
 });
 
 describe('buildBreadcrumbs', () => {
@@ -64,6 +83,18 @@ describe('buildBreadcrumbs', () => {
     expect(ld.itemListElement[0]?.position).toBe(1);
     expect(ld.itemListElement[2]?.name).toBe('Title');
     expect(ld.itemListElement[2]?.item).toBe('https://kevinkiklee.io/posts/x');
+  });
+
+  it('handles a single-item breadcrumb (just the current page)', () => {
+    const ld = buildBreadcrumbs([{ name: 'Home', url: 'https://kevinkiklee.io/' }]);
+    expect(ld.itemListElement).toHaveLength(1);
+    expect(ld.itemListElement[0]?.position).toBe(1);
+    expect(ld.itemListElement[0]?.name).toBe('Home');
+  });
+
+  it('returns an empty itemListElement for empty input', () => {
+    const ld = buildBreadcrumbs([]);
+    expect(ld.itemListElement).toEqual([]);
   });
 });
 
@@ -86,6 +117,17 @@ describe('buildPerson', () => {
     });
     expect(ld.sameAs).toHaveLength(3);
     expect(ld.sameAs[2]).toBe('https://www.linkedin.com/in/kevinkiklee/');
+  });
+
+  it('drops empty-string sameAs entries (filter(Boolean))', () => {
+    // The helper uses `.filter(Boolean)` which filters undefined AND
+    // empty strings. This test pins that behaviour so a future refactor
+    // (e.g. switching to `.filter((x) => x !== undefined)`) will trip.
+    const ld = buildPerson({
+      mastodon: 'https://mastodon.social/@kevin',
+      github: '',
+    });
+    expect(ld.sameAs).toEqual(['https://mastodon.social/@kevin']);
   });
 });
 

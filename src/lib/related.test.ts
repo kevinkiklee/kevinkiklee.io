@@ -59,4 +59,25 @@ describe('relatedPosts', () => {
     ];
     expect(relatedPosts(target, candidates, 2)).toHaveLength(2);
   });
+
+  it('breaks ties by recency descending when overlap counts are equal', () => {
+    // All three candidates have the same overlap (1 tag in common).
+    // Tie-break must be newest pubDate first.
+    const target = mkPost('a', ['x'], '2026-01-01');
+    const candidates = [
+      mkPost('older', ['x'], '2026-01-02'),
+      mkPost('newest', ['x'], '2026-04-15'),
+      mkPost('middle', ['x'], '2026-02-10'),
+    ];
+    const out = relatedPosts(target, candidates, 3);
+    expect(out.map((p) => p.id)).toEqual(['newest', 'middle', 'older']);
+  });
+
+  it('excludes the source post even when it appears with high overlap', () => {
+    // Self-match would otherwise score perfectly on every tag.
+    const target = mkPost('self', ['x', 'y', 'z'], '2026-01-01');
+    const out = relatedPosts(target, [target, mkPost('b', ['x', 'y'], '2026-01-02')], 5);
+    expect(out.map((p) => p.id)).toEqual(['b']);
+    expect(out.map((p) => p.id)).not.toContain('self');
+  });
 });

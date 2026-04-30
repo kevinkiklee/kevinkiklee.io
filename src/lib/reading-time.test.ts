@@ -25,4 +25,23 @@ describe('computeReadingTime', () => {
     expect(computeReadingTime(md)).toBe(1);
     expect(computeWordCount(md)).toBe(100);
   });
+
+  it('returns 1 minute for empty markdown', () => {
+    expect(computeReadingTime('')).toBe(1);
+  });
+
+  it('returns 1 minute for markdown that is only a code block', () => {
+    const md = '```ts\nconst x = 1;\nconst y = 2;\n```';
+    // All words live inside the fence and are stripped.
+    expect(computeWordCount(md)).toBe(0);
+    expect(computeReadingTime(md)).toBe(1);
+  });
+
+  it('measures only prose when prose and code are mixed', () => {
+    const prose = 'word '.repeat(400);
+    const md = `${prose}\n\n\`\`\`ts\n${'console.log("noise");\n'.repeat(50)}\`\`\`\n`;
+    // 400 prose words → 2 min, code block contributes 0.
+    expect(computeWordCount(md)).toBe(400);
+    expect(computeReadingTime(md)).toBe(2);
+  });
 });
