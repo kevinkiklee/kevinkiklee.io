@@ -15,7 +15,7 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "style": { "useImportType": "off" },
+      "style": { "useImportType": "warn" },
       "suspicious": { "noExplicitAny": "warn" }
     }
   },
