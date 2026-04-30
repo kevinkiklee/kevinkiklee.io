@@ -4,6 +4,7 @@ import { MASTODON_INSTANCE_URL } from 'astro:env/client';
 interface Props {
   title: string;
   description: string;
+  canonical?: string | undefined;
   ogType?: 'website' | 'article' | undefined;
   ogImageUrl?: string | undefined;
   publishedTime?: Date | undefined;
@@ -14,6 +15,7 @@ interface Props {
 const {
   title,
   description,
+  canonical: canonicalProp,
   ogType = 'website',
   ogImageUrl,
   publishedTime,
@@ -22,7 +24,7 @@ const {
   lcpImage,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const canonical = canonicalProp ?? new URL(Astro.url.pathname, Astro.site).toString();
 const ogImage = ogImageUrl ?? new URL('/og-default.png', Astro.site).toString();
 const mastodonProfile = MASTODON_INSTANCE_URL ?? 'https://mastodon.social/@kevin';
 ---
