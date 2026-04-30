@@ -1,6 +1,48 @@
 ---
+import { getCollection } from 'astro:content';
+import PostCard from '~/components/PostCard.astro';
+import ProjectCard from '~/components/ProjectCard.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
+
+const posts = sortByDateDesc(await getPublishedPosts()).slice(0, 5);
+const projects = (await getCollection('projects'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999));
 ---
-<BaseLayout title="kevinkiklee.io">
-  <h1>kevinkiklee.io</h1>
+<BaseLayout
+  title="kevinkiklee.io"
+  description="Field notes from a Chrome DevRel — AI, web platform, and tangents."
+>
+  <section class="hero">
+    <p class="prompt">$ whoami</p>
+    <h1>// FIELD NOTES</h1>
+    <p class="tag">DEVREL @ GOOGLE CHROME · AI · WEB PLATFORM · TANGENTS</p>
+  </section>
+
+  <section aria-labelledby="latest">
+    <h2 id="latest" class="section-title">[ LATEST POSTS ]</h2>
+    {posts.map((post, i) => <PostCard post={post} index={i} />)}
+    <p class="more"><a href="/posts">→ all posts</a></p>
+  </section>
+
+  {projects.length > 0 && (
+    <section aria-labelledby="featured">
+      <h2 id="featured" class="section-title">[ FEATURED PROJECTS ]</h2>
+      <div class="grid">
+        {projects.map((project) => <ProjectCard project={project} />)}
+      </div>
+      <p class="more"><a href="/projects">→ all projects</a></p>
+    </section>
+  )}
 </BaseLayout>
+
+<style>
+  .hero { padding: var(--space-7) 0 var(--space-6); border-bottom: 2px solid var(--rule); margin-bottom: var(--space-6); }
+  .prompt { color: var(--fg-subtle); font-size: var(--text-sm); }
+  .hero h1 { font-size: var(--text-2xl); letter-spacing: 0.02em; text-transform: uppercase; margin: var(--space-2) 0; }
+  .tag { font-size: var(--text-xs); letter-spacing: 0.08em; color: var(--fg-muted); }
+  .section-title { font-size: var(--text-base); letter-spacing: 0.06em; margin: var(--space-7) 0 var(--space-4); }
+  .grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .more { margin-top: var(--space-5); font-size: var(--text-xs); }
+</style>

@@ -1,0 +1,52 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import PostMeta from './PostMeta.astro';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  index?: number | undefined;
+}
+const { post, index = 0 } = Astro.props;
+const { title, description, pubDate, tags } = post.data;
+const num = String(index + 1).padStart(2, '0');
+---
+<article class="post-card" style={`--i:${index}`}>
+  <a href={`/posts/${post.id}`}>
+    <h3>[{num}] {title.toUpperCase()}</h3>
+    <PostMeta pubDate={pubDate} tags={tags} />
+    <p>{description}</p>
+    <span class="cta">→ READ POST</span>
+  </a>
+</article>
+
+<style>
+  .post-card {
+    border-top: 1px solid var(--rule-soft);
+    padding: var(--space-5) 0;
+    container-type: inline-size;
+  }
+  .post-card a { display: block; }
+  .post-card h3 {
+    font-size: var(--text-lg);
+    letter-spacing: 0.02em;
+    margin-bottom: var(--space-2);
+    transition: color 180ms var(--ease);
+  }
+  .post-card p {
+    margin-top: var(--space-3);
+    color: var(--fg-muted);
+    max-width: var(--measure);
+  }
+  .post-card .cta {
+    display: inline-block;
+    margin-top: var(--space-3);
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    color: var(--fg-subtle);
+    transition: transform 180ms var(--ease), color 180ms var(--ease);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .post-card:hover { border-top-color: var(--rule); }
+    .post-card:hover .cta { color: var(--fg); transform: translateX(4px); }
+  }
+</style>
