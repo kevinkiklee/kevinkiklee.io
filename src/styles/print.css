@@ -15,7 +15,7 @@
   }
 
   /* Strip site chrome and any decorative aside (TOC, related posts, etc). */
-  header[role='banner'],
+  header[role="banner"],
   body > header,
   body > footer,
   nav,
@@ -40,14 +40,14 @@
   }
 
   /* Show absolute URLs after external links so printouts stay useful. */
-  a[href^='http']::after {
-    content: ' (' attr(href) ')';
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
     font-size: 0.85em;
     color: #444;
   }
-  a[href^='#']::after,
-  a[href^='/']::after {
-    content: '';
+  a[href^="#"]::after,
+  a[href^="/"]::after {
+    content: "";
   }
 
   h1,
