@@ -1,3 +1,18 @@
+---
+/*
+ * Speculation Rules: Chromium-only as of 2026-04. Tells the browser to
+ * prerender (full document + JS) and prefetch (HTML only) in-origin pages
+ * eagerly, skipping anything under /api/ and any link with
+ * `data-no-prerender`.
+ *
+ * Note: per-link prefetch fallback for non-Chromium browsers is handled
+ * via `astro.config.ts` `prefetch.defaultStrategy: 'hover'` plus per-link
+ * `prefetch={'viewport'}` attributes — Astro emits the matching
+ * `<link rel="prefetch">` tags itself. There is therefore no separate
+ * `PrefetchRules.astro` component; the responsibilities are split between
+ * this file (Chromium speculation) and the prefetch attrs (everyone else).
+ */
+---
 <script is:inline type="speculationrules" set:html={JSON.stringify({
   prerender: [{
     where: { and: [

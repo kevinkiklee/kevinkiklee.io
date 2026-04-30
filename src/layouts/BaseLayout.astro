@@ -23,6 +23,7 @@ interface Props {
   lcpImage?:
     | { sizes: string; avifSrcset?: string | undefined; webpSrcset?: string | undefined }
     | undefined;
+  preconnectGiscus?: boolean | undefined;
 }
 const { title, description = '', ...rest } = Astro.props;
 ---
