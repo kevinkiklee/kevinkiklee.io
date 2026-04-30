@@ -65,13 +65,7 @@
     "commit-msg": "pnpm exec commitlint --edit $1"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,astro}": [
-      "biome format --write",
-      "biome lint"
-    ],
-    "*.{md,mdx}": [
-      "cspell --no-progress",
-      "markdownlint-cli2"
-    ]
+    "*.{ts,tsx,js,jsx,astro}": ["biome format --write", "biome lint"],
+    "*.{md,mdx}": ["cspell --no-progress", "markdownlint-cli2"]
   }
 }

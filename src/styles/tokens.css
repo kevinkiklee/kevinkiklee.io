@@ -1,25 +1,31 @@
 :root {
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-display: 'IBM Plex Mono', var(--font-mono);
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-display: "IBM Plex Mono", var(--font-mono);
 
-  --text-xs:   clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
-  --text-sm:   clamp(0.82rem, 0.80rem + 0.13vw, 0.90rem);
+  --text-xs: clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
+  --text-sm: clamp(0.82rem, 0.80rem + 0.13vw, 0.90rem);
   --text-base: clamp(0.95rem, 0.92rem + 0.18vw, 1.05rem);
-  --text-lg:   clamp(1.10rem, 1.05rem + 0.25vw, 1.25rem);
-  --text-xl:   clamp(1.40rem, 1.30rem + 0.50vw, 1.75rem);
-  --text-2xl:  clamp(1.80rem, 1.60rem + 1.0vw,  2.50rem);
+  --text-lg: clamp(1.10rem, 1.05rem + 0.25vw, 1.25rem);
+  --text-xl: clamp(1.40rem, 1.30rem + 0.50vw, 1.75rem);
+  --text-2xl: clamp(1.80rem, 1.60rem + 1.0vw, 2.50rem);
 
   --leading-body: 1.65;
   --leading-tight: 1.25;
   --measure: 68ch;
 
-  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
-  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
 
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-:root[data-theme='light'] {
+:root[data-theme="light"] {
   --bg: #f5f4ee;
   --fg: #0a0a0a;
   --fg-muted: #4a4a4a;
@@ -33,7 +39,7 @@
   --selection-fg: #f5f4ee;
 }
 
-:root[data-theme='dark'] {
+:root[data-theme="dark"] {
   --bg: #0a0a0a;
   --fg: #ededed;
   --fg-muted: #b5b5b5;
@@ -48,11 +54,12 @@
 }
 
 @font-face {
-  font-family: 'JetBrains Mono';
-  src: url('/fonts/jetbrains-mono.woff2') format('woff2-variations');
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains-mono.woff2") format("woff2-variations");
   font-weight: 100 800;
   font-display: swap;
-  unicode-range: U+0000-007F, U+00A0-00FF, U+2010-2027, U+2030, U+2032-2033, U+2070, U+2074-2079, U+20A0-20BF, U+2122, U+2191-2199, U+2500-257F, U+2580-259F;
+  unicode-range: U+0000-007F, U+00A0-00FF, U+2010-2027, U+2030, U+2032-2033, U+2070, U+2074-2079,
+    U+20A0-20BF, U+2122, U+2191-2199, U+2500-257F, U+2580-259F;
   size-adjust: 102%;
   ascent-override: 80%;
   descent-override: 20%;
