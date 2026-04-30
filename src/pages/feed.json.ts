@@ -1,0 +1,29 @@
+import type { APIContext } from 'astro';
+import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
+
+export async function GET(context: APIContext) {
+  if (!context.site) throw new Error('astro.config site must be set');
+  const site = context.site;
+  const posts = sortByDateDesc(await getPublishedPosts());
+  const body = {
+    version: 'https://jsonfeed.org/version/1.1',
+    title: 'kevinkiklee.io',
+    home_page_url: site.toString(),
+    feed_url: new URL('/feed.json', site).toString(),
+    description: 'Field notes from a Chrome DevRel.',
+    language: 'en-US',
+    authors: [{ name: 'Kevin Lee', url: site.toString() }],
+    items: posts.map((p) => ({
+      id: new URL(`/posts/${p.id}`, site).toString(),
+      url: new URL(`/posts/${p.id}`, site).toString(),
+      title: p.data.title,
+      summary: p.data.description,
+      date_published: p.data.pubDate.toISOString(),
+      date_modified: (p.data.updatedDate ?? p.data.pubDate).toISOString(),
+      tags: p.data.tags,
+    })),
+  };
+  return new Response(JSON.stringify(body, null, 2), {
+    headers: { 'Content-Type': 'application/feed+json; charset=utf-8' },
+  });
+}
