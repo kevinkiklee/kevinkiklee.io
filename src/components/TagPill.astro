@@ -1,0 +1,35 @@
+---
+/**
+ * Brutalist tag chip. Renders as an <a> by default (linked to /tags/<slug>);
+ * pass `asLink={false}` for a non-interactive label (e.g. on the tag page
+ * heading itself, where linking back to the same page would be redundant).
+ *
+ * Use everywhere a tag pill appears so styling, padding, and the touch hit
+ * area stay consistent.
+ */
+interface Props {
+  tag: string;
+  asLink?: boolean | undefined;
+}
+const { tag, asLink = true } = Astro.props;
+---
+{asLink ? (
+  <a href={`/tags/${tag}`} class="pill">{tag.toUpperCase()}</a>
+) : (
+  <span class="pill">{tag.toUpperCase()}</span>
+)}
+
+<style>
+  .pill {
+    background: var(--pill-bg);
+    color: var(--pill-fg);
+    /* Visually compact, but expand the hit area for touch accuracy. The
+       negative margin keeps the visual rhythm of the meta line intact. */
+    padding: var(--space-2) var(--space-3);
+    margin: -2px;
+    display: inline-block;
+    min-height: 32px;
+    line-height: 1.4;
+    text-decoration: none;
+  }
+</style>

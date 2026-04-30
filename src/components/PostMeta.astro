@@ -1,5 +1,6 @@
 ---
 import { formatDate } from '~/lib/format';
+import TagPill from './TagPill.astro';
 
 interface Props {
   pubDate: Date;
@@ -15,7 +16,7 @@ const { pubDate, updatedDate, tags, minutesRead } = Astro.props;
   {minutesRead && <span> · {minutesRead} MIN READ</span>}
   {tags.length > 0 && (
     <span> · {tags.map((t, i) => (
-      <>{i > 0 && ' '}<a href={`/tags/${t}`} class="pill">{t.toUpperCase()}</a></>
+      <>{i > 0 && ' '}<TagPill tag={t} /></>
     ))}</span>
   )}
 </div>
@@ -26,17 +27,5 @@ const { pubDate, updatedDate, tags, minutesRead } = Astro.props;
     color: var(--fg-muted);
     letter-spacing: 0.06em;
     font-variant-numeric: tabular-nums slashed-zero;
-  }
-  .pill {
-    background: var(--pill-bg);
-    color: var(--pill-fg);
-    /* Visually compact, but expand the hit area for touch accuracy. The
-       negative margin keeps the visual rhythm of the meta line intact. */
-    padding: var(--space-2) var(--space-3);
-    margin: -2px;
-    display: inline-block;
-    min-height: 32px;
-    line-height: 1.4;
-    text-decoration: none;
   }
 </style>
