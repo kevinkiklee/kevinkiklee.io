@@ -1,9 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
+import JsonLd from '~/components/JsonLd.astro';
 import PostCard from '~/components/PostCard.astro';
 import ProjectCard from '~/components/ProjectCard.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
+import { buildWebSite } from '~/lib/schema';
 
 const posts = sortByDateDesc(await getPublishedPosts()).slice(0, 5);
 const projects = (await getCollection('projects'))
@@ -14,6 +16,7 @@ const projects = (await getCollection('projects'))
   title="kevinkiklee.io"
   description="Field notes from a Chrome DevRel — AI, web platform, and tangents."
 >
+  <JsonLd slot="head" data={buildWebSite()} />
   <section class="hero">
     <p class="prompt">$ whoami</p>
     <h1>// FIELD NOTES</h1>
