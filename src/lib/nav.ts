@@ -1,4 +1,7 @@
-type Dir = 'forward' | 'back' | 'lateral' | 'forward-into-post';
+import { type Dir, decideDirection } from './nav-direction';
+
+export { decideDirection };
+export type { Dir, NavType } from './nav-direction';
 
 function getDepth(): number {
   return (history.state?.depth as number) ?? 0;
@@ -9,25 +12,22 @@ function setDirOnHtml(dir: Dir) {
 }
 
 document.addEventListener('astro:before-preparation', (e: Event) => {
-  // biome-ignore lint/suspicious/noExplicitAny: Astro transition event types are loose
-  const evt = e as any;
+  const evt = e as ViewTransitionPreparationEvent;
   document.documentElement.dataset.transitioning = '';
   const fromDepth = getDepth();
-  const toPath: string | undefined = evt.to?.pathname;
-  const toIsPost = toPath?.startsWith('/posts/') && toPath !== '/posts';
-  const isTraverse = evt.navigationType === 'traverse';
-  const dir: Dir = isTraverse ? 'back' : toIsPost ? 'forward-into-post' : 'forward';
+  const dir = decideDirection(evt.navigationType, evt.from, evt.to, fromDepth);
   setDirOnHtml(dir);
-  if (!isTraverse) {
+  if (evt.navigationType !== 'traverse') {
     history.replaceState({ ...(history.state ?? {}), depth: fromDepth + 1 }, '');
   }
 
   // Reduced motion or save-data → skip transition
   let slow = false;
   try {
-    // biome-ignore lint/suspicious/noExplicitAny: Connection API not in TS lib
-    const c = (navigator as any).connection;
-    slow = Boolean(c?.saveData) || ['slow-2g', '2g'].includes(c?.effectiveType);
+    const c = navigator.connection;
+    slow =
+      Boolean(c?.saveData) ||
+      (c?.effectiveType !== undefined && ['slow-2g', '2g'].includes(c.effectiveType));
   } catch {
     slow = false;
   }

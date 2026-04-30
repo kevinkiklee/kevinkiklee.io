@@ -23,8 +23,8 @@ const num = String(index + 1).padStart(2, '0');
   // Only the topmost in-viewport post-card carries view-transition-name.
   // Idempotent: PostCard may render many times per page, but the script is
   // hoisted once globally by Astro. Guard prevents re-init on re-runs.
-  if (!(window as unknown as { __postCardVTInit?: boolean }).__postCardVTInit) {
-    (window as unknown as { __postCardVTInit?: boolean }).__postCardVTInit = true;
+  if (!window.__postCardVTInit) {
+    window.__postCardVTInit = true;
 
     const setup = () => {
       const cards = Array.from(document.querySelectorAll<HTMLElement>('.post-card h3[data-slug]'));

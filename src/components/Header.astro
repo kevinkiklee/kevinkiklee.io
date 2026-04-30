@@ -9,7 +9,10 @@ const links = [
 ];
 function isCurrent(href: string) {
   if (href === '/') return path === '/';
-  return path.startsWith(href);
+  // Highlight on exact match OR on a true child route (`/posts/foo`),
+  // but not on a sibling that happens to share a prefix
+  // (e.g. `/projects` should not light up when on `/projects-archive`).
+  return path === href || path.startsWith(`${href}/`);
 }
 ---
 <header class="site-header">

@@ -1,4 +1,4 @@
-import type { CollectionEntry } from 'astro:content';
+import { type CollectionEntry, getCollection } from 'astro:content';
 
 type Post = CollectionEntry<'posts'>;
 
@@ -12,12 +12,20 @@ export function tagCounts(posts: Post[]): Record<string, number> {
   return out;
 }
 
+/**
+ * Returns posts visible in the current environment.
+ *
+ * - Production builds: drafts are filtered out.
+ * - Vercel preview deployments (`VERCEL_ENV=preview`): drafts are included
+ *   so authors can review unpublished work pre-merge.
+ * - Local dev: all posts (drafts included).
+ */
 export async function getPublishedPosts(): Promise<Post[]> {
-  const { getCollection } = await import('astro:content');
   const env = import.meta.env;
   const vercelEnv = env.VERCEL_ENV as string | undefined;
+  const showDrafts = !env.PROD || vercelEnv === 'preview';
   return getCollection('posts', ({ data }) => {
-    if (env.PROD && vercelEnv !== 'preview') return data.draft !== true;
-    return true;
+    if (showDrafts) return true;
+    return data.draft !== true;
   });
 }

@@ -124,6 +124,11 @@
 </style>
 
 <script>
+  // How long to wait after the last keystroke before firing a search.
+  // 120ms is fast enough to feel live but slow enough that a typist
+  // doesn't trigger 6 in-flight Pagefind queries while typing "astro".
+  const SEARCH_DEBOUNCE_MS = 120;
+
   const dlg = document.getElementById('search-palette') as HTMLDialogElement | null;
   const input = document.getElementById('palette-input') as HTMLInputElement | null;
   const results = document.getElementById('palette-results') as HTMLDivElement | null;
@@ -206,7 +211,7 @@
             return `<a href="${url}" aria-label="Open: ${title}"><strong>${title}</strong><small>${d.excerpt}</small></a>`;
           })
           .join('');
-      }, 120);
+      }, SEARCH_DEBOUNCE_MS);
     });
 
     document.addEventListener('keydown', (e) => {
