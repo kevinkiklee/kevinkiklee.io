@@ -46,3 +46,15 @@
   --selection-bg: #ededed;
   --selection-fg: #0a0a0a;
 }
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/jetbrains-mono.woff2') format('woff2-variations');
+  font-weight: 100 800;
+  font-display: swap;
+  unicode-range: U+0000-007F, U+00A0-00FF, U+2010-2027, U+2030, U+2032-2033, U+2070, U+2074-2079, U+20A0-20BF, U+2122, U+2191-2199, U+2500-257F, U+2580-259F;
+  size-adjust: 102%;
+  ascent-override: 80%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+}

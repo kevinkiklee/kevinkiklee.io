@@ -10,3 +10,6 @@ dist
 .superpowers/
 stats.html
 .lighthouseci/
+
+# Local font sources — keep TTFs out of git, ship only subsetted WOFF2.
+fonts/source/
