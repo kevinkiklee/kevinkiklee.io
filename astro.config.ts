@@ -8,6 +8,7 @@ import pagefind from 'astro-pagefind';
 import { defineConfig, envField } from 'astro/config';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { parse as parseYaml } from 'yaml';
+import imageSitemap from './src/integrations/image-sitemap';
 import { remarkReadingTime } from './src/lib/reading-time';
 
 // Read post frontmatter at config-evaluation time so the sitemap can:
@@ -142,6 +143,7 @@ export default defineConfig({
         return item;
       },
     }),
+    imageSitemap(),
     pagefind(),
     partytown({ config: { forward: ['dataLayer.push'], debug: false } }),
   ],
