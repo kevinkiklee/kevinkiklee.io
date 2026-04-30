@@ -1,0 +1,86 @@
+---
+import { GISCUS_CATEGORY, GISCUS_CATEGORY_ID, GISCUS_REPO, GISCUS_REPO_ID } from 'astro:env/client';
+
+const repo = GISCUS_REPO ?? 'kevinkiklee/kevinkiklee.io';
+const repoId = GISCUS_REPO_ID ?? '';
+const category = GISCUS_CATEGORY ?? 'General';
+const categoryId = GISCUS_CATEGORY_ID ?? '';
+
+const configured = Boolean(repoId && categoryId);
+---
+{configured ? (
+  <div
+    id="giscus-mount"
+    data-repo={repo}
+    data-repo-id={repoId}
+    data-category={category}
+    data-category-id={categoryId}
+  >
+    <noscript>
+      Comments require JavaScript.{' '}
+      <a href={`https://github.com/${repo}/discussions`}>Open in GitHub Discussions ↗</a>
+    </noscript>
+  </div>
+) : (
+  <p class="giscus-unconfigured">
+    Comments will appear here once Giscus is configured. Until then,{' '}
+    <a href={`https://github.com/${repo}/discussions`}>open a discussion on GitHub ↗</a>.
+  </p>
+)}
+
+<script>
+  const mount = document.getElementById('giscus-mount');
+  if (mount && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries, obs) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          obs.disconnect();
+          const s = document.createElement('script');
+          s.src = 'https://giscus.app/client.js';
+          s.async = true;
+          s.crossOrigin = 'anonymous';
+          // biome-ignore lint/style/noNonNullAssertion: data attributes set in markup
+          s.dataset.repo = mount.dataset.repo!;
+          // biome-ignore lint/style/noNonNullAssertion: data attributes set in markup
+          s.dataset.repoId = mount.dataset.repoId!;
+          // biome-ignore lint/style/noNonNullAssertion: data attributes set in markup
+          s.dataset.category = mount.dataset.category!;
+          // biome-ignore lint/style/noNonNullAssertion: data attributes set in markup
+          s.dataset.categoryId = mount.dataset.categoryId!;
+          s.dataset.mapping = 'pathname';
+          s.dataset.strict = '0';
+          s.dataset.reactionsEnabled = '1';
+          s.dataset.emitMetadata = '0';
+          s.dataset.inputPosition = 'top';
+          s.dataset.theme =
+            document.documentElement.dataset.theme === 'dark' ? 'dark_dimmed' : 'light';
+          s.dataset.lang = 'en';
+          mount.appendChild(s);
+        }
+      }
+    }, { rootMargin: '200px' });
+    io.observe(mount);
+
+    // Keep the Giscus iframe theme in sync with our toggle.
+    const sendGiscusTheme = () => {
+      const t =
+        document.documentElement.dataset.theme === 'dark' ? 'dark_dimmed' : 'light';
+      const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+      iframe?.contentWindow?.postMessage(
+        { giscus: { setConfig: { theme: t } } },
+        'https://giscus.app',
+      );
+    };
+    new MutationObserver(sendGiscusTheme).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+  }
+</script>
+
+<style>
+  .giscus-unconfigured {
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+  }
+</style>

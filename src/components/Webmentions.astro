@@ -1,0 +1,58 @@
+---
+import { fetchWebmentions } from '~/lib/webmentions';
+
+interface Props {
+  url: string;
+}
+const { url } = Astro.props;
+const mentions = await fetchWebmentions(url);
+const replies = mentions.filter((m) => m.type === 'reply');
+const likes = mentions.filter((m) => m.type === 'like');
+const reposts = mentions.filter((m) => m.type === 'repost');
+---
+{mentions.length > 0 && (
+  <section class="webmentions" aria-labelledby="wm-h">
+    <h3 id="wm-h">[ WEBMENTIONS ]</h3>
+    {(likes.length + reposts.length) > 0 && (
+      <p class="reactions">
+        {likes.length} ♥ · {reposts.length} ↻
+      </p>
+    )}
+    {replies.length > 0 && (
+      <ul role="list">
+        {replies.map((m) => (
+          <li>
+            <a href={m.author.url}><strong>{m.author.name}</strong></a>
+            {' — '}
+            <a href={m.url}>{new Date(m.published).toISOString().slice(0, 10)}</a>
+            <p>{m.content.text}</p>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+)}
+
+<style>
+  .webmentions {
+    margin-top: var(--space-7);
+    border-top: 2px solid var(--rule);
+    padding-top: var(--space-5);
+  }
+  h3 {
+    font-size: var(--text-base);
+    letter-spacing: 0.06em;
+  }
+  .reactions {
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+  }
+  li {
+    padding: var(--space-3) 0;
+    border-top: 1px solid var(--rule-soft);
+  }
+  li p {
+    margin-top: var(--space-2);
+    color: var(--fg-muted);
+  }
+</style>

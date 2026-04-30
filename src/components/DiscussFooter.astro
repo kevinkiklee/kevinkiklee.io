@@ -1,0 +1,53 @@
+---
+import Giscus from './Giscus.astro';
+import Webmentions from './Webmentions.astro';
+
+interface Props {
+  postUrl: string;
+  postTitle: string;
+  mastodonUrl?: string | undefined;
+}
+const { postUrl, postTitle, mastodonUrl } = Astro.props;
+
+const shareText = `"${postTitle}" — ${postUrl}`;
+const elkShare = `https://elk.zone/intent/post?text=${encodeURIComponent(shareText)}`;
+const blueskyShare = `https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`;
+---
+<aside class="discuss" aria-labelledby="discuss-h">
+  <h2 id="discuss-h">[ DISCUSS ]</h2>
+  <ul role="list" class="links">
+    {mastodonUrl ? (
+      <li><a href={mastodonUrl}>↗ Reply on Mastodon (existing thread)</a></li>
+    ) : (
+      <li><a href={elkShare}>↗ Start a thread on Mastodon</a></li>
+    )}
+    <li><a href={blueskyShare}>↗ Share on Bluesky</a></li>
+  </ul>
+
+  <Webmentions url={postUrl} />
+
+  <h3 class="comments-h">[ COMMENTS ]</h3>
+  <Giscus />
+</aside>
+
+<style>
+  .discuss {
+    margin-top: var(--space-7);
+    border-top: 2px solid var(--rule);
+    padding-top: var(--space-5);
+  }
+  h2 {
+    font-size: var(--text-base);
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-3);
+  }
+  .comments-h {
+    font-size: var(--text-base);
+    letter-spacing: 0.06em;
+    margin-top: var(--space-7);
+    margin-bottom: var(--space-3);
+  }
+  .links li {
+    padding: var(--space-2) 0;
+  }
+</style>

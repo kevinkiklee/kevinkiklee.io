@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import DiscussFooter from '~/components/DiscussFooter.astro';
 import JsonLd from '~/components/JsonLd.astro';
 import PostMeta from '~/components/PostMeta.astro';
 import { buildBlogPosting, buildBreadcrumbs } from '~/lib/schema';
@@ -56,6 +57,11 @@ const jsonLd = [
     <div class="prose">
       <slot />
     </div>
+    <DiscussFooter
+      postUrl={postUrl}
+      postTitle={title}
+      mastodonUrl={post.data.mastodonUrl}
+    />
   </article>
 </BaseLayout>
 

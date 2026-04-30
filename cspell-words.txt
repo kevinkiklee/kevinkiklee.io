@@ -1,10 +1,13 @@
 astro
 biome
 biomejs
+bluesky
+bsky
 commitlint
 cspell
 devrel
 dvh
+elk
 fluid
 giscus
 indexnow
