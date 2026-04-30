@@ -11,6 +11,8 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "check": "astro check && biome ci . && cspell '**/*.{md,mdx}' --no-progress && markdownlint-cli2 '**/*.{md,mdx}'",
     "format": "biome format --write .",
     "fonts:subset": "tsx scripts/subset-fonts.ts",
@@ -31,6 +33,7 @@
     "@vercel/speed-insights": "^1.1.0",
     "astro": "^5.0.0",
     "astro-pagefind": "^1.6.0",
+    "mdast-util-to-string": "^4.0.0",
     "pagefind": "^1.1.0",
     "satori": "^0.12.0",
     "web-vitals": "^4.2.0",
@@ -42,6 +45,7 @@
     "@commitlint/cli": "19.6.0",
     "@commitlint/config-conventional": "19.6.0",
     "@lhci/cli": "0.14.0",
+    "@types/mdast": "^4.0.4",
     "@types/node": "22.9.0",
     "axe-core": "4.10.0",
     "cspell": "8.16.0",
@@ -52,7 +56,9 @@
     "simple-git-hooks": "2.11.1",
     "subset-font": "^2.5.0",
     "tsx": "4.19.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "unified": "^11.0.5",
+    "vitest": "^2.1.0"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm exec lint-staged",

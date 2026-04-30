@@ -1,6 +1,7 @@
 import { defineConfig, envField } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import { remarkReadingTime } from './src/lib/reading-time';
 
 export default defineConfig({
   site: 'https://kevinkiklee.io',
@@ -14,6 +15,13 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'auto',
     assets: '_astro',
+  },
+  markdown: {
+    remarkPlugins: [remarkReadingTime],
+    shikiConfig: {
+      themes: { light: 'min-light', dark: 'min-dark' },
+      wrap: true,
+    },
   },
   vite: {
     build: {
