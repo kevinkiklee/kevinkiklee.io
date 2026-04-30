@@ -1,15 +1,29 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { getCollection } from 'astro:content';
-import * as Sentry from '@sentry/node';
 import { ImageResponse } from '@vercel/og';
 import type { APIContext } from 'astro';
 import { ogTemplate } from '~/lib/og';
+import { getPublishedPosts } from '~/lib/posts';
 
 export const prerender = false;
 
 const dsn = process.env.SENTRY_DSN_OG;
-if (dsn) Sentry.init({ dsn, tracesSampleRate: 0.1 });
+let sentryReady = false;
+
+/**
+ * Lazy-import @sentry/node only when a DSN is configured. The Sentry SDK
+ * adds ~150 KB to the cold-start bundle, so we keep it out of the function
+ * graph entirely when unused.
+ */
+async function ensureSentry(): Promise<typeof import('@sentry/node') | null> {
+  if (!dsn) return null;
+  const Sentry = await import('@sentry/node');
+  if (!sentryReady) {
+    Sentry.init({ dsn, tracesSampleRate: 0.1 });
+    sentryReady = true;
+  }
+  return Sentry;
+}
 
 // Static (instanced) bold cut — @vercel/og/Satori's opentype.js parser
 // cannot parse JetBrainsMono variable font's fvar table reliably.
@@ -20,7 +34,7 @@ export async function GET(ctx: APIContext) {
   try {
     const slug = ctx.url.searchParams.get('slug');
     if (!slug) return new Response('missing slug', { status: 400 });
-    const posts = await getCollection('posts');
+    const posts = await getPublishedPosts();
     const post = posts.find((p) => p.id === slug);
     if (!post) return new Response('not found', { status: 404 });
     const tree = ogTemplate({
@@ -38,7 +52,8 @@ export async function GET(ctx: APIContext) {
       },
     });
   } catch (err) {
-    if (dsn) Sentry.captureException(err);
+    const Sentry = await ensureSentry();
+    Sentry?.captureException(err);
     console.error('og render failed', err);
     return new Response('OG render failed', { status: 500 });
   }
