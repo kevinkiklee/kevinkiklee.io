@@ -8,7 +8,7 @@ const projects = (await getCollection('projects')).sort(
 );
 ---
 <BaseLayout title="Projects · kevinkiklee.io" description="Open-source projects and side experiments.">
-  <h1 class="page-title">// PROJECTS</h1>
+  <h1 class="page-title">{'// PROJECTS'}</h1>
   {projects.length === 0 ? (
     <p class="empty">No projects featured yet.</p>
   ) : (

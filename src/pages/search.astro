@@ -5,12 +5,12 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 // bundles `@pagefind/default-ui` (JS + CSS) into the route bundle, pushing
 // initial JS for /search to ~94 KB. Instead we lazy-load
 // /pagefind/pagefind-ui.{js,css} (which Pagefind emits next to the index)
-// via dynamic <script> + <link> injection on first focus or idle.
+// via dynamic script + link injection on first focus or idle.
 const bundlePath = '/pagefind/';
 const uiOptions = { showImages: false, resetStyles: false };
 ---
 <BaseLayout title="Search · kevinkiklee.io" description="Search the archive.">
-  <h1 class="page-title">// SEARCH</h1>
+  <h1 class="page-title">{'// SEARCH'}</h1>
   <div
     id="search"
     class="pagefind-ui pagefind-uninit"

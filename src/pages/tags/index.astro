@@ -6,7 +6,7 @@ const counts = tagCounts(await getPublishedPosts());
 const tags = Object.entries(counts).sort(([, a], [, b]) => b - a);
 ---
 <BaseLayout title="Tags · kevinkiklee.io" description="Browse posts by tag.">
-  <h1 class="page-title">// TAGS</h1>
+  <h1 class="page-title">{'// TAGS'}</h1>
   {tags.length === 0 ? (
     <p class="empty">No tags yet — tags appear once posts are published.</p>
   ) : (
