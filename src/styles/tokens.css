@@ -1,0 +1,48 @@
+:root {
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-display: 'IBM Plex Mono', var(--font-mono);
+
+  --text-xs:   clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
+  --text-sm:   clamp(0.82rem, 0.80rem + 0.13vw, 0.90rem);
+  --text-base: clamp(0.95rem, 0.92rem + 0.18vw, 1.05rem);
+  --text-lg:   clamp(1.10rem, 1.05rem + 0.25vw, 1.25rem);
+  --text-xl:   clamp(1.40rem, 1.30rem + 0.50vw, 1.75rem);
+  --text-2xl:  clamp(1.80rem, 1.60rem + 1.0vw,  2.50rem);
+
+  --leading-body: 1.65;
+  --leading-tight: 1.25;
+  --measure: 68ch;
+
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root[data-theme='light'] {
+  --bg: #f5f4ee;
+  --fg: #0a0a0a;
+  --fg-muted: #4a4a4a;
+  --fg-subtle: #767676;
+  --rule: #0a0a0a;
+  --rule-soft: #c8c5b8;
+  --pill-bg: #0a0a0a;
+  --pill-fg: #f5f4ee;
+  --code-bg: #ebe9df;
+  --selection-bg: #0a0a0a;
+  --selection-fg: #f5f4ee;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0a0a0a;
+  --fg: #ededed;
+  --fg-muted: #b5b5b5;
+  --fg-subtle: #888888;
+  --rule: #ededed;
+  --rule-soft: #2a2a2a;
+  --pill-bg: #ededed;
+  --pill-fg: #0a0a0a;
+  --code-bg: #161616;
+  --selection-bg: #ededed;
+  --selection-fg: #0a0a0a;
+}
