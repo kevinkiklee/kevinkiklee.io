@@ -30,13 +30,14 @@
     "@astrojs/sitemap": "^3.0.0",
     "@astrojs/vercel": "^9.0.5",
     "@vercel/analytics": "^1.4.0",
-    "@vercel/og": "^0.6.0",
+    "@vercel/og": "^0.11.1",
     "@vercel/speed-insights": "^1.1.0",
     "astro": "^5.0.0",
     "astro-pagefind": "^1.6.0",
     "mdast-util-to-string": "^4.0.0",
     "pagefind": "^1.1.0",
     "satori": "^0.12.0",
+    "satori-html": "^0.3.2",
     "web-vitals": "^4.2.0",
     "yaml": "^2.6.0"
   },
@@ -66,13 +67,7 @@
     "commit-msg": "pnpm exec commitlint --edit $1"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,astro}": [
-      "biome format --write",
-      "biome lint"
-    ],
-    "*.{md,mdx}": [
-      "cspell --no-progress",
-      "markdownlint-cli2"
-    ]
+    "*.{ts,tsx,js,jsx,astro}": ["biome format --write", "biome lint"],
+    "*.{md,mdx}": ["cspell --no-progress", "markdownlint-cli2"]
   }
 }

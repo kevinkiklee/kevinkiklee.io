@@ -72,6 +72,20 @@ async function main(): Promise<void> {
   copyFileSync(resolve(ogSrc), resolve(ogDst));
   console.log(`copied ${ogSrc} -> ${ogDst}`);
 
+  // Also instance the variable font at weight 700 as a static TTF.
+  // @vercel/og/Satori's bundled opentype.js cannot parse our fvar table,
+  // so the OG endpoint loads this static cut instead.
+  const ogBoldDst = 'public/fonts/og/JetBrainsMono-Bold.ttf';
+  const ogSrcBuf = readFileSync(resolve(ogSrc));
+  const latinAscii = String.fromCodePoint(...Array.from({ length: 0x100 }, (_, i) => i));
+  const ogBold = await subsetFont(ogSrcBuf, latinAscii, {
+    targetFormat: 'truetype',
+    preserveNameIds: [0, 1, 2, 3, 4, 5, 6],
+    variationAxes: { wght: { min: 700, max: 700 } },
+  });
+  writeFileSync(resolve(ogBoldDst), ogBold);
+  console.log(`wrote ${ogBoldDst} (${ogBold.byteLength.toLocaleString()} bytes)`);
+
   console.log('done');
 }
 

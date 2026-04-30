@@ -15,7 +15,7 @@ const { post, minutesRead, wordCount } = Astro.props;
 const { title, description, pubDate, updatedDate, tags } = post.data;
 
 const postUrl = new URL(`/posts/${post.id}`, Astro.site).toString();
-const ogImageUrl = new URL('/og-default.png', Astro.site).toString();
+const ogImageUrl = new URL(`/api/og?slug=${post.id}`, Astro.site).toString();
 const authorUrl = new URL('/about', Astro.site).toString();
 const homeUrl = new URL('/', Astro.site).toString();
 const postsUrl = new URL('/posts', Astro.site).toString();
@@ -44,6 +44,7 @@ const jsonLd = [
   title={`${title} · kevinkiklee.io`}
   description={description}
   ogType="article"
+  ogImageUrl={ogImageUrl}
   publishedTime={pubDate}
   modifiedTime={updatedDate}
   {tags}
