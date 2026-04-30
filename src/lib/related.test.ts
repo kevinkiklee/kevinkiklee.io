@@ -43,6 +43,12 @@ describe('relatedPosts', () => {
     expect(out.map((p) => p.id)).toEqual(['b', 'c', 'd']);
   });
 
+  it('returns [] when there are no candidates', () => {
+    const target = mkPost('a', ['x'], '2026-01-01');
+    expect(relatedPosts(target, [target], 3)).toEqual([]);
+    expect(relatedPosts(target, [], 3)).toEqual([]);
+  });
+
   it('returns at most `limit` posts', () => {
     const target = mkPost('a', ['x'], '2026-01-01');
     const candidates = [
