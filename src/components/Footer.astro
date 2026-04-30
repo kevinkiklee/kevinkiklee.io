@@ -1,0 +1,29 @@
+---
+import { MASTODON_INSTANCE_URL } from 'astro:env/client';
+const year = new Date().getFullYear();
+const mastodon = MASTODON_INSTANCE_URL ?? 'https://mastodon.social/@kevin';
+---
+<footer class="site-footer">
+  <div class="row">
+    <span>[ © {year} KEVIN LEE ]</span>
+    <ul role="list">
+      <li><a href={mastodon} rel="me">MASTODON</a></li>
+      <li><a href="https://github.com/kevinkiklee">GITHUB</a></li>
+      <li><a href="/rss.xml">RSS</a></li>
+      <li><a href="/feed.json">JSON FEED</a></li>
+      <li><a href="/privacy">PRIVACY</a></li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 2px solid var(--rule);
+    padding: var(--space-5);
+    margin-top: var(--space-8);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+  }
+  .row { display: flex; justify-content: space-between; gap: var(--space-5); max-width: 1100px; margin: 0 auto; flex-wrap: wrap; }
+  ul { display: flex; gap: var(--space-4); list-style: none; padding: 0; margin: 0; }
+</style>
