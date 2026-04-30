@@ -1,0 +1,31 @@
+---
+import { GA_MEASUREMENT_ID } from 'astro:env/client';
+const ga = GA_MEASUREMENT_ID;
+---
+<script>
+  import { whenActivated } from '~/lib/prerender-analytics';
+
+  async function load() {
+    const [{ inject }, { injectSpeedInsights }] = await Promise.all([
+      import('@vercel/analytics'),
+      import('@vercel/speed-insights'),
+    ]);
+    inject();
+    injectSpeedInsights();
+  }
+
+  whenActivated(() => {
+    if ('requestIdleCallback' in window) {
+      (window as Window).requestIdleCallback(load, { timeout: 1500 });
+    } else {
+      setTimeout(load, 800);
+    }
+  });
+</script>
+
+{ga && (
+  <>
+    <script is:inline type="text/partytown" src={`https://www.googletagmanager.com/gtag/js?id=${ga}`} async></script>
+    <script is:inline type="text/partytown" set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga}',{anonymize_ip:true,allow_google_signals:false});`}></script>
+  </>
+)}

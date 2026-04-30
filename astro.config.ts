@@ -1,4 +1,5 @@
 import mdx from '@astrojs/mdx';
+import partytown from '@astrojs/partytown';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 import pagefind from 'astro-pagefind';
@@ -46,6 +47,7 @@ export default defineConfig({
       filter: (page) => !page.includes('/api/') && !page.endsWith('/404'),
     }),
     pagefind(),
+    partytown({ config: { forward: ['dataLayer.push'], debug: false } }),
   ],
   env: {
     schema: {
