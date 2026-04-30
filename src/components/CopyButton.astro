@@ -1,0 +1,41 @@
+---
+/**
+ * Code-block copy button.
+ *
+ * Mounted once globally in BaseLayout. The script listens for the
+ * `astro:page-load` event (which fires on initial load AND after every
+ * ClientRouter swap) and walks every `.prose pre` to attach a button.
+ * The `if (pre.querySelector('.copy-btn')) return;` guard makes the
+ * walk idempotent.
+ */
+---
+<script>
+  type AnyPre = HTMLPreElement;
+
+  function attach(): void {
+    document.querySelectorAll<AnyPre>('.prose pre').forEach((pre) => {
+      if (pre.querySelector('.copy-btn')) return;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'copy-btn';
+      btn.textContent = 'COPY';
+      btn.setAttribute('aria-label', 'Copy code');
+      btn.addEventListener('click', async () => {
+        const code = pre.querySelector('code')?.textContent ?? '';
+        try {
+          await navigator.clipboard.writeText(code);
+          btn.textContent = 'COPIED';
+          setTimeout(() => {
+            btn.textContent = 'COPY';
+          }, 1200);
+        } catch {
+          btn.textContent = 'ERR';
+        }
+      });
+      pre.style.position = 'relative';
+      pre.appendChild(btn);
+    });
+  }
+
+  document.addEventListener('astro:page-load', attach);
+</script>
