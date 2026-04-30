@@ -1,0 +1,74 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = sortByDateDesc(await getPublishedPosts());
+  // Page 1 lives at /posts (year-grouped archive). The numbered pages are
+  // for older posts, so we slice off the first 30 here.
+  const older = posts.slice(30);
+  if (older.length === 0) {
+    // Still emit a single empty page-2 to avoid a 404 if someone links to it
+    // while only ~30 posts exist; behavior degrades gracefully.
+    return paginate(older, { pageSize: 30 });
+  }
+  return paginate(older, { pageSize: 30 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+// Numbered pages on this route are 2..N (page 1 is /posts).
+const displayPage = page.currentPage + 1;
+const lastDisplayPage = page.lastPage + 1;
+const canonical = new URL(`/posts/page/${displayPage}`, Astro.site).toString();
+const prevHref = displayPage === 2 ? '/posts' : `/posts/page/${displayPage - 1}`;
+const nextHref = displayPage < lastDisplayPage ? `/posts/page/${displayPage + 1}` : null;
+---
+<BaseLayout title={`Posts · page ${displayPage}`} description="Older posts.">
+  <link slot="head" rel="canonical" href={canonical} />
+  <h1 class="page-title">// POSTS — PAGE {displayPage}/{lastDisplayPage}</h1>
+  <ul role="list" class="archive">
+    {page.data.map((p) => (
+      <li>
+        <a href={`/posts/${p.id}`}>
+          <h3>
+            <time datetime={p.data.pubDate.toISOString()}>{p.data.pubDate.toISOString().slice(0, 10)}</time>
+            <span>{p.data.title}</span>
+          </h3>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <nav aria-label="Pagination" class="pager">
+    <a href={prevHref}>← newer</a>
+    {' · '}
+    {nextHref ? <a href={nextHref}>older →</a> : <span aria-hidden="true">older →</span>}
+  </nav>
+</BaseLayout>
+
+<style>
+  .page-title { font-size: var(--text-2xl); text-transform: uppercase; margin-bottom: var(--space-6); }
+  .archive { font-variant-numeric: tabular-nums; }
+  .archive li {
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--rule-soft);
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 60px;
+  }
+  .archive h3 {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+    min-height: 44px;
+    font-size: var(--text-base);
+    font-weight: 400;
+    font-family: var(--font-mono);
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: var(--leading-body);
+  }
+  .archive time { color: var(--fg-subtle); font-size: var(--text-sm); }
+  .pager { margin-top: var(--space-6); font-size: var(--text-sm); color: var(--fg-muted); }
+  .pager span { color: var(--fg-subtle); }
+</style>

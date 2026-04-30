@@ -2,7 +2,9 @@
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
 
-const posts = sortByDateDesc(await getPublishedPosts()).slice(0, 30);
+const allPosts = sortByDateDesc(await getPublishedPosts());
+const posts = allPosts.slice(0, 30);
+const hasOlder = allPosts.length > 30;
 const groupedByYear = posts.reduce<Record<number, typeof posts>>((acc, p) => {
   const y = p.data.pubDate.getFullYear();
   const bucket = acc[y] ?? [];
@@ -23,14 +25,19 @@ const years = Object.keys(groupedByYear)
         {(groupedByYear[year] ?? []).map((p) => (
           <li>
             <a href={`/posts/${p.id}`}>
-              <time datetime={p.data.pubDate.toISOString()}>{p.data.pubDate.toISOString().slice(5, 10)}</time>
-              <span>{p.data.title}</span>
+              <h3>
+                <time datetime={p.data.pubDate.toISOString()}>{p.data.pubDate.toISOString().slice(5, 10)}</time>
+                <span>{p.data.title}</span>
+              </h3>
             </a>
           </li>
         ))}
       </ul>
     </section>
   ))}
+  {hasOlder && (
+    <p class="more"><a href="/posts/page/2">→ older posts</a></p>
+  )}
 </BaseLayout>
 
 <style>
@@ -43,6 +50,21 @@ const years = Object.keys(groupedByYear)
     content-visibility: auto;
     contain-intrinsic-size: 1px 60px;
   }
-  .archive a { display: grid; grid-template-columns: 80px 1fr; gap: var(--space-4); align-items: baseline; min-height: 44px; }
+  /* Visually compress the per-post h3 to a one-liner; keep semantics intact for
+     screen-reader rotor + AEO. */
+  .archive h3 {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+    min-height: 44px;
+    font-size: var(--text-base);
+    font-weight: 400;
+    font-family: var(--font-mono);
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: var(--leading-body);
+  }
   .archive time { color: var(--fg-subtle); font-size: var(--text-sm); }
+  .more { margin-top: var(--space-6); font-size: var(--text-xs); }
 </style>
