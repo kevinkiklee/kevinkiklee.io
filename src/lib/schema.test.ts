@@ -101,17 +101,20 @@ describe('buildBreadcrumbs', () => {
 describe('buildPerson', () => {
   it('produces a Person with sameAs links and filters undefined', () => {
     const ld = buildPerson({
-      mastodon: 'https://mastodon.social/@kevin',
+      mastodon: 'https://mastodon.social/@kevinkiklee',
       github: 'https://github.com/kevinkiklee',
     });
     expect(ld['@type']).toBe('Person');
     expect(ld.name).toBe('Kevin Lee');
-    expect(ld.sameAs).toEqual(['https://mastodon.social/@kevin', 'https://github.com/kevinkiklee']);
+    expect(ld.sameAs).toEqual([
+      'https://mastodon.social/@kevinkiklee',
+      'https://github.com/kevinkiklee',
+    ]);
   });
 
   it('includes linkedin when provided', () => {
     const ld = buildPerson({
-      mastodon: 'https://mastodon.social/@kevin',
+      mastodon: 'https://mastodon.social/@kevinkiklee',
       github: 'https://github.com/kevinkiklee',
       linkedin: 'https://www.linkedin.com/in/kevinkiklee/',
     });
@@ -124,10 +127,10 @@ describe('buildPerson', () => {
     // empty strings. This test pins that behaviour so a future refactor
     // (e.g. switching to `.filter((x) => x !== undefined)`) will trip.
     const ld = buildPerson({
-      mastodon: 'https://mastodon.social/@kevin',
+      mastodon: 'https://mastodon.social/@kevinkiklee',
       github: '',
     });
-    expect(ld.sameAs).toEqual(['https://mastodon.social/@kevin']);
+    expect(ld.sameAs).toEqual(['https://mastodon.social/@kevinkiklee']);
   });
 });
 

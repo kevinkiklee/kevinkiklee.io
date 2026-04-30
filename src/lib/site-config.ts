@@ -10,7 +10,7 @@ export const SITE = {
   url: 'https://kevinkiklee.io',
   tagline: 'Field notes from a Chrome DevRel',
   description: 'Field notes from a Chrome DevRel — AI, web platform, and tangents.',
-  defaultMastodon: 'https://mastodon.social/@kevin',
+  defaultMastodon: 'https://mastodon.social/@kevinkiklee',
   bsky: 'https://bsky.app/profile/kevinkiklee.bsky.social',
   github: 'https://github.com/kevinkiklee',
   linkedin: 'https://www.linkedin.com/in/kevinkiklee/',
