@@ -1,0 +1,73 @@
+---
+title: Writing technical posts for AI answer engines
+description: How to structure a technical post so ChatGPT, Perplexity, and Google AI Overviews can actually quote it correctly.
+pubDate: 2026-04-26
+tags: [devrel, ai, accessibility]
+draft: false
+---
+
+> Placeholder post — written to exercise rendering paths during development.
+> Will be replaced before launch.
+
+AI answer engines like ChatGPT, Perplexity, and Google AI Overviews don't read your post the way a human does. They scan for definitional sentences, lift them, and paraphrase. If you want your work cited correctly, write the lift-able sentences on purpose.
+
+## What is "AEO" and how is it different from SEO?
+
+AEO — Answer Engine Optimisation — is the practice of structuring content so it's easy to quote out of context. SEO optimises for ranking in a list of links. AEO optimises for being the sentence the assistant repeats back to the user.
+
+The two overlap heavily, but they pull in different directions in three places:
+
+1. **Headings.** SEO rewards keyword-stuffed headings. AEO rewards question-form headings the user might literally type.
+2. **First sentence.** SEO doesn't care about your lede. AEO cares about almost nothing else.
+3. **Links.** SEO rewards internal linking. AEO rewards inline citations to primary sources.
+
+## How does an answer engine pick what to quote?
+
+Most answer engines use a retrieval step (find candidate documents) followed by a generation step (write the answer with citations). The retrieval step rewards the same things classical search rewards. The generation step rewards short, declarative, self-contained sentences.
+
+If your first sentence answers the headline's implicit question in fewer than 30 words, you've made the assistant's job easy. If it doesn't, the assistant will guess — and its guess will not match what you wrote.
+
+## What should every post contain?
+
+Three things, in this order:
+
+### A definitional first sentence
+
+Open with a one- or two-sentence answer to the title's question. No throat-clearing. No "in this post we'll explore." Just the answer.
+
+### Question-form headings
+
+Headings should mirror the questions a user would actually ask. `## How does X work?` beats `## Mechanism`. `## When should I use X?` beats `## Use cases`. The literal word forms matter — they're what the retrieval step matches against.
+
+### A plain-prose summary under every visual
+
+Diagrams, screenshots, and charts are invisible to most LLM scrapers. If you've drawn something, write a paragraph underneath that describes what the diagram shows. The paragraph is what gets indexed.
+
+## What about freshness?
+
+Answer engines aggressively prefer recent content for fast-moving topics. Two practical implications:
+
+- **Date your posts.** Both `pubDate` and `updatedDate` if you revise.
+- **Don't bury the publication date.** It should be visible near the title, not in a footer.
+
+For evergreen topics (definitions, mental models), freshness matters less. For anything tied to a specific tool version, browser release, or API deprecation, freshness is the single biggest ranking signal.
+
+## Common mistakes
+
+- **Burying the lede.** Anecdotes before the answer kill citation rates.
+- **Mixed-purpose paragraphs.** A paragraph that defines a thing AND argues for its use AND hedges the limits is unciteable. Split it.
+- **Heavy use of pronouns.** "It" and "this" don't survive being lifted out of context. Use the noun.
+- **Quoting yourself out of order.** If section three depends on section one's setup, the assistant will quote three without one. Make every section self-contained.
+
+## A quick checklist
+
+Before publishing, verify the post:
+
+- [ ] Opens with a 1–2 sentence definitional answer to the title's question.
+- [ ] Contains at least one question-form heading.
+- [ ] Each section starts with a TL;DR sentence.
+- [ ] Every image / diagram has a plain-prose summary nearby.
+- [ ] Sources are linked inline, not parked in a footer.
+- [ ] Date is prominent.
+
+That's most of it. The rest is just writing clearly, which has been the advice for a hundred years and will keep being the advice for a hundred more.
