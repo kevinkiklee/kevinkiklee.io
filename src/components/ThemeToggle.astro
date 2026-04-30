@@ -1,4 +1,9 @@
-<button id="theme-toggle" type="button" aria-label="Toggle color theme">
+<button
+  id="theme-toggle"
+  type="button"
+  aria-label="Switch to dark theme"
+  aria-pressed="false"
+>
   <span aria-hidden="true" data-icon="light">☀</span>
   <span aria-hidden="true" data-icon="dark">☾</span>
 </button>
@@ -14,18 +19,40 @@
     cursor: pointer;
     min-width: 44px;
     min-height: 44px;
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
   }
-  :root[data-theme='light'] #theme-toggle [data-icon='light'],
-  :root[data-theme='dark']  #theme-toggle [data-icon='dark'] { display: none; }
+  /* Both icons are always in the DOM. We crossfade opacity so the swap is
+     perceptual rather than a layout-shifting display flip. */
+  #theme-toggle [data-icon] {
+    grid-area: 1 / 1;
+    transition: opacity 180ms var(--ease);
+  }
+  #theme-toggle {
+    display: inline-grid;
+    place-items: center;
+  }
+  :root[data-theme='light'] #theme-toggle [data-icon='light'] { opacity: 0; }
+  :root[data-theme='light'] #theme-toggle [data-icon='dark']  { opacity: 1; }
+  :root[data-theme='dark']  #theme-toggle [data-icon='light'] { opacity: 1; }
+  :root[data-theme='dark']  #theme-toggle [data-icon='dark']  { opacity: 0; }
 </style>
 
 <script>
   import { getTheme, setTheme, initThemeListeners } from '~/lib/theme';
   initThemeListeners();
-  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+  const btn = document.getElementById('theme-toggle');
+  function syncLabel() {
+    if (!btn) return;
+    const isDark = getTheme() === 'dark';
+    btn.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+    btn.setAttribute('aria-pressed', String(isDark));
+  }
+  syncLabel();
+  btn?.addEventListener('click', () => {
     setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+    syncLabel();
   });
 </script>

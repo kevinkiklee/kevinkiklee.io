@@ -1,15 +1,15 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
-const path = Astro.url.pathname.replace(/^\//, '');
+// Note: the requested path is NOT available at build time (404 is a static
+// asset served by Vercel), so we render the path on the client. The
+// fallback "—" keeps the layout stable until the script runs.
 ---
 <BaseLayout title="404 · kevinkiklee.io" description="Page not found">
   <section class="not-found">
-    <pre aria-hidden="true">
-┌─────────────────────────────────────────┐
+    <pre aria-hidden="true">┌─────────────────────────────────────────┐
 │  ERROR 404 — file not found             │
-│  $ ls /posts/{path}_
-└─────────────────────────────────────────┘
-    </pre>
+│  $ ls /<span id="not-found-path">—</span>_
+└─────────────────────────────────────────┘</pre>
     <h1>Nothing here</h1>
     <p>That URL does not match a post or page on this site.</p>
     <ul role="list">
@@ -18,6 +18,12 @@ const path = Astro.url.pathname.replace(/^\//, '');
       <li><a href="/search">→ search</a></li>
     </ul>
   </section>
+  <script>
+    // The static 404 has no server-rendered access to the requested URL,
+    // so we read it from the browser at runtime.
+    const el = document.getElementById('not-found-path');
+    if (el) el.textContent = window.location.pathname.replace(/^\//, '');
+  </script>
 </BaseLayout>
 
 <style>

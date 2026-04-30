@@ -30,7 +30,7 @@
       />
       <button type="submit" aria-label="Close search palette" title="Close (Esc)">[ESC]</button>
     </div>
-    <div id="palette-results" class="results" role="listbox" aria-label="Search results"></div>
+    <div id="palette-results" class="results" aria-label="Search results"></div>
     <p class="palette-hint">
       <kbd>↵</kbd> open · <kbd>Esc</kbd> close · full results: <a href="/search">/search</a>
     </p>
@@ -228,6 +228,13 @@
     results.addEventListener('click', (e) => {
       const target = e.target as HTMLElement | null;
       if (target?.closest('a')) close();
+    });
+
+    // Click outside the form (i.e. on the dialog's own padding/backdrop)
+    // closes the palette. We bind on `mousedown` so dragging text selection
+    // out of the form doesn't accidentally close it.
+    dlg.addEventListener('mousedown', (e) => {
+      if (e.target === dlg) close();
     });
   }
 </script>

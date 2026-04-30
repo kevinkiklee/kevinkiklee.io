@@ -1,4 +1,6 @@
 ---
+import { formatDate } from '~/lib/format';
+
 interface Props {
   pubDate: Date;
   updatedDate?: Date | undefined;
@@ -6,11 +8,10 @@ interface Props {
   minutesRead?: number | undefined;
 }
 const { pubDate, updatedDate, tags, minutesRead } = Astro.props;
-const fmt = (d: Date) => d.toISOString().slice(0, 10);
 ---
 <div class="meta">
-  <time datetime={pubDate.toISOString()}>{fmt(pubDate)}</time>
-  {updatedDate && <span> · UPDATED {fmt(updatedDate)}</span>}
+  <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+  {updatedDate && <span> · UPDATED {formatDate(updatedDate)}</span>}
   {minutesRead && <span> · {minutesRead} MIN READ</span>}
   {tags.length > 0 && (
     <span> · {tags.map((t, i) => (
@@ -29,7 +30,13 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10);
   .pill {
     background: var(--pill-bg);
     color: var(--pill-fg);
-    padding: 1px 6px;
+    /* Visually compact, but expand the hit area for touch accuracy. The
+       negative margin keeps the visual rhythm of the meta line intact. */
+    padding: var(--space-2) var(--space-3);
+    margin: -2px;
+    display: inline-block;
+    min-height: 32px;
+    line-height: 1.4;
     text-decoration: none;
   }
 </style>
