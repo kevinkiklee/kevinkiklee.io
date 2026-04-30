@@ -2,7 +2,9 @@ astro
 biome
 biomejs
 bluesky
+brutalist
 bsky
+chromascope
 colour
 commitlint
 cspell
@@ -10,8 +12,10 @@ devrel
 dvh
 elk
 fluid
+fotocue
 frontmatter
 giscus
+hostmind
 indexnow
 jetbrains
 kevinkiklee
@@ -26,6 +30,7 @@ monochromatic
 ncrement
 pagefind
 partytown
+photobot
 pnpm
 pnpx
 prereqs

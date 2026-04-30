@@ -82,3 +82,9 @@ size budget against every PR.
 
 - Spec: [`docs/superpowers/specs/2026-04-29-personal-blog-design.md`](./docs/superpowers/specs/2026-04-29-personal-blog-design.md)
 - Plan: [`docs/superpowers/plans/2026-04-29-personal-blog-implementation.md`](./docs/superpowers/plans/2026-04-29-personal-blog-implementation.md)
+
+## License
+
+Personal site — all post content © Kevin Lee, all rights reserved. Source
+code (everything outside `src/content/posts/`) is MIT-licensed; feel free
+to crib the layout, components, or tooling.
