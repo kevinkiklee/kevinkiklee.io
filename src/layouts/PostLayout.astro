@@ -1,5 +1,5 @@
 ---
-import { getImage } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import type { MarkdownHeading } from 'astro';
 import DiscussFooter from '~/components/DiscussFooter.astro';
@@ -17,7 +17,7 @@ interface Props {
   headings?: MarkdownHeading[] | undefined;
 }
 const { post, minutesRead, wordCount, headings = [] } = Astro.props;
-const { title, description, pubDate, updatedDate, tags } = post.data;
+const { title, description, pubDate, updatedDate, tags, cover, series } = post.data;
 
 const postUrl = new URL(`/posts/${post.id}`, Astro.site).toString();
 const ogImageUrl = new URL(`/api/og?slug=${post.id}`, Astro.site).toString();
@@ -31,12 +31,12 @@ const postsUrl = new URL('/posts', Astro.site).toString();
 // variant where supported and falls back to WebP otherwise. AVIF is the
 // LCP candidate on modern Chrome/Safari, so it gets `fetchpriority="high"`.
 let lcpImage: { sizes: string; avifSrcset?: string; webpSrcset?: string } | undefined;
-if (post.data.cover) {
+if (cover) {
   const sizes = '(min-width: 768px) 720px, 100vw';
   const widths = [480, 768, 1024, 1536];
   const [avif, webp] = await Promise.all([
-    getImage({ src: post.data.cover.src, widths, sizes, format: 'avif' }),
-    getImage({ src: post.data.cover.src, widths, sizes, format: 'webp' }),
+    getImage({ src: cover.src, widths, sizes, format: 'avif' }),
+    getImage({ src: cover.src, widths, sizes, format: 'webp' }),
   ]);
   lcpImage = {
     sizes,
@@ -72,6 +72,7 @@ const jsonLd = [
   ogImageUrl={ogImageUrl}
   publishedTime={pubDate}
   modifiedTime={updatedDate}
+  preconnectGiscus
   {tags}
   {lcpImage}
 >
@@ -81,6 +82,24 @@ const jsonLd = [
       <h1 style={`view-transition-name: post-title-${post.id};`}>{title}</h1>
       <PostMeta {pubDate} {updatedDate} {tags} {minutesRead} />
     </header>
+    {cover && (
+      <figure class="post-hero">
+        <Picture
+          src={cover.src}
+          alt={cover.alt}
+          widths={[800, 1200, 2400]}
+          sizes="(min-width: 1100px) 1100px, 100vw"
+          formats={['avif', 'webp']}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </figure>
+    )}
+    {series && (
+      <nav class="series-banner" aria-label="Series navigation">
+        <span>[ SERIES: {series.name.toUpperCase()} · PART {series.order} ]</span>
+      </nav>
+    )}
     <div class="post-body">
       {headings.length > 0 && (
         <div class="toc-inline">
@@ -112,6 +131,31 @@ const jsonLd = [
     text-transform: uppercase;
     letter-spacing: 0.02em;
     margin-bottom: var(--space-3);
+  }
+  /* Cover hero: full-width within the post column, sharp brutalist border
+     on the bottom edge, no border-radius. The img element fills the figure
+     so the responsive srcset above does the heavy lifting. */
+  .post-hero {
+    margin: 0 0 var(--space-6);
+    border-bottom: 2px solid var(--rule);
+  }
+  .post-hero :global(img) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  /* Honour `prefers-reduced-data`: hero is decorative, so skip the hero
+     fetch entirely on metered or data-saver connections. */
+  @media (prefers-reduced-data: reduce) {
+    .post-hero { display: none; }
+  }
+  .series-banner {
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    color: var(--fg-muted);
+    border: 1px dashed var(--rule-soft);
+    padding: var(--space-2) var(--space-3);
+    margin-bottom: var(--space-6);
   }
   .prose { max-width: var(--measure); }
   /* Default: stack the inline TOC at the top, hide the sticky aside. */
