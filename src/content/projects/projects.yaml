@@ -1,0 +1,8 @@
+- id: photo-tools
+  name: photo-tools
+  blurb: Photography toolkit — sensor comparison, lens calculators. Canvas/WebGL.
+  url: https://github.com/kevinkiklee/photo-tools
+  repoUrl: https://github.com/kevinkiklee/photo-tools
+  tech: [nextjs, typescript, canvas, webgl]
+  featured: true
+  order: 1
