@@ -1,0 +1,22 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { getPublishedPosts, tagCounts } from '~/lib/posts';
+
+const counts = tagCounts(await getPublishedPosts());
+const tags = Object.entries(counts).sort(([, a], [, b]) => b - a);
+---
+<BaseLayout title="Tags · kevinkiklee.io" description="Browse posts by tag.">
+  <h1 class="page-title">// TAGS</h1>
+  <ul role="list" class="tag-grid">
+    {tags.map(([tag, count]) => (
+      <li><a href={`/tags/${tag}`}>{tag.toUpperCase()} <span class="count">[{count}]</span></a></li>
+    ))}
+  </ul>
+</BaseLayout>
+
+<style>
+  .page-title { font-size: var(--text-2xl); text-transform: uppercase; margin-bottom: var(--space-6); }
+  .tag-grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .tag-grid a { padding: var(--space-3); border: 1px solid var(--rule-soft); display: block; min-height: 44px; }
+  .count { color: var(--fg-subtle); font-size: var(--text-xs); }
+</style>

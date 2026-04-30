@@ -1,0 +1,43 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
+
+const posts = sortByDateDesc(await getPublishedPosts()).slice(0, 30);
+const groupedByYear = posts.reduce<Record<number, typeof posts>>((acc, p) => {
+  const y = p.data.pubDate.getFullYear();
+  const bucket = acc[y] ?? [];
+  bucket.push(p);
+  acc[y] = bucket;
+  return acc;
+}, {});
+const years = Object.keys(groupedByYear)
+  .map(Number)
+  .sort((a, b) => b - a);
+---
+<BaseLayout title="Posts · kevinkiklee.io" description="Archive of all posts.">
+  <h1 class="page-title">// POSTS</h1>
+  {years.map((year) => (
+    <section>
+      <h2>{year}</h2>
+      <ul role="list" class="archive">
+        {(groupedByYear[year] ?? []).map((p) => (
+          <li>
+            <a href={`/posts/${p.id}`}>
+              <time datetime={p.data.pubDate.toISOString()}>{p.data.pubDate.toISOString().slice(5, 10)}</time>
+              <span>{p.data.title}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</BaseLayout>
+
+<style>
+  .page-title { font-size: var(--text-2xl); text-transform: uppercase; margin-bottom: var(--space-6); }
+  h2 { font-size: var(--text-lg); border-bottom: 2px solid var(--rule); padding-bottom: var(--space-2); margin: var(--space-6) 0 var(--space-3); }
+  .archive { font-variant-numeric: tabular-nums; }
+  .archive li { padding: var(--space-2) 0; border-top: 1px solid var(--rule-soft); }
+  .archive a { display: grid; grid-template-columns: 80px 1fr; gap: var(--space-4); align-items: baseline; min-height: 44px; }
+  .archive time { color: var(--fg-subtle); font-size: var(--text-sm); }
+</style>
