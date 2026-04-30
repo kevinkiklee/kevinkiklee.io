@@ -68,6 +68,7 @@
   body {
     font-size: var(--text-base);
     line-height: var(--leading-body);
+    font-weight: var(--weight-body);
     background: var(--bg);
     color: var(--fg);
     /* Block accidental pull-to-refresh on long posts. */

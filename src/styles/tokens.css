@@ -37,20 +37,24 @@
   --code-bg: #ebe9df;
   --selection-bg: #0a0a0a;
   --selection-fg: #f5f4ee;
+  --weight-body: 400;
 }
 
 :root[data-theme="dark"] {
   --bg: #0a0a0a;
-  --fg: #ededed;
-  --fg-muted: #b5b5b5;
-  --fg-subtle: #888888;
-  --rule: #ededed;
-  --rule-soft: #2a2a2a;
-  --pill-bg: #ededed;
+  --fg: #f4f4f4;
+  --fg-muted: #c8c8c8;
+  --fg-subtle: #9a9a9a;
+  --rule: #f4f4f4;
+  --rule-soft: #2f2f2f;
+  --pill-bg: #f4f4f4;
   --pill-fg: #0a0a0a;
   --code-bg: #161616;
-  --selection-bg: #ededed;
+  --selection-bg: #f4f4f4;
   --selection-fg: #0a0a0a;
+  /* Mono fonts at 400 on dark backgrounds read thin. The variable axis lets
+     us bump the body slightly without changing the type aesthetic. */
+  --weight-body: 450;
 }
 
 /*
