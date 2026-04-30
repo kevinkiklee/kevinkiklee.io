@@ -70,8 +70,20 @@ function isCurrent(href: string) {
   nav a[aria-current='page'] { border-bottom: 2px solid var(--fg); }
   @media (max-width: 640px) {
     .row { gap: var(--space-3); justify-content: flex-start; }
-    nav { order: 3; width: 100%; overflow-x: auto; }
-    nav ul { gap: var(--space-4); }
+    nav {
+      order: 3;
+      width: 100%;
+      overflow-x: auto;
+      /* iOS momentum scroll for the horizontal nav strip. */
+      -webkit-overflow-scrolling: touch;
+    }
+    nav ul {
+      gap: var(--space-4);
+      /* Snap to the start of each nav item so users land on whole labels
+         when fling-scrolling, not mid-word. */
+      scroll-snap-type: x proximity;
+    }
+    nav li { scroll-snap-align: start; }
   }
 </style>
 
