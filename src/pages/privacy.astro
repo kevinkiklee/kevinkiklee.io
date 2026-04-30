@@ -1,0 +1,25 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+<BaseLayout title="Privacy · kevinkiklee.io" description="What this site collects and why.">
+  <article class="prose" style="max-width: var(--measure);">
+    <h1>// PRIVACY</h1>
+    <p>This site collects the bare minimum needed to understand whether anyone is reading it and whether the site is fast.</p>
+    <h2>What's collected</h2>
+    <ul>
+      <li><strong>Vercel Web Analytics</strong> — pageviews, referrers, country. Cookieless. Aggregated. ~30-day retention.</li>
+      <li><strong>Vercel Speed Insights</strong> — anonymous Core Web Vitals (LCP, INP, CLS) from real visits. Cookieless.</li>
+      <li><strong>Google Analytics 4</strong> — pageviews, referrers, country, anonymized IP. Loaded off the main thread via Partytown. ~14-month retention. No ad-personalization signals sent.</li>
+      <li><strong>webmention.io</strong> — when this site fetches replies from Mastodon/Bluesky for display alongside posts. Their privacy policy applies.</li>
+      <li><strong>Giscus</strong> — when you scroll to the comments section on a post, GitHub's iframe loads. GitHub's privacy policy applies.</li>
+    </ul>
+    <h2>What's NOT collected</h2>
+    <ul>
+      <li>Cookies — none set by this site.</li>
+      <li>Personal data — no email/contact form on this site.</li>
+      <li>Cross-site tracking, ad networks, fingerprinting.</li>
+    </ul>
+    <h2>Contact</h2>
+    <p>Mastodon DM. Listed on the <a href="/about">about page</a>.</p>
+  </article>
+</BaseLayout>

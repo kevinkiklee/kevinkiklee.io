@@ -1,0 +1,32 @@
+---
+import { MASTODON_INSTANCE_URL } from 'astro:env/client';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+
+const mastodon = MASTODON_INSTANCE_URL ?? 'https://mastodon.social/@kevin';
+---
+<BaseLayout title="About · kevinkiklee.io" description="Who I am, what I work on, how to reach me.">
+  <article class="h-card">
+    <h1 class="page-title">// ABOUT</h1>
+    <p class="lead">
+      Hi, I'm <a class="p-name u-url" rel="me" href="https://kevinkiklee.io">Kevin Lee</a>.
+      I work as a <span class="p-job-title">Developer Relations Engineer</span>
+      at <span class="p-org">Google Chrome</span>.
+    </p>
+    <p>This site is a place for field notes — heavy on AI and the web platform, lighter on everything else. Most posts are short. Some are long. RSS welcome.</p>
+    <h2>FIND ME</h2>
+    <ul class="links" role="list">
+      <li><a class="u-url" rel="me" href={mastodon}>↗ Mastodon — primary social</a></li>
+      <li><a class="u-url" rel="me" href="https://github.com/kevinkiklee">↗ GitHub</a></li>
+      <li><a class="u-url" rel="me" href="https://www.linkedin.com/in/kevinkiklee/">↗ LinkedIn</a></li>
+    </ul>
+    <p class="discuss">Best way to reach me is on Mastodon. I read everything.</p>
+  </article>
+</BaseLayout>
+
+<style>
+  .page-title { font-size: var(--text-2xl); text-transform: uppercase; margin-bottom: var(--space-6); }
+  .lead { font-size: var(--text-lg); max-width: var(--measure); }
+  h2 { font-size: var(--text-base); border-bottom: 2px solid var(--rule); padding-bottom: var(--space-2); margin: var(--space-7) 0 var(--space-3); }
+  .links li { padding: var(--space-2) 0; }
+  .discuss { margin-top: var(--space-5); color: var(--fg-muted); }
+</style>
