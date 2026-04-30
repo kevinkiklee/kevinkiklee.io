@@ -11,7 +11,9 @@ interface Props {
   publishedTime?: Date | undefined;
   modifiedTime?: Date | undefined;
   tags?: string[] | undefined;
-  lcpImage?: { srcset: string; sizes: string } | undefined;
+  lcpImage?:
+    | { sizes: string; avifSrcset?: string | undefined; webpSrcset?: string | undefined }
+    | undefined;
 }
 const {
   title,
@@ -71,11 +73,23 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
 <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png" />
 
-{lcpImage && (
+{lcpImage?.avifSrcset && (
   <link
     rel="preload"
     as="image"
-    imagesrcset={lcpImage.srcset}
+    type="image/avif"
+    fetchpriority="high"
+    imagesrcset={lcpImage.avifSrcset}
+    imagesizes={lcpImage.sizes}
+  />
+)}
+{lcpImage?.webpSrcset && (
+  <link
+    rel="preload"
+    as="image"
+    type="image/webp"
+    fetchpriority="high"
+    imagesrcset={lcpImage.webpSrcset}
     imagesizes={lcpImage.sizes}
   />
 )}

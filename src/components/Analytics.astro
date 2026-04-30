@@ -6,12 +6,13 @@ const ga = GA_MEASUREMENT_ID;
   import { whenActivated } from '~/lib/prerender-analytics';
 
   async function load() {
-    const [{ inject }, { injectSpeedInsights }] = await Promise.all([
-      import('@vercel/analytics'),
-      import('@vercel/speed-insights'),
-    ]);
-    inject();
-    injectSpeedInsights();
+    // Two separate `import()` calls (rather than one Promise.all-with-array
+    // destructure) so Vite emits two distinct chunks for @vercel/analytics
+    // and @vercel/speed-insights. They share no code, and a single tuple
+    // import made Rollup occasionally collapse them into one fat chunk.
+    const analyticsP = import('@vercel/analytics').then((m) => m.inject());
+    const speedP = import('@vercel/speed-insights').then((m) => m.injectSpeedInsights());
+    await Promise.all([analyticsP, speedP]);
   }
 
   whenActivated(() => {

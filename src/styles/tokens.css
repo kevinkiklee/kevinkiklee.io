@@ -53,13 +53,33 @@
   --selection-fg: #0a0a0a;
 }
 
+/*
+ * JetBrains Mono is split into two unicode-range subsets so the browser
+ * only fetches the heavier "extended" file (box-drawing, currency, arrows)
+ * when those glyphs are actually used. Body text on most pages stays well
+ * under our 30 KB font budget by relying on the primary file alone.
+ *
+ * Both @font-face blocks share identical metric overrides so they line up
+ * pixel-for-pixel when both are loaded simultaneously.
+ */
 @font-face {
   font-family: "JetBrains Mono";
   src: url("/fonts/jetbrains-mono.woff2") format("woff2-variations");
   font-weight: 100 800;
   font-display: swap;
-  unicode-range: U+0000-007F, U+00A0-00FF, U+2010-2027, U+2030, U+2032-2033, U+2070, U+2074-2079,
-    U+20A0-20BF, U+2122, U+2191-2199, U+2500-257F, U+2580-259F;
+  unicode-range: U+0000-007F, U+00A0-00FF;
+  size-adjust: 102%;
+  ascent-override: 80%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains-mono-ext.woff2") format("woff2-variations");
+  font-weight: 100 800;
+  font-display: swap;
+  unicode-range: U+2010-2027, U+2030, U+2032-2033, U+2070, U+2074-2079, U+20A0-20BF, U+2122,
+    U+2191-2199, U+2500-257F, U+2580-259F;
   size-adjust: 102%;
   ascent-override: 80%;
   descent-override: 20%;

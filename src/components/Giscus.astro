@@ -31,12 +31,26 @@ const configured = Boolean(repoId && categoryId);
 <script>
   const mount = document.getElementById('giscus-mount');
   if (mount && 'IntersectionObserver' in window) {
+    let preconnected = false;
+    const addPreconnect = () => {
+      if (preconnected) return;
+      preconnected = true;
+      // Inject a `<link rel="preconnect">` once the comments section is
+      // approaching the viewport. Saves the TLS handshake when the script
+      // request actually fires moments later.
+      const link = document.createElement('link');
+      link.rel = 'preconnect';
+      link.href = 'https://giscus.app';
+      link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+    };
     const io = new IntersectionObserver((entries, obs) => {
       for (const e of entries) {
         if (e.isIntersecting) {
           obs.disconnect();
           // Avoid double-loading after view-transition swaps preserve DOM state.
           if (mount.querySelector('script[src*="giscus"]')) return;
+          addPreconnect();
           const s = document.createElement('script');
           s.src = 'https://giscus.app/client.js';
           s.async = true;

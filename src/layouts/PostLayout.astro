@@ -26,22 +26,23 @@ const homeUrl = new URL('/', Astro.site).toString();
 const postsUrl = new URL('/posts', Astro.site).toString();
 
 // If the post has a cover image, preload the responsive srcset so the LCP
-// element loads in parallel with the HTML parse. Falls back to undefined
-// for posts without a cover (most of them, including hello-world).
-let lcpImage: { srcset: string; sizes: string } | undefined;
+// element loads in parallel with the HTML parse. We emit BOTH an AVIF and a
+// WebP preload — the browser uses `image/avif` `type` to pick the AVIF
+// variant where supported and falls back to WebP otherwise. AVIF is the
+// LCP candidate on modern Chrome/Safari, so it gets `fetchpriority="high"`.
+let lcpImage: { sizes: string; avifSrcset?: string; webpSrcset?: string } | undefined;
 if (post.data.cover) {
-  const optimized = await getImage({
-    src: post.data.cover.src,
-    widths: [480, 768, 1024, 1536],
-    sizes: '(min-width: 768px) 720px, 100vw',
-    format: 'webp',
-  });
-  if (optimized.srcSet?.attribute) {
-    lcpImage = {
-      srcset: optimized.srcSet.attribute,
-      sizes: '(min-width: 768px) 720px, 100vw',
-    };
-  }
+  const sizes = '(min-width: 768px) 720px, 100vw';
+  const widths = [480, 768, 1024, 1536];
+  const [avif, webp] = await Promise.all([
+    getImage({ src: post.data.cover.src, widths, sizes, format: 'avif' }),
+    getImage({ src: post.data.cover.src, widths, sizes, format: 'webp' }),
+  ]);
+  lcpImage = {
+    sizes,
+    avifSrcset: avif.srcSet?.attribute,
+    webpSrcset: webp.srcSet?.attribute,
+  };
 }
 
 const jsonLd = [

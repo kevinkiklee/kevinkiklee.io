@@ -20,7 +20,9 @@ interface Props {
   publishedTime?: Date | undefined;
   modifiedTime?: Date | undefined;
   tags?: string[] | undefined;
-  lcpImage?: { srcset: string; sizes: string } | undefined;
+  lcpImage?:
+    | { sizes: string; avifSrcset?: string | undefined; webpSrcset?: string | undefined }
+    | undefined;
 }
 const { title, description = '', ...rest } = Astro.props;
 ---
