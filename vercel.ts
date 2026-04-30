@@ -7,17 +7,14 @@ export const config: VercelConfig = {
   installCommand: 'pnpm install --frozen-lockfile',
   outputDirectory: 'dist',
   redirects: [
-    // www → apex (canonical hygiene; runs before path normalization)
-    {
-      source: '/:path*',
-      has: [{ type: 'host', value: 'www.kevinkiklee.io' }],
-      destination: 'https://kevinkiklee.io/:path*',
-      statusCode: 308,
-    },
     // strip trailing slash
     { source: '/(.*)/', destination: '/$1', statusCode: 308 },
     // legacy /feed → /rss.xml
     { source: '/feed', destination: '/rss.xml', statusCode: 308 },
+    // www → apex is configured at the project domain level (Vercel API
+    // PATCH /v9/projects/.../domains/www.kevinkiklee.io with redirect +
+    // redirectStatusCode), not here — `host` matchers in vercel.ts
+    // redirects are silently ignored by the edge.
   ],
   headers: [
     routes.header('/(.*)', [
