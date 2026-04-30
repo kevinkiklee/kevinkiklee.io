@@ -1,0 +1,54 @@
+---
+import Search from 'astro-pagefind/components/Search';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+<BaseLayout title="Search · kevinkiklee.io" description="Search the archive.">
+  <h1 class="page-title">// SEARCH</h1>
+  <Search id="search" className="pagefind-ui" uiOptions={{ showImages: false, resetStyles: false }} />
+  <p class="hint">
+    Tip: press <kbd>/</kbd> or <kbd>⌘K</kbd> from anywhere on the site to open the quick palette.
+  </p>
+</BaseLayout>
+
+<style is:global>
+  .pagefind-ui {
+    /* Defensive: declare both legacy and current Pagefind UI variables.
+       Unused vars are harmless; this keeps the search UI monochrome (no blue defaults)
+       across Pagefind UI versions. */
+    --pagefind-ui-primary: var(--fg);
+    --pagefind-ui-text: var(--fg);
+    --pagefind-ui-background: var(--bg);
+    --pagefind-ui-border: var(--rule);
+    --pagefind-ui-tag: var(--code-bg);
+    --pagefind-ui-border-radius: 0;
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-image-border-radius: 0;
+    --pagefind-ui-image-box-ratio: 3 / 2;
+    --pagefind-ui-font: var(--font-mono);
+    --pagefind-ui-scale: 0.95;
+  }
+  .pagefind-ui a,
+  .pagefind-ui a:hover,
+  .pagefind-ui a:focus {
+    color: var(--fg);
+  }
+</style>
+
+<style>
+  .page-title {
+    font-size: var(--text-2xl);
+    text-transform: uppercase;
+    margin-bottom: var(--space-6);
+  }
+  .hint {
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+    margin-top: var(--space-5);
+  }
+  kbd {
+    border: 1px solid var(--rule);
+    padding: 0 var(--space-2);
+    border-radius: 0;
+    font-family: var(--font-mono);
+  }
+</style>
