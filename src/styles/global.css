@@ -3,6 +3,7 @@
 @import "./tokens.css" layer(tokens);
 @import "./prose.css" layer(prose);
 @import "./transitions.css" layer(utilities);
+@import "./print.css" layer(utilities);
 
 @layer reset {
   *,

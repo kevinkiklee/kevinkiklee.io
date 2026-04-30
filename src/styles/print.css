@@ -1,0 +1,96 @@
+/* Print-only stylesheet (per spec §3.6).
+ * Optimised for ink, not screen. Strips chrome (nav/footer/asides),
+ * forces black on white, and exposes URLs after links so a printout is
+ * still useful as a reference document. */
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* Strip site chrome and any decorative aside (TOC, related posts, etc). */
+  header[role='banner'],
+  body > header,
+  body > footer,
+  nav,
+  aside,
+  .skip-link,
+  #search-palette,
+  #shortcuts-overlay,
+  #copy-button,
+  #route-announce {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  a {
+    color: #000 !important;
+    text-decoration: underline;
+  }
+
+  /* Show absolute URLs after external links so printouts stay useful. */
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: #444;
+  }
+  a[href^='#']::after,
+  a[href^='/']::after {
+    content: '';
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #000 !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  h2 {
+    page-break-before: always;
+    break-before: page;
+  }
+  /* Don't force a page break before the very first H2 of an article. */
+  article > h2:first-of-type,
+  article > header + h2,
+  .prose > h2:first-of-type {
+    page-break-before: auto;
+    break-before: auto;
+  }
+
+  p,
+  li,
+  blockquote {
+    orphans: 3;
+    widows: 3;
+  }
+
+  pre,
+  code {
+    background: #f4f4f4 !important;
+    color: #000 !important;
+    border: 1px solid #ccc;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}

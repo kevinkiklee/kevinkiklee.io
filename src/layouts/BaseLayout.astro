@@ -6,8 +6,10 @@ import BaseHead from '~/components/BaseHead.astro';
 import CopyButton from '~/components/CopyButton.astro';
 import Footer from '~/components/Footer.astro';
 import Header from '~/components/Header.astro';
+import KeyboardShortcuts from '~/components/KeyboardShortcuts.astro';
 import PrerenderRules from '~/components/PrerenderRules.astro';
 import SearchPalette from '~/components/SearchPalette.astro';
+import ShortcutsOverlay from '~/components/ShortcutsOverlay.astro';
 
 interface Props {
   title: string;
@@ -52,6 +54,8 @@ const { title, description = '', ...rest } = Astro.props;
     <Footer />
     <div id="route-announce" aria-live="polite" aria-atomic="true" class="sr-only"></div>
     <SearchPalette />
+    <ShortcutsOverlay />
+    <KeyboardShortcuts />
     <CopyButton />
     <script>
       import '~/lib/nav';

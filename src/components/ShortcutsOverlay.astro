@@ -1,0 +1,80 @@
+---
+// Modal listing keyboard shortcuts. Triggered by `?` or by JS calling
+// document.getElementById('shortcuts-overlay').showModal().
+---
+<dialog id="shortcuts-overlay" aria-label="Keyboard shortcuts">
+  <form method="dialog" class="frame">
+    <header>
+      <h2>// SHORTCUTS</h2>
+      <button type="submit" aria-label="Close shortcuts" title="Close (Esc)">[ESC]</button>
+    </header>
+    <dl>
+      <div><dt><kbd>g</kbd> <kbd>h</kbd></dt><dd>Home</dd></div>
+      <div><dt><kbd>g</kbd> <kbd>p</kbd></dt><dd>Posts</dd></div>
+      <div><dt><kbd>g</kbd> <kbd>a</kbd></dt><dd>About</dd></div>
+      <div><dt><kbd>g</kbd> <kbd>t</kbd></dt><dd>Tags</dd></div>
+      <div><dt><kbd>/</kbd> · <kbd>⌘K</kbd></dt><dd>Open search palette</dd></div>
+      <div><dt><kbd>?</kbd></dt><dd>Show this overlay</dd></div>
+      <div><dt><kbd>Esc</kbd></dt><dd>Close any overlay</dd></div>
+    </dl>
+  </form>
+</dialog>
+
+<style>
+  dialog {
+    background: var(--bg);
+    color: var(--fg);
+    border: 2px solid var(--rule);
+    padding: 0;
+    max-width: min(520px, 92vw);
+    width: 100%;
+    margin-top: 12vh;
+    font-family: var(--font-mono);
+  }
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+  }
+  .frame { padding: var(--space-5); }
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  header h2 {
+    font-size: var(--text-base);
+    letter-spacing: 0.06em;
+  }
+  header button {
+    background: transparent;
+    border: 0;
+    color: var(--fg-muted);
+    font: inherit;
+    cursor: pointer;
+  }
+  dl {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+  }
+  dl > div {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--space-3);
+    align-items: baseline;
+  }
+  dt { display: flex; gap: var(--space-2); align-items: baseline; }
+  dd { margin: 0; color: var(--fg-muted); }
+  kbd {
+    border: 1px solid var(--rule);
+    padding: 0 var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--bg);
+    color: var(--fg);
+  }
+</style>

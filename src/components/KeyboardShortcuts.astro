@@ -1,0 +1,72 @@
+---
+// Global key handler. Wires `g <key>` chords to navigation and `?` to the
+// shortcuts overlay. The overlay itself lives in <ShortcutsOverlay/>; this
+// component is purely the listener.
+---
+<script>
+  // Map of `g`-chord destinations. Updating routes here and in
+  // ShortcutsOverlay is the only place to keep in sync.
+  const ROUTES: Record<string, string> = {
+    h: '/',
+    p: '/posts',
+    a: '/about',
+    t: '/tags',
+  };
+
+  function isTypingTarget(target: EventTarget | null): boolean {
+    if (!(target instanceof HTMLElement)) return false;
+    const tag = target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+    if (target.isContentEditable) return true;
+    return false;
+  }
+
+  // Idempotent: this script may be inlined into multiple route bundles.
+  if (!(window as unknown as { __kbInit?: boolean }).__kbInit) {
+    (window as unknown as { __kbInit?: boolean }).__kbInit = true;
+
+    let chordPrefix: 'g' | null = null;
+    let chordTimer: number | undefined;
+
+    function clearChord() {
+      chordPrefix = null;
+      window.clearTimeout(chordTimer);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      // Never intercept while the user is typing in a field.
+      if (isTypingTarget(e.target)) return;
+      // Ignore when modifier keys other than shift are held; shift is okay
+      // because `?` requires it on US keyboards.
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      const k = e.key.toLowerCase();
+
+      // `?` opens the shortcuts overlay.
+      if (e.key === '?' || (e.shiftKey && k === '/')) {
+        const dlg = document.getElementById('shortcuts-overlay') as HTMLDialogElement | null;
+        if (dlg && !dlg.open) {
+          e.preventDefault();
+          dlg.showModal();
+        }
+        clearChord();
+        return;
+      }
+
+      if (chordPrefix === 'g') {
+        const dest = ROUTES[k];
+        if (dest) {
+          e.preventDefault();
+          window.location.assign(dest);
+        }
+        clearChord();
+        return;
+      }
+
+      if (k === 'g') {
+        chordPrefix = 'g';
+        chordTimer = window.setTimeout(clearChord, 1500);
+      }
+    });
+  }
+</script>
