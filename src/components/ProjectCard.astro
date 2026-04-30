@@ -7,7 +7,7 @@ interface Props {
 const { project } = Astro.props;
 const { name, blurb, url, repoUrl, tech } = project.data;
 ---
-<article class="project-card">
+<article class="project-card reveal">
   <h3><a href={url}>{name.toUpperCase()} ↗</a></h3>
   <p>{blurb}</p>
   <ul role="list" class="tech">
@@ -17,7 +17,11 @@ const { name, blurb, url, repoUrl, tech } = project.data;
 </article>
 
 <style>
-  .project-card { border: 1px solid var(--rule-soft); padding: var(--space-4); }
+  .project-card {
+    border: 1px solid var(--rule-soft);
+    padding: var(--space-4);
+    contain: layout paint;
+  }
   h3 { font-size: var(--text-base); text-transform: uppercase; }
   p { color: var(--fg-muted); margin: var(--space-3) 0; }
   .tech { display: flex; gap: var(--space-2); flex-wrap: wrap; font-size: var(--text-xs); color: var(--fg-subtle); }

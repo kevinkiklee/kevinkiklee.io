@@ -10,7 +10,7 @@ const { post, index = 0 } = Astro.props;
 const { title, description, pubDate, tags } = post.data;
 const num = String(index + 1).padStart(2, '0');
 ---
-<article class="post-card" style={`--i:${index}`}>
+<article class="post-card reveal" style={`--i:${index}`}>
   <a href={`/posts/${post.id}`}>
     <h3 data-slug={post.id}>[{num}] {title.toUpperCase()}</h3>
     <PostMeta pubDate={pubDate} tags={tags} />
@@ -54,6 +54,9 @@ const num = String(index + 1).padStart(2, '0');
     border-top: 1px solid var(--rule-soft);
     padding: var(--space-5) 0;
     container-type: inline-size;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 200px;
+    contain: layout paint;
   }
   .post-card a { display: block; }
   .post-card h3 {

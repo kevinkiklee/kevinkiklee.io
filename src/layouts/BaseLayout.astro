@@ -3,6 +3,7 @@ import '~/styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import Analytics from '~/components/Analytics.astro';
 import BaseHead from '~/components/BaseHead.astro';
+import CopyButton from '~/components/CopyButton.astro';
 import Footer from '~/components/Footer.astro';
 import Header from '~/components/Header.astro';
 import PrerenderRules from '~/components/PrerenderRules.astro';
@@ -16,6 +17,7 @@ interface Props {
   publishedTime?: Date | undefined;
   modifiedTime?: Date | undefined;
   tags?: string[] | undefined;
+  lcpImage?: { srcset: string; sizes: string } | undefined;
 }
 const { title, description = '', ...rest } = Astro.props;
 ---
@@ -50,8 +52,10 @@ const { title, description = '', ...rest } = Astro.props;
     <Footer />
     <div id="route-announce" aria-live="polite" aria-atomic="true" class="sr-only"></div>
     <SearchPalette />
+    <CopyButton />
     <script>
       import '~/lib/nav';
+      import '~/lib/scroll-reveal';
     </script>
   </body>
 </html>
