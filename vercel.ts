@@ -7,7 +7,16 @@ export const config: VercelConfig = {
   installCommand: 'pnpm install --frozen-lockfile',
   outputDirectory: 'dist',
   redirects: [
+    // www → apex (canonical hygiene; runs before path normalization)
+    {
+      source: '/:path*',
+      has: [{ type: 'host', value: 'www.kevinkiklee.io' }],
+      destination: 'https://kevinkiklee.io/:path*',
+      statusCode: 308,
+    },
+    // strip trailing slash
     { source: '/(.*)/', destination: '/$1', statusCode: 308 },
+    // legacy /feed → /rss.xml
     { source: '/feed', destination: '/rss.xml', statusCode: 308 },
   ],
   headers: [
