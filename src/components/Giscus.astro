@@ -35,6 +35,8 @@ const configured = Boolean(repoId && categoryId);
       for (const e of entries) {
         if (e.isIntersecting) {
           obs.disconnect();
+          // Avoid double-loading after view-transition swaps preserve DOM state.
+          if (mount.querySelector('script[src*="giscus"]')) return;
           const s = document.createElement('script');
           s.src = 'https://giscus.app/client.js';
           s.async = true;

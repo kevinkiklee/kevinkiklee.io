@@ -1,5 +1,6 @@
 ---
 import '~/styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import BaseHead from '~/components/BaseHead.astro';
 import Footer from '~/components/Footer.astro';
 import Header from '~/components/Header.astro';
@@ -33,6 +34,7 @@ const { title, description = '', ...rest } = Astro.props;
         document.documentElement.style.background = t === 'dark' ? '#0a0a0a' : '#f5f4ee';
       })();
     </script>
+    <ClientRouter fallback="swap" />
     <slot name="head" />
   </head>
   <body>
@@ -44,5 +46,8 @@ const { title, description = '', ...rest } = Astro.props;
     <Footer />
     <div id="route-announce" aria-live="polite" aria-atomic="true" class="sr-only"></div>
     <SearchPalette />
+    <script>
+      import '~/lib/nav';
+    </script>
   </body>
 </html>
