@@ -1,0 +1,60 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+const { headings } = Astro.props;
+// Show only H2/H3. We render a flat list with H3s indented for simplicity
+// — nested <ul> would generate noisy markup for short posts.
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+{items.length > 0 && (
+  <aside class="toc" aria-label="Table of contents" transition:persist>
+    <p class="toc-label">// CONTENTS</p>
+    <ol>
+      {items.map((h) => (
+        <li class:list={[`depth-${h.depth}`]}>
+          <a href={`#${h.slug}`}>{h.text}</a>
+        </li>
+      ))}
+    </ol>
+  </aside>
+)}
+
+<style>
+  .toc {
+    border: 1px solid var(--rule);
+    padding: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.4;
+  }
+  .toc-label {
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    color: var(--fg-subtle);
+    margin-bottom: var(--space-3);
+    text-transform: uppercase;
+  }
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .toc li.depth-3 { padding-left: var(--space-4); }
+  .toc a { color: var(--fg-muted); }
+  .toc a:hover, .toc a:focus-visible { color: var(--fg); }
+
+  @media (min-width: 1024px) {
+    .toc {
+      position: sticky;
+      top: var(--space-6);
+      max-height: calc(100dvh - var(--space-7));
+      overflow-y: auto;
+    }
+  }
+</style>

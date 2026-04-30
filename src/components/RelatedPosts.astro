@@ -1,0 +1,64 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getPublishedPosts } from '~/lib/posts';
+import { relatedPosts } from '~/lib/related';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  limit?: number;
+}
+const { post, limit = 3 } = Astro.props;
+const all = await getPublishedPosts();
+const related = relatedPosts(post, all, limit);
+---
+{related.length > 0 && (
+  <aside class="related" aria-labelledby="related-heading">
+    <h2 id="related-heading">// RELATED</h2>
+    <ul role="list">
+      {related.map((p) => (
+        <li>
+          <a href={`/posts/${p.id}`}>
+            <h3>{p.data.title}</h3>
+            <p>{p.data.description}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}
+
+<style>
+  .related {
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: 2px solid var(--rule);
+  }
+  .related h2 {
+    font-size: var(--text-base);
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-4);
+  }
+  .related ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .related li {
+    border: 1px solid var(--rule-soft);
+    padding: var(--space-3);
+    transition: border-color 180ms var(--ease);
+  }
+  .related li:hover { border-color: var(--fg); }
+  .related h3 {
+    font-size: var(--text-base);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: var(--space-2);
+  }
+  .related p {
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+  }
+</style>

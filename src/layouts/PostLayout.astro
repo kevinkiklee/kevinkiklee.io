@@ -1,9 +1,12 @@
 ---
+import type { MarkdownHeading } from 'astro';
 import { getImage } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import DiscussFooter from '~/components/DiscussFooter.astro';
 import JsonLd from '~/components/JsonLd.astro';
 import PostMeta from '~/components/PostMeta.astro';
+import RelatedPosts from '~/components/RelatedPosts.astro';
+import TableOfContents from '~/components/TableOfContents.astro';
 import { buildBlogPosting, buildBreadcrumbs } from '~/lib/schema';
 import BaseLayout from './BaseLayout.astro';
 
@@ -11,8 +14,9 @@ interface Props {
   post: CollectionEntry<'posts'>;
   minutesRead?: number | undefined;
   wordCount?: number | undefined;
+  headings?: MarkdownHeading[] | undefined;
 }
-const { post, minutesRead, wordCount } = Astro.props;
+const { post, minutesRead, wordCount, headings = [] } = Astro.props;
 const { title, description, pubDate, updatedDate, tags } = post.data;
 
 const postUrl = new URL(`/posts/${post.id}`, Astro.site).toString();
@@ -76,9 +80,22 @@ const jsonLd = [
       <h1 style={`view-transition-name: post-title-${post.id};`}>{title}</h1>
       <PostMeta {pubDate} {updatedDate} {tags} {minutesRead} />
     </header>
-    <div class="prose">
-      <slot />
+    <div class="post-body">
+      {headings.length > 0 && (
+        <div class="toc-inline">
+          <TableOfContents headings={headings} />
+        </div>
+      )}
+      <div class="prose">
+        <slot />
+      </div>
+      {headings.length > 0 && (
+        <div class="toc-aside">
+          <TableOfContents headings={headings} />
+        </div>
+      )}
     </div>
+    <RelatedPosts post={post} />
     <DiscussFooter
       postUrl={postUrl}
       postTitle={title}
@@ -96,4 +113,21 @@ const jsonLd = [
     margin-bottom: var(--space-3);
   }
   .prose { max-width: var(--measure); }
+  /* Default: stack the inline TOC at the top, hide the sticky aside. */
+  .toc-inline { margin-bottom: var(--space-6); }
+  .toc-aside { display: none; }
+
+  /* On wide viewports, show the sticky aside next to the prose and hide
+     the inline TOC. The grid keeps the prose at its measure and parks the
+     TOC in a 220px column on the right. */
+  @media (min-width: 1024px) {
+    .post-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 220px;
+      gap: var(--space-6);
+      align-items: start;
+    }
+    .toc-inline { display: none; }
+    .toc-aside { display: block; }
+  }
 </style>
