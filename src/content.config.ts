@@ -1,11 +1,19 @@
 import { defineCollection, z } from 'astro:content';
-import { glob, file } from 'astro/loaders';
+import { file, glob } from 'astro/loaders';
 import tagsJson from './content/tags.json' with { type: 'json' };
 
 const TAG_SET = new Set(tagsJson.tags);
 
+// Strip the leading `YYYY-MM-DD-` date prefix from filenames so URLs are
+// `/posts/hello-world` rather than `/posts/2026-04-12-hello-world`.
+const DATE_PREFIX = /^\d{4}-\d{2}-\d{2}-/;
+
 const posts = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/posts' }),
+  loader: glob({
+    pattern: '**/*.{md,mdx}',
+    base: './src/content/posts',
+    generateId: ({ entry }) => entry.replace(/\.(md|mdx)$/, '').replace(DATE_PREFIX, ''),
+  }),
   schema: ({ image }) =>
     z.object({
       title: z.string().max(80),

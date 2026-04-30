@@ -1,6 +1,6 @@
-import { defineConfig, envField } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import { defineConfig, envField } from 'astro/config';
 import { remarkReadingTime } from './src/lib/reading-time';
 
 export default defineConfig({
