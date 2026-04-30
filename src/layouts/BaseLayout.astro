@@ -1,22 +1,28 @@
 ---
 import '~/styles/global.css';
+import BaseHead from '~/components/BaseHead.astro';
 import Footer from '~/components/Footer.astro';
 import Header from '~/components/Header.astro';
+
 interface Props {
   title: string;
-  description?: string;
+  description?: string | undefined;
+  ogType?: 'website' | 'article' | undefined;
+  ogImageUrl?: string | undefined;
+  publishedTime?: Date | undefined;
+  modifiedTime?: Date | undefined;
+  tags?: string[] | undefined;
 }
-const { title, description = '' } = Astro.props;
+const { title, description = '', ...rest } = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <BaseHead title={title} description={description} {...rest} />
+    <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
     <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#f5f4ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
-    <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
     <script is:inline>
       (function () {
         var stored = localStorage.getItem('theme');
@@ -26,8 +32,6 @@ const { title, description = '' } = Astro.props;
         document.documentElement.style.background = t === 'dark' ? '#0a0a0a' : '#f5f4ee';
       })();
     </script>
-    <title>{title}</title>
-    {description && <meta name="description" content={description} />}
     <slot name="head" />
   </head>
   <body>

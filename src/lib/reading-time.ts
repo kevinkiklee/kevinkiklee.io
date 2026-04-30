@@ -4,7 +4,7 @@ import type { Plugin } from 'unified';
 
 const WPM = 200;
 
-export function computeReadingTime(markdown: string): number {
+export function computeWordCount(markdown: string): number {
   const stripped = markdown
     .replace(/```[\s\S]*?```/g, '')
     .replace(/`[^`]*`/g, '')
@@ -12,16 +12,21 @@ export function computeReadingTime(markdown: string): number {
     .replace(/[#>*_~`>-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
-  const words = stripped.length === 0 ? 0 : stripped.split(/\s+/).length;
-  return Math.max(1, Math.round(words / WPM));
+  return stripped.length === 0 ? 0 : stripped.split(/\s+/).length;
+}
+
+export function computeReadingTime(markdown: string): number {
+  return Math.max(1, Math.round(computeWordCount(markdown) / WPM));
 }
 
 export const remarkReadingTime: Plugin<[], Root> = () => (tree, file) => {
   const text = mdastToString(tree);
-  const minutes = computeReadingTime(text);
+  const wordCount = computeWordCount(text);
+  const minutes = Math.max(1, Math.round(wordCount / WPM));
   // Astro injects astro.frontmatter into file.data
   const data = file.data as { astro?: { frontmatter?: Record<string, unknown> } };
   data.astro ??= {};
   data.astro.frontmatter ??= {};
   data.astro.frontmatter.minutesRead = minutes;
+  data.astro.frontmatter.wordCount = wordCount;
 };

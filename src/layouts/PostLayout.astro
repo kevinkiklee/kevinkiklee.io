@@ -1,16 +1,53 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import JsonLd from '~/components/JsonLd.astro';
 import PostMeta from '~/components/PostMeta.astro';
+import { buildBlogPosting, buildBreadcrumbs } from '~/lib/schema';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
   post: CollectionEntry<'posts'>;
   minutesRead?: number | undefined;
+  wordCount?: number | undefined;
 }
-const { post, minutesRead } = Astro.props;
+const { post, minutesRead, wordCount } = Astro.props;
 const { title, description, pubDate, updatedDate, tags } = post.data;
+
+const postUrl = new URL(`/posts/${post.id}`, Astro.site).toString();
+const ogImageUrl = new URL('/og-default.png', Astro.site).toString();
+const authorUrl = new URL('/about', Astro.site).toString();
+const homeUrl = new URL('/', Astro.site).toString();
+const postsUrl = new URL('/posts', Astro.site).toString();
+
+const jsonLd = [
+  buildBlogPosting({
+    url: postUrl,
+    title,
+    description,
+    pubDate,
+    updatedDate,
+    tags,
+    imageUrl: ogImageUrl,
+    wordCount,
+    minutesRead,
+    authorUrl,
+  }),
+  buildBreadcrumbs([
+    { name: 'Home', url: homeUrl },
+    { name: 'Posts', url: postsUrl },
+    { name: title, url: postUrl },
+  ]),
+];
 ---
-<BaseLayout title={`${title} · kevinkiklee.io`} description={description}>
+<BaseLayout
+  title={`${title} · kevinkiklee.io`}
+  description={description}
+  ogType="article"
+  publishedTime={pubDate}
+  modifiedTime={updatedDate}
+  {tags}
+>
+  <JsonLd slot="head" data={jsonLd} />
   <article class="post">
     <header>
       <h1>{title}</h1>
