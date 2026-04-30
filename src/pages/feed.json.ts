@@ -18,6 +18,11 @@ export async function GET(context: APIContext) {
       url: new URL(`/posts/${p.id}`, site).toString(),
       title: p.data.title,
       summary: p.data.description,
+      // JSON Feed 1.1 requires `content_html` OR `content_text`. We ship the
+      // raw markdown body as plain text (readers strip the formatting) and
+      // fall back to the description when the body is unavailable (e.g. in
+      // older content layer snapshots).
+      content_text: p.body || p.data.description,
       date_published: p.data.pubDate.toISOString(),
       date_modified: (p.data.updatedDate ?? p.data.pubDate).toISOString(),
       tags: p.data.tags,

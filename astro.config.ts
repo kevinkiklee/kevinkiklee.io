@@ -158,6 +158,11 @@ export default defineConfig({
         access: 'public',
         optional: true,
       }),
+      TWITTER_HANDLE: envField.string({
+        context: 'client',
+        access: 'public',
+        optional: true,
+      }),
       WEBMENTION_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
       VERCEL_DEPLOY_HOOK_URL: envField.string({
         context: 'server',

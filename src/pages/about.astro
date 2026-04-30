@@ -3,16 +3,17 @@ import { MASTODON_INSTANCE_URL } from 'astro:env/client';
 import JsonLd from '~/components/JsonLd.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { buildPerson } from '~/lib/schema';
+import { SITE } from '~/lib/site-config';
 
-const mastodon = MASTODON_INSTANCE_URL ?? 'https://mastodon.social/@kevin';
+const mastodon = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
 ---
 <BaseLayout title="About · kevinkiklee.io" description="Who I am, what I work on, how to reach me.">
   <JsonLd
     slot="head"
     data={buildPerson({
       mastodon,
-      github: 'https://github.com/kevinkiklee',
-      linkedin: 'https://www.linkedin.com/in/kevinkiklee/',
+      github: SITE.github,
+      linkedin: SITE.linkedin,
     })}
   />
   <article class="h-card">

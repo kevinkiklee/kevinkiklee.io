@@ -67,16 +67,33 @@ If you want to seed a webmention manually, the
 
 Posts target both human readers and AI answer surfaces. Two house rules:
 
-1. **Definitional first sentence.** Open with a single sentence that
-   defines the topic in plain English. AI summarisers love this.
+1. **Definitional first sentence.** Open with one or two sentences that
+   directly answer the post's headline question in plain English. AI
+   summarisers (ChatGPT, Perplexity, Google AI Overviews) lift this verbatim.
 2. **Question-form headings.** Use `## What is X?` / `## When should I
-   use X?` / `## How does X compare to Y?` for at least one heading.
+   use X?` / `## How does X compare to Y?` / `## How does X work?` for at
+   least one section heading per post.
 
 Other helpful conventions:
 
 - Lead each section with a 1-2 sentence answer; expand below.
 - Cite primary sources inline; the print stylesheet exposes URLs.
 - Code blocks use Shiki dual themes (light + dark); no colour overrides.
+- Provide plain-prose summaries beneath any visual (diagram, screenshot,
+  chart). Answer engines can't see the image; the summary is what they index.
+
+### AEO checklist
+
+Before publishing, verify the post:
+
+- [ ] Opens with a 1–2 sentence definitional answer to the title's question.
+- [ ] Contains at least one question-form heading
+      (e.g. `## What is X?`, `## How does X work?`).
+- [ ] Each section starts with a TL;DR sentence answering its heading.
+- [ ] Every image / diagram has both `alt` text AND a plain-prose summary
+      paragraph nearby (alt text alone is invisible to most LLM scrapers).
+- [ ] Tags listed in frontmatter are concrete topics (not vibes).
+- [ ] Primary sources are linked inline, not parked in a footer.
 
 ## Reviewing locally
 
