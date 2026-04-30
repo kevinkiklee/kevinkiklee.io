@@ -4,6 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 import pagefind from 'astro-pagefind';
 import { defineConfig, envField } from 'astro/config';
+import { visualizer } from 'rollup-plugin-visualizer';
 import { remarkReadingTime } from './src/lib/reading-time';
 
 export default defineConfig({
@@ -40,6 +41,17 @@ export default defineConfig({
         external: [/^\/pagefind\/.*/],
       },
     },
+    plugins: [
+      // rollup-plugin-visualizer returns a rollup `Plugin` whose typings
+      // diverge from vite's `PluginOption` only under
+      // `exactOptionalPropertyTypes` — the runtime shape is identical.
+      // @ts-expect-error: rollup/vite Plugin variance mismatch under strict TS.
+      visualizer({
+        filename: 'stats.html',
+        gzipSize: true,
+        brotliSize: true,
+      }),
+    ],
   },
   integrations: [
     mdx(),
