@@ -1,0 +1,31 @@
+<button id="theme-toggle" type="button" aria-label="Toggle color theme">
+  <span aria-hidden="true" data-icon="light">☀</span>
+  <span aria-hidden="true" data-icon="dark">☾</span>
+</button>
+
+<style>
+  #theme-toggle {
+    background: none;
+    border: 1px solid var(--rule);
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    padding: var(--space-1) var(--space-3);
+    cursor: pointer;
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  :root[data-theme='light'] #theme-toggle [data-icon='light'],
+  :root[data-theme='dark']  #theme-toggle [data-icon='dark'] { display: none; }
+</style>
+
+<script>
+  import { getTheme, setTheme, initThemeListeners } from '~/lib/theme';
+  initThemeListeners();
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  });
+</script>

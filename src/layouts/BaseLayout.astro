@@ -11,7 +11,19 @@ const { title, description = '' } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#f5f4ee" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
     <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      (function () {
+        var stored = localStorage.getItem('theme');
+        var prefers = matchMedia('(prefers-color-scheme: dark)').matches;
+        var t = stored || (prefers ? 'dark' : 'light');
+        document.documentElement.dataset.theme = t;
+        document.documentElement.style.background = t === 'dark' ? '#0a0a0a' : '#f5f4ee';
+      })();
+    </script>
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
   </head>
