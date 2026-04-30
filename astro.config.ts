@@ -1,6 +1,7 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, envField } from 'astro/config';
+import pagefind from 'astro-pagefind';
 import { remarkReadingTime } from './src/lib/reading-time';
 
 export default defineConfig({
@@ -33,6 +34,7 @@ export default defineConfig({
     sitemap({
       filter: (page) => !page.includes('/api/') && !page.endsWith('/404'),
     }),
+    pagefind(),
   ],
   env: {
     schema: {
