@@ -5,6 +5,7 @@ describe('SITE', () => {
   it('matches the expected shape', () => {
     expect(SITE).toMatchInlineSnapshot(`
       {
+        "bsky": "https://bsky.app/profile/kevinkiklee.bsky.social",
         "defaultMastodon": "https://mastodon.social/@kevin",
         "description": "Field notes from a Chrome DevRel — AI, web platform, and tangents.",
         "github": "https://github.com/kevinkiklee",
@@ -12,6 +13,7 @@ describe('SITE', () => {
         "locale": "en_US",
         "tagline": "Field notes from a Chrome DevRel",
         "title": "kevinkiklee.io",
+        "url": "https://kevinkiklee.io",
       }
     `);
   });
@@ -21,5 +23,9 @@ describe('SITE', () => {
       expect(typeof v).toBe('string');
       expect(v.length).toBeGreaterThan(0);
     }
+  });
+
+  it('url is a valid https URL with no trailing slash', () => {
+    expect(SITE.url).toMatch(/^https:\/\/[^/]+$/);
   });
 });
