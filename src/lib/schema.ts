@@ -1,3 +1,5 @@
+import type { Crumb } from './crumbs';
+
 const SITE = 'https://kevinkiklee.io';
 const PERSON_REF = { '@type': 'Person', name: 'Kevin Lee', url: `${SITE}/about` } as const;
 
@@ -152,7 +154,7 @@ export function buildWebSite() {
   } as const;
 }
 
-export function buildBreadcrumbs(items: { name: string; url: string }[]) {
+export function buildBreadcrumbs(items: Crumb[], origin: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -160,7 +162,7 @@ export function buildBreadcrumbs(items: { name: string; url: string }[]) {
       '@type': 'ListItem',
       position: i + 1,
       name: it.name,
-      item: it.url,
+      item: new URL(it.url, origin).toString(),
     })),
   } as const;
 }

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { Crumb } from './crumbs';
 import {
   ENTITY_IDS,
   SPEAKABLE_SELECTORS,
@@ -446,5 +447,27 @@ describe('buildWebPage', () => {
       description: 'Privacy policy',
       inLanguage: 'en-US',
     });
+  });
+});
+
+describe('buildBreadcrumbs (refactored)', () => {
+  it('maps Crumb[] to BreadcrumbList JSON-LD with absolute URLs', () => {
+    const crumbs: Crumb[] = [
+      { name: '~', url: '/' },
+      { name: 'posts', url: '/posts' },
+      { name: 'Hello', url: '/posts/hello' },
+    ];
+    const out = buildBreadcrumbs(crumbs, 'https://kevinkiklee.io');
+    expect(out['@type']).toBe('BreadcrumbList');
+    expect(out.itemListElement).toEqual([
+      { '@type': 'ListItem', position: 1, name: '~', item: 'https://kevinkiklee.io/' },
+      { '@type': 'ListItem', position: 2, name: 'posts', item: 'https://kevinkiklee.io/posts' },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'Hello',
+        item: 'https://kevinkiklee.io/posts/hello',
+      },
+    ]);
   });
 });
