@@ -17,12 +17,12 @@ const firstSlug = items[0]?.slug;
       <span class="toc-prefix">// CONTENTS</span>
       <span class="toc-current" data-current>{items[0]?.text ?? ''}</span>
     </summary>
+    <span class="toc-indicator" aria-hidden="true"></span>
     <ol>
       {items.map((h) => (
         <li class:list={[`depth-${h.depth}`]}>
           <a
             href={`#${h.slug}`}
-            data-toc-link={h.slug}
             aria-current={h.slug === firstSlug ? 'location' : undefined}
           >{h.text}</a>
         </li>
@@ -33,13 +33,13 @@ const firstSlug = items[0]?.slug;
 
 {items.length > 0 && variant === 'aside' && (
   <aside class="toc toc-aside" aria-label="Table of contents" transition:persist>
-    <p class="toc-label">// CONTENTS</p>
+    <p class="toc-label">Contents</p>
+    <span class="toc-indicator" aria-hidden="true"></span>
     <ol>
       {items.map((h) => (
         <li class:list={[`depth-${h.depth}`]}>
           <a
             href={`#${h.slug}`}
-            data-toc-link={h.slug}
             aria-current={h.slug === firstSlug ? 'location' : undefined}
           >{h.text}</a>
         </li>
@@ -50,6 +50,8 @@ const firstSlug = items[0]?.slug;
 
 <style>
   .toc {
+    position: relative;
+    contain: layout paint;
     border: 1px solid var(--rule);
     padding: var(--space-4);
     font-family: var(--font-mono);
@@ -72,7 +74,7 @@ const firstSlug = items[0]?.slug;
     content: "▸";
     color: var(--fg-subtle);
     margin-right: var(--space-2);
-    transition: transform 180ms var(--ease);
+    transition: transform var(--t-base) var(--ease-out);
     display: inline-block;
   }
   .toc-inline[open] summary::before { transform: rotate(90deg); }
@@ -87,10 +89,10 @@ const firstSlug = items[0]?.slug;
 
   .toc-label {
     font-size: var(--text-xs);
-    letter-spacing: 0.06em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     color: var(--fg-subtle);
     margin-bottom: var(--space-3);
-    text-transform: uppercase;
   }
   .toc ol {
     list-style: none;
@@ -102,19 +104,39 @@ const firstSlug = items[0]?.slug;
   }
   .toc li.depth-3 { padding-left: var(--space-4); }
   .toc a {
-    color: var(--fg-muted);
     display: inline-block;
-    min-height: 32px;
+    color: var(--fg-muted);
+    padding-left: var(--space-2);
+    margin-left: calc(-1 * var(--space-2));
+    transition: color var(--t-fast) var(--ease-out);
   }
   .toc a:hover, .toc a:focus-visible { color: var(--fg); }
-  /* Active link: bold + leading arrow glyph (no colour change — brutalist). */
-  .toc a[aria-current="location"] {
+  /* Active heading: weight bump + colour swap. The compositor-rendered
+     indicator bar (below) is the primary signal; the weight + colour
+     keep the active item readable in forced-colors / colour-blind cases. */
+  .toc a[aria-current='location'],
+  .toc a.is-active {
     color: var(--fg);
-    font-weight: 700;
+    font-weight: 600;
   }
-  .toc a[aria-current="location"]::before {
-    content: "→ ";
-    color: var(--fg-subtle);
+
+  /* Active-section indicator: a 2px bar that glides between items via
+     transform: translateY(N) scaleY(R) where R = item-height / base-height.
+     Fully compositor (no height animation, no layout reflow). */
+  .toc-indicator {
+    position: absolute;
+    /* Align with the inner edge of the .toc padding so the bar reads
+       as a left-rail mark next to the link text. The inline variant's
+       bar sits below the summary row (where the <ol> starts when open). */
+    top: var(--space-4);
+    left: var(--space-4);
+    width: 2px;
+    height: 1.4em;
+    background: var(--accent);
+    transform-origin: top left;
+    transform: translateY(0) scaleY(0);
+    transition: transform var(--t-base) var(--ease-out);
+    pointer-events: none;
   }
 
   @media (min-width: 1024px) {
@@ -123,76 +145,105 @@ const firstSlug = items[0]?.slug;
       top: var(--space-6);
       max-height: calc(100dvh - var(--space-7));
       overflow-y: auto;
+      /* Re-establish positioning for the indicator inside a sticky parent. */
+      isolation: isolate;
     }
   }
 </style>
 
 <script>
-  declare global {
-    interface Window { __tocScrollspyInit?: boolean }
-  }
+  function setupTocScrollspy(): void {
+    const tocs = document.querySelectorAll<HTMLElement>('.toc');
+    if (!tocs.length) return;
 
-  // Single global scrollspy: observes article H2/H3 elements and updates
-  // aria-current="location" on matching TOC anchors (inline + aside).
-  // Idempotent across view transitions.
-  if (!window.__tocScrollspyInit) {
-    window.__tocScrollspyInit = true;
+    const headings = document.querySelectorAll<HTMLElement>('.prose h2[id], .prose h3[id]');
+    if (!headings.length) return;
 
-    // Hoisted across setup() runs so we can disconnect the previous IO when
-    // the user navigates between posts; otherwise each navigation accumulates
-    // a stale observer bound to the prior page's headings.
-    let io: IntersectionObserver | null = null;
-    let cur: HTMLElement | null = null;
-    let headingMap = new Map<string, HTMLHeadingElement>();
+    // Build a map once per setup so the inline summary text update doesn't
+    // walk the heading list on every scroll-driven setActive.
+    const headingMap = new Map<string, HTMLElement>();
+    headings.forEach((h) => headingMap.set(h.id, h));
 
-    const setup = () => {
-      io?.disconnect();
+    tocs.forEach((toc) => {
+      const indicator = toc.querySelector<HTMLElement>('.toc-indicator');
+      const cur = toc.querySelector<HTMLElement>('.toc-current');
+      if (!indicator) return;
 
-      const links = Array.from(
-        document.querySelectorAll<HTMLAnchorElement>('a[data-toc-link]'),
-      );
-      if (links.length === 0) return;
+      const linksByHref = new Map<string, HTMLElement>();
+      toc.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
+        const href = a.getAttribute('href');
+        if (href) linksByHref.set(href, a);
+      });
 
-      const headings = Array.from(
-        document.querySelectorAll<HTMLHeadingElement>(
-          'article h2[id], article h3[id]',
-        ),
-      );
-      if (headings.length === 0) return;
+      const baseHeight = indicator.offsetHeight || 24;
+      let activeId: string | null = null;
 
-      // Cache once per page-load — both lookups are stable thanks to
-      // `transition:persist` on the inline TOC wrapper.
-      cur = document.querySelector<HTMLElement>('.toc-current');
-      headingMap = new Map(headings.map((h) => [h.id, h]));
-
-      const setActive = (slug: string) => {
-        for (const a of links) {
-          const match = a.dataset.tocLink === slug;
-          if (match) a.setAttribute('aria-current', 'location');
-          else a.removeAttribute('aria-current');
-        }
+      function setActive(id: string): void {
+        if (id === activeId) return;
+        activeId = id;
+        const link = linksByHref.get(`#${id}`);
+        if (!link || !indicator) return;
+        const ratio = link.offsetHeight / baseHeight;
+        indicator.style.transform = `translateY(${link.offsetTop}px) scaleY(${ratio})`;
+        toc.querySelectorAll('a[aria-current]').forEach((a) => a.removeAttribute('aria-current'));
+        link.setAttribute('aria-current', 'location');
+        // Inline variant: surface the current heading in the collapsed
+        // summary so the reader knows where they are without expanding.
         if (cur) {
-          const matched = headingMap.get(slug);
-          if (matched) cur.textContent = matched.textContent ?? '';
+          const heading = headingMap.get(id);
+          if (heading) cur.textContent = heading.textContent ?? '';
         }
-      };
+      }
 
-      io = new IntersectionObserver(
+      function reposition(): void {
+        if (activeId) {
+          const id = activeId;
+          activeId = null; // force re-apply
+          setActive(id);
+        }
+      }
+
+      const obs = new IntersectionObserver(
         (entries) => {
-          // Pick the most recently entered heading near viewport top.
-          const intersecting = entries.filter((e) => e.isIntersecting);
-          if (intersecting.length === 0) return;
-          // Sort by boundingClientRect.top ascending — closest to focal band wins.
-          intersecting.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-          const top = intersecting[0]?.target as HTMLElement | undefined;
-          if (top?.id) setActive(top.id);
+          if (document.visibilityState !== 'visible') return;
+          for (const entry of entries) {
+            if (entry.isIntersecting) setActive(entry.target.id);
+          }
         },
-        { rootMargin: '-40% 0% -55% 0%', threshold: 0 },
+        { rootMargin: '0px 0px -70% 0px' },
       );
-      for (const h of headings) io.observe(h);
-    };
+      headings.forEach((h) => obs.observe(h));
 
-    setup();
-    document.addEventListener('astro:after-swap', setup);
+      // Snap initial position (no animation), enable transitions next frame.
+      const firstId = headings[0]?.id;
+      if (firstId) {
+        const prevTransition = indicator.style.transition;
+        indicator.style.transition = 'none';
+        setActive(firstId);
+        requestAnimationFrame(() => {
+          indicator.style.transition = prevTransition;
+        });
+      }
+
+      // Re-position on resize / late font load — defensive against late
+      // layout shifts that would leave the indicator stranded. Also fires
+      // when the inline <details> opens (changes the bar's offsetParent).
+      const ro = new ResizeObserver(reposition);
+      ro.observe(toc);
+      document.fonts?.ready.then(reposition).catch(() => {});
+
+      // Cleanup on swap.
+      document.addEventListener(
+        'astro:before-swap',
+        () => {
+          obs.disconnect();
+          ro.disconnect();
+        },
+        { once: true },
+      );
+    });
   }
+
+  setupTocScrollspy();
+  document.addEventListener('astro:page-load', setupTocScrollspy);
 </script>

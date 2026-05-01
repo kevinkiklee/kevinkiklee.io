@@ -1,7 +1,51 @@
-const SITE = 'https://kevinkiklee.io';
-const PERSON_REF = { '@type': 'Person', name: 'Kevin Lee', url: `${SITE}/about` } as const;
+import type { Crumb } from './crumbs';
 
-export function buildBlogPosting(args: {
+const SITE = 'https://kevinkiklee.io';
+
+export const ENTITY_IDS = {
+  website: 'https://kevinkiklee.io#website',
+  person: 'https://kevinkiklee.io/about#person',
+  blog: 'https://kevinkiklee.io/posts#blog',
+} as const;
+
+type GraphPart = Record<string, unknown>;
+
+/**
+ * Compose multiple JSON-LD entities into a single @graph wrapper.
+ * Deduplicates by @id: a "full" entity (more keys) replaces a bare ref.
+ */
+export function buildPageGraph(parts: GraphPart[]): {
+  '@context': 'https://schema.org';
+  '@graph': GraphPart[];
+} {
+  const byId = new Map<string, GraphPart>();
+  const noId: GraphPart[] = [];
+
+  for (const part of parts) {
+    const id = part['@id'];
+    if (typeof id !== 'string') {
+      noId.push(part);
+      continue;
+    }
+    const existing = byId.get(id);
+    if (!existing) {
+      byId.set(id, part);
+      continue;
+    }
+    if (Object.keys(part).length > Object.keys(existing).length) {
+      byId.set(id, part);
+    }
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [...byId.values(), ...noId],
+  };
+}
+
+const HEADLINE_MAX = 110;
+
+export interface BlogPostingArgs {
   url: string;
   title: string;
   description: string;
@@ -12,37 +56,87 @@ export function buildBlogPosting(args: {
   wordCount?: number | undefined;
   minutesRead?: number | undefined;
   authorUrl: string;
-  hasHeadings?: boolean | undefined;
-}) {
-  return {
-    '@context': 'https://schema.org',
+  faq?: { q: string; a: string }[] | undefined;
+  license?: string | undefined;
+}
+
+export function buildBlogPosting(args: BlogPostingArgs) {
+  if (args.title.length > HEADLINE_MAX) {
+    throw new Error(`headline exceeds ${HEADLINE_MAX} chars: ${args.title.length}`);
+  }
+  const out: Record<string, unknown> = {
     '@type': 'BlogPosting',
+    '@id': args.url,
     mainEntityOfPage: { '@type': 'WebPage', '@id': args.url },
+    isPartOf: { '@id': ENTITY_IDS.blog },
     headline: args.title,
     description: args.description,
     image: args.imageUrl,
+    primaryImageOfPage: { '@type': 'ImageObject', url: args.imageUrl },
     datePublished: args.pubDate.toISOString(),
     dateModified: (args.updatedDate ?? args.pubDate).toISOString(),
-    author: PERSON_REF,
-    publisher: PERSON_REF,
+    author: buildAuthorRef(),
+    publisher: buildAuthorRef(),
     keywords: args.tags.join(','),
     inLanguage: 'en-US',
-    ...(args.wordCount && { wordCount: args.wordCount }),
-    ...(args.minutesRead && { timeRequired: `PT${args.minutesRead}M` }),
-    ...(args.hasHeadings && { speakable: buildSpeakable() }),
-  } as const;
+    speakable: buildSpeakable(),
+  };
+  if (args.tags[0]) out.articleSection = args.tags[0];
+  if (args.wordCount) out.wordCount = args.wordCount;
+  if (args.minutesRead) out.timeRequired = `PT${args.minutesRead}M`;
+  if (args.faq && args.faq.length > 0) {
+    out.mainEntity = {
+      '@type': 'FAQPage',
+      mainEntity: args.faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    };
+  }
+  if (args.license) {
+    out.license = args.license;
+    out.copyrightYear = args.pubDate.getUTCFullYear();
+  }
+  return out;
 }
 
-export function buildPerson(args: { mastodon: string; github: string; linkedin?: string }) {
-  return {
-    '@context': 'https://schema.org',
+const KNOWS_ABOUT = [
+  'Web platform',
+  'Chrome DevTools',
+  'Developer Relations',
+  'JavaScript',
+  'AI tooling',
+  'Web performance',
+  'Browser engines',
+] as const;
+
+export interface PersonArgs {
+  mastodon: string;
+  github: string;
+  bio: string;
+  linkedin?: string | undefined;
+  bluesky?: string | undefined;
+  portraitUrl?: string | undefined;
+}
+
+export function buildPerson(args: PersonArgs) {
+  const sameAs = [args.mastodon, args.github, args.linkedin, args.bluesky].filter(
+    (s): s is string => typeof s === 'string' && s.length > 0,
+  );
+  const out: Record<string, unknown> = {
     '@type': 'Person',
+    '@id': ENTITY_IDS.person,
     name: 'Kevin Lee',
-    url: `${SITE}/about`,
+    url: 'https://kevinkiklee.io/about',
     jobTitle: 'Developer Relations Engineer',
     worksFor: { '@type': 'Organization', name: 'Google Chrome' },
-    sameAs: [args.mastodon, args.github, args.linkedin].filter(Boolean),
-  } as const;
+    description: args.bio,
+    knowsAbout: [...KNOWS_ABOUT],
+    sameAs,
+  };
+  if (args.portraitUrl) out.image = args.portraitUrl;
+  return out;
 }
 
 export function buildWebSite() {
@@ -59,7 +153,7 @@ export function buildWebSite() {
   } as const;
 }
 
-export function buildBreadcrumbs(items: { name: string; url: string }[]) {
+export function buildBreadcrumbs(items: Crumb[], origin: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -67,20 +161,128 @@ export function buildBreadcrumbs(items: { name: string; url: string }[]) {
       '@type': 'ListItem',
       position: i + 1,
       name: it.name,
-      item: it.url,
+      item: new URL(it.url, origin).toString(),
     })),
   } as const;
 }
 
-/**
- * Speakable schema fragment for AEO read-aloud surfaces (Google Assistant,
- * Perplexity). Points to article H2/H3 headings as the speakable content.
- *
- * Designed to be merged into a BlogPosting via `speakable: buildSpeakable()`.
- */
+export const SPEAKABLE_SELECTORS = ['.lead', 'h1'] as const;
+
 export function buildSpeakable() {
   return {
     '@type': 'SpeakableSpecification',
-    xpath: ['/html/body//article//h2', '/html/body//article//h3'],
+    cssSelector: [...SPEAKABLE_SELECTORS],
+  } as const;
+}
+
+export function buildAuthorRef() {
+  return { '@id': ENTITY_IDS.person } as const;
+}
+
+export function buildBlog() {
+  return {
+    '@type': 'Blog',
+    '@id': ENTITY_IDS.blog,
+    name: 'kevinkiklee.io',
+    url: 'https://kevinkiklee.io/posts',
+    inLanguage: 'en-US',
+    publisher: { '@id': ENTITY_IDS.person },
+  } as const;
+}
+
+export function buildWebPage(args: { url: string; name: string; description: string }) {
+  return {
+    '@type': 'WebPage',
+    '@id': args.url,
+    name: args.name,
+    description: args.description,
+    inLanguage: 'en-US',
+  } as const;
+}
+
+export function buildCollectionPage(args: {
+  url: string;
+  name: string;
+  description: string;
+  itemListId: string;
+}) {
+  return {
+    '@type': 'CollectionPage',
+    '@id': args.url,
+    name: args.name,
+    description: args.description,
+    inLanguage: 'en-US',
+    mainEntity: { '@id': args.itemListId },
+  } as const;
+}
+
+export function buildItemListOfBlogPostings(args: {
+  id: string;
+  posts: { url: string; title: string }[];
+}) {
+  return {
+    '@type': 'ItemList',
+    '@id': args.id,
+    itemListElement: args.posts.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: p.url,
+      name: p.title,
+      item: { '@id': p.url },
+    })),
+  } as const;
+}
+
+export function buildItemListOfSoftwareSourceCode(args: {
+  id: string;
+  projects: {
+    name: string;
+    url: string;
+    repoUrl?: string | undefined;
+    blurb: string;
+    tech: string[];
+  }[];
+}) {
+  return {
+    '@type': 'ItemList',
+    '@id': args.id,
+    itemListElement: args.projects.map((p, i) => {
+      const item: Record<string, unknown> = {
+        '@type': 'SoftwareSourceCode',
+        name: p.name,
+        url: p.url,
+        description: p.blurb,
+      };
+      if (p.repoUrl) item.codeRepository = p.repoUrl;
+      if (p.tech.length > 0) item.programmingLanguage = p.tech;
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        url: p.url,
+        name: p.name,
+        item,
+      };
+    }),
+  } as const;
+}
+
+export function buildItemListOfDefinedTerms(args: {
+  id: string;
+  tags: { name: string; url: string }[];
+}) {
+  return {
+    '@type': 'ItemList',
+    '@id': args.id,
+    itemListElement: args.tags.map((t, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: t.url,
+      name: t.name,
+      item: {
+        '@type': 'DefinedTerm',
+        name: t.name,
+        url: t.url,
+      },
+    })),
   } as const;
 }

@@ -3,11 +3,12 @@ import type { CollectionEntry } from 'astro:content';
 
 interface Props {
   project: CollectionEntry<'projects'>;
+  index?: number | undefined;
 }
-const { project } = Astro.props;
+const { project, index = 0 } = Astro.props;
 const { name, blurb, url, repoUrl, tech } = project.data;
 ---
-<article class="project-card reveal">
+<article class="project-card reveal" style={`--i:${index}`}>
   <h3>
     <a href={url}>
       <span class="marker" aria-hidden="true"></span><span class="title">{name}</span>

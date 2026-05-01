@@ -141,28 +141,33 @@
   }
 
   /*
-   * Scroll-reveal: progressively enhance with the modern
-   * `animation-timeline: view()` syntax, fall back to IntersectionObserver
-   * for browsers that don't support it (handled in src/lib/scroll-reveal.ts).
-   * Phase 3 will refactor this section.
+   * SCROLL REVEAL (item f)
+   * Initial state engages only after JS sets [data-anim] on root, so
+   * crawlers + JS-disabled visitors see content immediately.
+   * Modern path: animation-timeline: view() is fully declarative.
+   * Fallback path: IntersectionObserver toggles .in-view (scroll-reveal.ts).
    */
-  .reveal {
+  html[data-anim] .reveal {
     opacity: 0;
     transform: translateY(8px);
-    transition: opacity 240ms var(--ease), transform 240ms var(--ease);
+    transition: opacity var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
+    transition-delay: calc(min(var(--i, 0), 8) * var(--stagger));
   }
-  .reveal.in-view {
+  html[data-anim] .reveal.in-view {
     opacity: 1;
     transform: none;
   }
+
   @supports (animation-timeline: view()) {
-    .reveal {
+    html[data-anim] .reveal {
       opacity: 1;
       transform: none;
       transition: none;
       animation: reveal-fade linear both;
       animation-timeline: view();
-      animation-range: entry 0% entry 30%;
+      animation-range: entry 10% entry 60%;
+      animation-delay: calc(min(var(--i, 0), 8) * var(--stagger));
+      animation-fill-mode: both;
     }
     @keyframes reveal-fade {
       from {
@@ -175,20 +180,107 @@
       }
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .reveal {
-      animation: none;
+
+  /* biome-ignore lint/correctness/noUnknownMediaFeatureName: Media Queries Level 5 — prefers-reduced-transparency is supported in Safari 17.4+ and progressively enhanced everywhere else. */
+  @media (prefers-reduced-motion: reduce), (prefers-reduced-data: reduce),
+    (prefers-reduced-transparency: reduce) {
+    html[data-anim] .reveal,
+    html[data-anim] .reveal.in-view {
       opacity: 1;
       transform: none;
       transition: none;
+      animation: none;
     }
   }
-  @media (prefers-reduced-data: reduce) {
-    .reveal {
+
+  /*
+   * SECTION HEADING LINE-DRAW (item g)
+   * Underline draws from left to right as the heading scrolls into view.
+   * Only applied to .prose h2 / .prose h3 (post body context).
+   */
+  @supports (animation-timeline: view()) {
+    html[data-anim] .prose h2,
+    html[data-anim] .prose h3 {
+      position: relative;
+    }
+    html[data-anim] .prose h2::after,
+    html[data-anim] .prose h3::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -4px;
+      height: 2px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: heading-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 60%;
+      animation-fill-mode: both;
+    }
+    @keyframes heading-draw {
+      from {
+        transform: scaleX(0);
+      }
+      to {
+        transform: scaleX(1);
+      }
+    }
+  }
+
+  /* Fallback for non-animation-timeline browsers: scroll-reveal.ts adds
+     .drawn class via the same IO. */
+  html[data-anim] .prose h2.drawn::after,
+  html[data-anim] .prose h3.drawn::after {
+    transform: scaleX(1);
+  }
+
+  /* Print: full content, headings static-underlined, no animation */
+  @media print {
+    html[data-anim] .reveal,
+    html[data-anim] .prose h2::after,
+    html[data-anim] .prose h3::after {
       animation: none;
+      transition: none;
       opacity: 1;
       transform: none;
-      transition: none;
+    }
+  }
+
+  /*
+   * MOBILE TAP FEEDBACK (item o)
+   * Quick outline pulse on :active for block-level interactive surfaces
+   * on touch-only devices. Inline links keep their existing :active
+   * background flash (would extend below the line if absolute-positioned).
+   */
+  @media (hover: none) and (pointer: coarse) {
+    button,
+    .post-card,
+    .pill,
+    [role="button"] {
+      position: relative;
+    }
+    button:active::after,
+    .post-card:active::after,
+    .pill:active::after,
+    [role="button"]:active::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border: 2px solid currentColor;
+      pointer-events: none;
+      animation: tap-pulse var(--t-fast) var(--ease-out);
+    }
+    @keyframes tap-pulse {
+      from {
+        transform: scale(1);
+        opacity: 1;
+      }
+      to {
+        transform: scale(1.04);
+        opacity: 0;
+      }
     }
   }
 }

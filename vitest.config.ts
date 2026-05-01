@@ -10,5 +10,5 @@ export default defineConfig({
       'astro:content': fileURLToPath(new URL('./test/stubs/astro-content.ts', import.meta.url)),
     },
   },
-  test: { include: ['src/**/*.test.ts'], environment: 'node' },
+  test: { include: ['src/**/*.test.ts', 'test/**/*.test.ts'], environment: 'node' },
 });

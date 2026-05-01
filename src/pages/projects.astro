@@ -1,19 +1,55 @@
 ---
 import { getCollection } from 'astro:content';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import JsonLd from '~/components/JsonLd.astro';
 import ProjectCard from '~/components/ProjectCard.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import { crumbsFor } from '~/lib/crumbs';
+import {
+  buildBreadcrumbs,
+  buildCollectionPage,
+  buildItemListOfSoftwareSourceCode,
+  buildPageGraph,
+  buildWebSite,
+} from '~/lib/schema';
+import { SITE } from '~/lib/site-config';
 
 const projects = (await getCollection('projects')).sort(
   (a, b) => (a.data.order ?? 999) - (b.data.order ?? 999),
 );
+
+const itemListId = `${SITE.url}/projects#list`;
+const crumbs = crumbsFor('/projects');
+const graph = buildPageGraph([
+  buildCollectionPage({
+    url: `${SITE.url}/projects`,
+    name: 'Projects',
+    description: 'Personal and side projects.',
+    itemListId,
+  }),
+  buildItemListOfSoftwareSourceCode({
+    id: itemListId,
+    projects: projects.map((p) => ({
+      name: p.data.name,
+      url: p.data.url,
+      repoUrl: p.data.repoUrl,
+      blurb: p.data.blurb,
+      tech: p.data.tech,
+    })),
+  }),
+  buildBreadcrumbs(crumbs, SITE.url),
+  buildWebSite(),
+]);
 ---
 <BaseLayout title="Projects · kevinkiklee.io" description="Open-source projects and side experiments.">
+  <JsonLd slot="head" data={graph} />
+  <Breadcrumbs items={crumbs} />
   <h1 class="page-title">Projects</h1>
   {projects.length === 0 ? (
     <p class="empty">No projects featured yet.</p>
   ) : (
     <div class="grid">
-      {projects.map((project) => <ProjectCard project={project} />)}
+      {projects.map((project, i) => <ProjectCard project={project} index={i} />)}
     </div>
   )}
 </BaseLayout>

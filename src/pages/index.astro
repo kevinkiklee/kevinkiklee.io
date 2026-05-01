@@ -6,7 +6,7 @@ import ProjectCard from '~/components/ProjectCard.astro';
 import SectionTitle from '~/components/SectionTitle.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
-import { buildWebSite } from '~/lib/schema';
+import { ENTITY_IDS, buildBlog, buildPageGraph, buildWebSite } from '~/lib/schema';
 
 const posts = sortByDateDesc(await getPublishedPosts()).slice(0, 5);
 const projects = (await getCollection('projects'))
@@ -17,7 +17,11 @@ const projects = (await getCollection('projects'))
   title="kevinkiklee.io"
   description="Field notes from a Chrome DevRel — AI, web platform, and tangents."
 >
-  <JsonLd slot="head" data={buildWebSite()} />
+  <JsonLd slot="head" data={buildPageGraph([
+    buildWebSite(),
+    buildBlog(),
+    { '@id': ENTITY_IDS.person },
+  ])} />
   <section aria-labelledby="latest">
     <SectionTitle id="latest" name="latest" allHref="/posts" allLabel="all posts" />
     {posts.map((post, i) => <PostCard post={post} index={i} />)}
@@ -27,7 +31,7 @@ const projects = (await getCollection('projects'))
     <section aria-labelledby="featured">
       <SectionTitle id="featured" name="featured projects" allHref="/projects" allLabel="all projects" />
       <div class="grid">
-        {projects.map((project) => <ProjectCard project={project} />)}
+        {projects.map((project, i) => <ProjectCard project={project} index={i} />)}
       </div>
     </section>
   )}

@@ -121,6 +121,70 @@
     font-family: var(--font-mono);
     font-size: 0.9em;
   }
+
+  /* Open/close choreography. JS still calls showModal()/close(); these
+     rules let the browser interpolate display + overlay across the
+     show/hide flip via transition-behavior: allow-discrete.
+
+     @starting-style is required for the closed→open transition to fire
+     on first show. Browsers without it (Chrome <117 / Safari <17.4 /
+     FF <129, ~5% of visitors) see snap. Graceful degradation. */
+  #search-palette {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+    transition:
+      opacity var(--t-base) var(--ease-out),
+      transform var(--t-base) var(--ease-spring),
+      overlay var(--t-base) allow-discrete,
+      display var(--t-base) allow-discrete;
+  }
+  #search-palette[open] {
+    opacity: 1;
+    transform: none;
+  }
+  #search-palette::backdrop {
+    background: rgba(0, 0, 0, 0);
+    transition:
+      background var(--t-base) var(--ease-out),
+      overlay var(--t-base) allow-discrete,
+      display var(--t-base) allow-discrete;
+  }
+  #search-palette[open]::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  @starting-style {
+    #search-palette[open] {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.985);
+    }
+    #search-palette[open]::backdrop {
+      background: rgba(0, 0, 0, 0);
+    }
+  }
+
+  /* Mobile: drop the scale, slide up from bottom edge instead. */
+  @media (max-width: 640px) {
+    #search-palette {
+      position: fixed;
+      bottom: 0;
+      top: auto;
+      left: 0;
+      right: 0;
+      margin: 0;
+      width: 100%;
+      max-width: 100%;
+      border-radius: 0;
+      border-top: 2px solid var(--rule);
+      border-bottom: none;
+      transform: translateY(8px);
+    }
+    @starting-style {
+      #search-palette[open] {
+        transform: translateY(8px);
+      }
+    }
+  }
 </style>
 
 <script>

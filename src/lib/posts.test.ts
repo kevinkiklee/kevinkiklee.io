@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getPublishedPosts, sortByDateDesc, tagCounts } from './posts';
+import { getPublishedPosts, prevNextFor, sortByDateDesc, tagCounts } from './posts';
 
 describe('sortByDateDesc', () => {
   it('sorts posts newest first', () => {
@@ -101,5 +101,53 @@ describe('getPublishedPosts (draft-filter logic)', () => {
 
   it('shows drafts in local dev', () => {
     expect(visibleUnder({ PROD: false })).toEqual(['a', 'b', 'c']);
+  });
+});
+
+describe('prevNextFor', () => {
+  function fixturePost(id: string, isoDate: string) {
+    // biome-ignore lint/suspicious/noExplicitAny: test fixture
+    return { id, data: { pubDate: new Date(isoDate), title: id } } as any;
+  }
+
+  const posts = sortByDateDesc([
+    fixturePost('a', '2026-01-01'),
+    fixturePost('b', '2026-02-01'),
+    fixturePost('c', '2026-03-01'),
+  ]);
+
+  it('newest post: no next, prev is older sibling', () => {
+    // biome-ignore lint/style/noNonNullAssertion: test fixture with known length
+    const result = prevNextFor(posts[0]!, posts);
+    expect(result.next).toBeUndefined();
+    expect(result.prev?.id).toBe('b');
+  });
+
+  it('middle post: prev = older, next = newer', () => {
+    // biome-ignore lint/style/noNonNullAssertion: test fixture with known length
+    const result = prevNextFor(posts[1]!, posts);
+    expect(result.next?.id).toBe('c');
+    expect(result.prev?.id).toBe('a');
+  });
+
+  it('oldest post: no prev, next is newer sibling', () => {
+    // biome-ignore lint/style/noNonNullAssertion: test fixture with known length
+    const result = prevNextFor(posts[2]!, posts);
+    expect(result.next?.id).toBe('b');
+    expect(result.prev).toBeUndefined();
+  });
+
+  it('single post: both undefined', () => {
+    const single = [fixturePost('only', '2026-01-01')];
+    const result = prevNextFor(single[0], single);
+    expect(result.next).toBeUndefined();
+    expect(result.prev).toBeUndefined();
+  });
+
+  it('post not in list: both undefined', () => {
+    const stranger = fixturePost('stranger', '2026-04-01');
+    const result = prevNextFor(stranger, posts);
+    expect(result.next).toBeUndefined();
+    expect(result.prev).toBeUndefined();
   });
 });

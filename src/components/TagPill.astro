@@ -6,6 +6,11 @@
  *
  * Use everywhere a tag pill appears so styling, padding, and the touch hit
  * area stay consistent.
+ *
+ * Hover/active state uses an inverse-fill: a ::before layer slides out from
+ * the right edge (transform: scaleX(0)) revealing the bordered outline
+ * beneath. Reads as "pulling the fill out". Both states stay AA-contrast
+ * in light + dark themes.
  */
 interface Props {
   tag: string;
@@ -21,43 +26,56 @@ const { tag, asLink = true } = Astro.props;
 
 <style>
   .pill {
-    background: var(--pill-bg);
-    color: var(--pill-fg);
-    /* Visually compact, but expand the hit area via an invisible
-       ::before expander on the linked variant. */
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background: transparent;
+    color: var(--bg);
+    border: 1px solid var(--fg);
+    /* Visually compact, but expand the hit area for touch accuracy. The
+       negative margin keeps the visual rhythm of the meta line intact. */
     padding: var(--space-2) var(--space-3);
     margin: -2px;
     display: inline-block;
     min-height: 32px;
     line-height: 1.4;
     text-decoration: none;
-    position: relative;
-    transition:
-      background-color 180ms var(--ease),
-      color 180ms var(--ease);
+    transition: color var(--t-fast) var(--ease-out);
   }
-  a.pill::before {
-    content: "";
+  .pill::before {
+    content: '';
     position: absolute;
-    inset: -6px -2px;
+    inset: 0;
+    background: var(--fg);
+    transform: scaleX(1);
+    transform-origin: right;
+    transition: transform var(--t-base) var(--ease-out);
+    z-index: -1;
   }
-  /* Don't expand the hit zone when the pill is nested inside another link
-     (e.g. inside a PostCard's outer wrap). The outer link already handles
-     the tap; the expander would steal hit area from the parent link.
-     `:global(a)` keeps Astro's CSS scoper from cid-attributing the
-     ancestor selector — the parent anchor is in a different component's
-     scope (PostCard) and would never carry TagPill's cid attribute. */
-  :global(a) a.pill::before { content: none; }
-  /* Accent on hover/focus is the only colour state; pill stays inverted in
-     either theme so the hit area never disappears against the bg. */
   @media (hover: hover) and (pointer: fine) {
-    a.pill:hover { background: var(--accent); }
+    .pill:hover { color: var(--fg); }
+    .pill:hover::before { transform: scaleX(0); }
   }
-  a.pill:focus-visible { background: var(--accent); }
-  /* Forced-colors: lean on system Highlight so the inversion still reads. */
+  .pill:focus-visible { color: var(--fg); }
+  .pill:focus-visible::before { transform: scaleX(0); }
+  @media (hover: none) {
+    .pill:active { color: var(--fg); }
+    .pill:active::before { transform: scaleX(0); }
+  }
+  /* Forced-colors: lean on system Highlight so the inversion still reads.
+     The ::before layer is removed (background: transparent on a
+     forced-colors surface is treated as no fill anyway). */
   @media (forced-colors: active) {
-    .pill { background: ButtonFace; color: ButtonText; border: 1px solid ButtonText; }
+    .pill {
+      background: ButtonFace;
+      color: ButtonText;
+      border: 1px solid ButtonText;
+    }
+    .pill::before { display: none; }
     a.pill:hover,
-    a.pill:focus-visible { background: Highlight; color: HighlightText; }
+    a.pill:focus-visible {
+      background: Highlight;
+      color: HighlightText;
+    }
   }
 </style>
