@@ -81,8 +81,7 @@
   /* Mobile: shrink code to keep ~50ch per line under the bumped body type;
      preserve tap target via invisible ::before expander to 44×44. */
   @media (max-width: 640px) {
-    .prose pre,
-    .prose pre code {
+    .prose pre {
       font-size: 0.875em;
     }
     .copy-btn {
