@@ -12,9 +12,10 @@ interface RemarkPluginFile extends VFile {
 /**
  * Astro/remark plugin enforcing AEO conventions on MDX posts.
  *
- * Behavior (Tasks 11–14 add to this):
- * - Locates the h1, finds the first paragraph after it (skipping image/
- *   figure/blockquote leaders), attaches `className="lead"` to it.
+ * Behavior (Tasks 11–15 add to this):
+ * - Finds the first paragraph in the body (skipping leading image/figure/
+ *   blockquote), attaches `className="lead"` to it. PostLayout supplies
+ *   the page's <h1> outside the MDX body, so we don't require <h1> here.
  * - Fails the build with a descriptive Error when an MDX post lacks a
  *   TL;DR, h2 outline, or correct image attributes; or when frontmatter
  *   title/description exceed configured limits.
@@ -37,13 +38,9 @@ export function remarkAeo() {
       }
     }
 
-    const h1Index = tree.children.findIndex(
-      (n) => n.type === 'heading' && (n as Heading).depth === 1,
-    );
-    if (h1Index === -1) {
-      throw new Error(`[remark-aeo] no <h1> in ${filePath}`);
-    }
-
+    // Lead detection: first non-skippable paragraph in the body becomes
+    // the TL;DR. PostLayout supplies the page's <h1> outside the MDX body,
+    // so we don't require <h1> here.
     const isSkippable = (n: { type: string }) =>
       n.type === 'image' ||
       n.type === 'thematicBreak' ||
@@ -51,7 +48,7 @@ export function remarkAeo() {
       (n.type === 'paragraph' && isOnlyImage(n as Paragraph));
 
     let leadIndex = -1;
-    for (let i = h1Index + 1; i < tree.children.length; i++) {
+    for (let i = 0; i < tree.children.length; i++) {
       const node = tree.children[i];
       if (!node) continue;
       if (isSkippable(node)) continue;
@@ -62,7 +59,7 @@ export function remarkAeo() {
       break;
     }
     if (leadIndex === -1) {
-      throw new Error(`[remark-aeo] no TL;DR paragraph after <h1> in ${filePath}`);
+      throw new Error(`[remark-aeo] no TL;DR paragraph found in ${filePath}`);
     }
 
     const lead = tree.children[leadIndex] as Paragraph & {
