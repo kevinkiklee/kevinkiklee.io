@@ -6,11 +6,17 @@ interface Props {
   title: string;
   description: string;
   canonical?: string | undefined;
-  ogType?: 'website' | 'article' | undefined;
+  ogType?: 'website' | 'article' | 'profile' | undefined;
   ogImageUrl?: string | undefined;
   publishedTime?: Date | undefined;
   modifiedTime?: Date | undefined;
   tags?: string[] | undefined;
+  noindex?: boolean | undefined;
+  prevUrl?: string | undefined;
+  nextUrl?: string | undefined;
+  markdownAlternateUrl?: string | undefined;
+  profileFirstName?: string | undefined;
+  profileLastName?: string | undefined;
   lcpImage?:
     | { sizes: string; avifSrcset?: string | undefined; webpSrcset?: string | undefined }
     | undefined;
@@ -24,6 +30,12 @@ const {
   publishedTime,
   modifiedTime,
   tags = [],
+  noindex,
+  prevUrl,
+  nextUrl,
+  markdownAlternateUrl,
+  profileFirstName,
+  profileLastName,
   lcpImage,
 } = Astro.props;
 
@@ -38,7 +50,17 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{finalTitle}</title>
 <meta name="description" content={description} />
+<meta name="author" content="Kevin Lee" />
+<meta name="robots" content={noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large'} />
 <link rel="canonical" href={canonical} />
+<link rel="alternate" hreflang="en" href={canonical} />
+<link rel="alternate" hreflang="x-default" href={canonical} />
+<link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="kevinkiklee.io" />
+{markdownAlternateUrl && (
+  <link rel="alternate" type="text/markdown" href={markdownAlternateUrl} />
+)}
+{prevUrl && <link rel="prev" href={prevUrl} />}
+{nextUrl && <link rel="next" href={nextUrl} />}
 
 <meta property="og:type" content={ogType} />
 <meta property="og:title" content={title} />
@@ -50,6 +72,8 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content={title} />
+<meta property="og:image:type" content="image/png" />
+<meta name="twitter:image:alt" content={title} />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
@@ -60,9 +84,16 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 
 {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
 {modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
-{ogType === 'article' && <meta property="article:author" content="Kevin Lee" />}
+{ogType === 'article' && <meta property="article:author" content="https://kevinkiklee.io/about" />}
 {ogType === 'article' && tags[0] && <meta property="article:section" content={tags[0]} />}
 {tags.map((t) => <meta property="article:tag" content={t} />)}
+
+{ogType === 'profile' && profileFirstName && (
+  <meta property="profile:first_name" content={profileFirstName} />
+)}
+{ogType === 'profile' && profileLastName && (
+  <meta property="profile:last_name" content={profileLastName} />
+)}
 
 <link rel="alternate" type="application/rss+xml" href="/rss.xml" title="kevinkiklee.io" />
 <link rel="alternate" type="application/feed+json" href="/feed.json" title="kevinkiklee.io" />
