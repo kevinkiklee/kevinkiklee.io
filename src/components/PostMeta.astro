@@ -12,8 +12,8 @@ const { pubDate, updatedDate, tags, minutesRead } = Astro.props;
 ---
 <div class="meta">
   <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
-  {updatedDate && <span> · UPDATED {formatDate(updatedDate)}</span>}
-  {minutesRead && <span> · {minutesRead} MIN READ</span>}
+  {updatedDate && <span> · updated {formatDate(updatedDate)}</span>}
+  {minutesRead && <span> · {minutesRead} min read</span>}
   {tags.length > 0 && (
     <span> · {tags.map((t, i) => (
       <>{i > 0 && ' '}<TagPill tag={t} /></>
@@ -25,7 +25,7 @@ const { pubDate, updatedDate, tags, minutesRead } = Astro.props;
   .meta {
     font-size: var(--text-xs);
     color: var(--fg-muted);
-    letter-spacing: 0.06em;
+    letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums slashed-zero;
   }
 </style>

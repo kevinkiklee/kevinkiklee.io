@@ -8,12 +8,17 @@ const { project } = Astro.props;
 const { name, blurb, url, repoUrl, tech } = project.data;
 ---
 <article class="project-card reveal">
-  <h3><a href={url}>{name.toUpperCase()} ↗</a></h3>
+  <h3>
+    <a href={url}>
+      <span class="marker" aria-hidden="true"></span><span class="title">{name}</span>
+      <span class="ext" aria-hidden="true">↗</span>
+    </a>
+  </h3>
   <p>{blurb}</p>
   <ul role="list" class="tech">
     {tech.map((t) => <li>{t}</li>)}
   </ul>
-  {repoUrl && <a href={repoUrl} class="repo">[ view repo ]</a>}
+  {repoUrl && <a href={repoUrl} class="repo">view repo →</a>}
 </article>
 
 <style>
@@ -21,11 +26,49 @@ const { name, blurb, url, repoUrl, tech } = project.data;
     border: 1px solid var(--rule-soft);
     padding: var(--space-4);
     contain: layout paint;
+    transition: border-color 180ms var(--ease);
   }
-  h3 { font-size: var(--text-base); text-transform: uppercase; }
+  @media (hover: hover) and (pointer: fine) {
+    .project-card:hover { border-color: var(--rule); }
+    .project-card:hover .ext,
+    .project-card:hover .repo { color: var(--accent); }
+    .project-card:hover .ext { transform: translate(2px, -2px); }
+  }
+  h3 {
+    font-size: var(--text-base);
+    letter-spacing: -0.005em;
+    line-height: var(--leading-tight);
+    display: flex;
+    align-items: baseline;
+    gap: 0.4em;
+  }
+  /* Same CSS triangle as PostCard — kept in sync visually. */
+  .marker {
+    flex: 0 0 auto;
+    width: 0;
+    height: 0;
+    border-left: 0.45em solid var(--accent);
+    border-top: 0.32em solid transparent;
+    border-bottom: 0.32em solid transparent;
+    transform: translateY(-0.05em);
+  }
+  .title { flex: 1 1 auto; }
+  .ext {
+    flex: 0 0 auto;
+    color: var(--fg-subtle);
+    transition:
+      color 180ms var(--ease),
+      transform 180ms var(--ease);
+  }
   p { color: var(--fg-muted); margin: var(--space-3) 0; }
   .tech { display: flex; gap: var(--space-2); flex-wrap: wrap; font-size: var(--text-xs); color: var(--fg-subtle); }
   .tech li::before { content: '['; }
   .tech li::after { content: ']'; }
-  .repo { display: inline-block; margin-top: var(--space-3); font-size: var(--text-xs); color: var(--fg-muted); }
+  .repo {
+    display: inline-block;
+    margin-top: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    transition: color 180ms var(--ease);
+  }
 </style>

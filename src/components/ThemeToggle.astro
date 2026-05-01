@@ -23,6 +23,17 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: color 180ms var(--ease), border-color 180ms var(--ease);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    #theme-toggle:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+  }
+  #theme-toggle:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
   }
   /* Both icons are always in the DOM. We crossfade opacity so the swap is
      perceptual rather than a layout-shifting display flip. */

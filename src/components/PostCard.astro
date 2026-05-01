@@ -8,14 +8,15 @@ interface Props {
 }
 const { post, index = 0 } = Astro.props;
 const { title, description, pubDate, tags } = post.data;
-const num = String(index + 1).padStart(2, '0');
 ---
 <article class="post-card reveal" style={`--i:${index}`}>
   <a href={`/posts/${post.id}`}>
-    <h3 data-slug={post.id}>[{num}] {title.toUpperCase()}</h3>
+    <h3 data-slug={post.id}>
+      <span class="marker" aria-hidden="true"></span><span class="title">{title}</span>
+    </h3>
     <PostMeta pubDate={pubDate} tags={tags} />
     <p>{description}</p>
-    <span class="cta">→ READ POST</span>
+    <span class="cta">→ read post</span>
   </a>
 </article>
 
@@ -61,25 +62,55 @@ const num = String(index + 1).padStart(2, '0');
   .post-card a { display: block; }
   .post-card h3 {
     font-size: var(--text-lg);
-    letter-spacing: 0.02em;
+    letter-spacing: -0.005em;
+    line-height: var(--leading-tight);
     margin-bottom: var(--space-2);
     transition: color 180ms var(--ease);
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
   }
+  /*
+   * Marker triangle (▸) rendered as a CSS shape so we never have to ship the
+   * extended font subset for chrome glyphs. Sizes follow the heading via em.
+   */
+  .post-card .marker {
+    flex: 0 0 auto;
+    width: 0;
+    height: 0;
+    border-left: 0.45em solid var(--accent);
+    border-top: 0.32em solid transparent;
+    border-bottom: 0.32em solid transparent;
+    transform: translateY(-0.05em);
+  }
+  .post-card .title { flex: 1 1 auto; }
   .post-card p {
     margin-top: var(--space-3);
     color: var(--fg-muted);
     max-width: var(--measure);
+    /* Reserve two lines so the card doesn't reflow when the variable font
+       weight resolves and slightly changes line wrap. */
+    min-height: calc(2 * var(--leading-body) * var(--text-base));
   }
   .post-card .cta {
     display: inline-block;
     margin-top: var(--space-3);
     font-size: var(--text-xs);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.04em;
     color: var(--fg-subtle);
-    transition: transform 180ms var(--ease), color 180ms var(--ease);
+    transition:
+      transform 180ms var(--ease),
+      color 180ms var(--ease);
   }
   @media (hover: hover) and (pointer: fine) {
     .post-card:hover { border-top-color: var(--rule); }
-    .post-card:hover .cta { color: var(--fg); transform: translateX(4px); }
+    .post-card:hover .cta {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+  }
+  .post-card a:focus-visible .cta {
+    color: var(--accent);
+    transform: translateX(4px);
   }
 </style>

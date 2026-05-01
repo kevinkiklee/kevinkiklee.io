@@ -8,14 +8,14 @@
   }
   .prose h2 {
     font-size: var(--text-xl);
-    text-transform: uppercase;
+    letter-spacing: -0.005em;
     border-bottom: 2px solid var(--rule);
     padding-bottom: var(--space-2);
     margin-top: var(--space-7);
   }
   .prose h3 {
     font-size: var(--text-lg);
-    text-transform: uppercase;
+    letter-spacing: -0.005em;
     margin-top: var(--space-6);
   }
   .prose ul,

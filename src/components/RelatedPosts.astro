@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { getPublishedPosts } from '~/lib/posts';
 import { relatedPosts } from '~/lib/related';
+import SectionTitle from './SectionTitle.astro';
 
 interface Props {
   post: CollectionEntry<'posts'>;
@@ -13,12 +14,12 @@ const related = relatedPosts(post, all, limit);
 ---
 {related.length > 0 && (
   <aside class="related" aria-labelledby="related-heading">
-    <h2 id="related-heading">// RELATED</h2>
+    <SectionTitle id="related-heading" name="related" />
     <ul role="list">
       {related.map((p) => (
         <li>
           <a href={`/posts/${p.id}`}>
-            <h3>{p.data.title}</h3>
+            <h3><span class="marker" aria-hidden="true"></span><span>{p.data.title}</span></h3>
             <p>{p.data.description}</p>
           </a>
         </li>
@@ -33,11 +34,6 @@ const related = relatedPosts(post, all, limit);
     padding-top: var(--space-5);
     border-top: 2px solid var(--rule);
   }
-  .related h2 {
-    font-size: var(--text-base);
-    letter-spacing: 0.06em;
-    margin-bottom: var(--space-4);
-  }
   .related ul {
     list-style: none;
     padding: 0;
@@ -50,12 +46,27 @@ const related = relatedPosts(post, all, limit);
     padding: var(--space-3);
     transition: border-color 180ms var(--ease);
   }
-  .related li:hover { border-color: var(--fg); }
+  @media (hover: hover) and (pointer: fine) {
+    .related li:hover { border-color: var(--fg); }
+  }
   .related h3 {
     font-size: var(--text-base);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: -0.005em;
+    line-height: var(--leading-tight);
     margin-bottom: var(--space-2);
+    display: flex;
+    align-items: baseline;
+    gap: 0.4em;
+  }
+  /* Smaller marker triangle to match the smaller card scale. */
+  .related .marker {
+    flex: 0 0 auto;
+    width: 0;
+    height: 0;
+    border-left: 0.4em solid var(--accent);
+    border-top: 0.28em solid transparent;
+    border-bottom: 0.28em solid transparent;
+    transform: translateY(-0.05em);
   }
   .related p {
     color: var(--fg-muted);

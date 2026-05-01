@@ -11,7 +11,7 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
 ---
 {items.length > 0 && (
   <aside class="toc" aria-label="Table of contents" transition:persist>
-    <p class="toc-label">// CONTENTS</p>
+    <p class="toc-label">Contents</p>
     <ol>
       {items.map((h) => (
         <li class:list={[`depth-${h.depth}`]}>
@@ -32,10 +32,10 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
   }
   .toc-label {
     font-size: var(--text-xs);
-    letter-spacing: 0.06em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     color: var(--fg-subtle);
     margin-bottom: var(--space-3);
-    text-transform: uppercase;
   }
   .toc ol {
     list-style: none;
@@ -46,8 +46,23 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
     gap: var(--space-2);
   }
   .toc li.depth-3 { padding-left: var(--space-4); }
-  .toc a { color: var(--fg-muted); }
+  .toc a {
+    display: inline-block;
+    color: var(--fg-muted);
+    border-left: 2px solid transparent;
+    padding-left: var(--space-2);
+    margin-left: calc(-1 * var(--space-2) - 2px);
+    transition: color 180ms var(--ease), border-color 180ms var(--ease);
+  }
   .toc a:hover, .toc a:focus-visible { color: var(--fg); }
+  /* Active heading: accent border-left + weight bump. Two non-colour signals
+     so a colour-blind or forced-colors user still sees the active item. */
+  .toc a[aria-current='location'],
+  .toc a.is-active {
+    color: var(--fg);
+    font-weight: 600;
+    border-left-color: var(--accent);
+  }
 
   @media (min-width: 1024px) {
     .toc {

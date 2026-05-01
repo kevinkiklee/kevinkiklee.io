@@ -5,8 +5,10 @@
 <dialog id="shortcuts-overlay" aria-label="Keyboard shortcuts">
   <form method="dialog" class="frame">
     <header>
-      <h2>// SHORTCUTS</h2>
-      <button type="submit" aria-label="Close shortcuts" title="Close (Esc)">[ESC]</button>
+      <h2>Keyboard shortcuts</h2>
+      <button type="submit" aria-label="Close shortcuts" title="Close (Esc)">
+        <span class="ar" aria-hidden="true">→</span> close (Esc)
+      </button>
     </header>
     <dl>
       <div><dt><kbd>g</kbd> <kbd>h</kbd></dt><dd>Home</dd></div>
@@ -46,7 +48,8 @@
   }
   header h2 {
     font-size: var(--text-base);
-    letter-spacing: 0.06em;
+    font-weight: 600;
+    letter-spacing: -0.005em;
   }
   header button {
     background: transparent;
@@ -54,6 +57,13 @@
     color: var(--fg-muted);
     font: inherit;
     cursor: pointer;
+    transition: color 180ms var(--ease);
+  }
+  header button:hover, header button:focus-visible { color: var(--fg); }
+  header button .ar {
+    color: var(--accent);
+    font-weight: 700;
+    margin-right: 0.2em;
   }
   dl {
     display: flex;

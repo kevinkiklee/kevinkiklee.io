@@ -6,16 +6,16 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 ---
 <BaseLayout title="404 · kevinkiklee.io" description="Page not found">
   <section class="not-found">
-    <pre aria-hidden="true">┌─────────────────────────────────────────┐
-│  ERROR 404 — file not found             │
+    <pre class="signage" aria-hidden="true">┌─────────────────────────────────────────┐
+│  ERROR 404 — FILE NOT FOUND             │
 │  $ ls /<span id="not-found-path">—</span>_
 └─────────────────────────────────────────┘</pre>
     <h1>Nothing here</h1>
     <p>That URL does not match a post or page on this site.</p>
     <ul role="list">
-      <li><a href="/">→ home</a></li>
-      <li><a href="/posts">→ all posts</a></li>
-      <li><a href="/search">→ search</a></li>
+      <li><a href="/"><span class="ar" aria-hidden="true">→</span> home</a></li>
+      <li><a href="/posts"><span class="ar" aria-hidden="true">→</span> all posts</a></li>
+      <li><a href="/search"><span class="ar" aria-hidden="true">→</span> search</a></li>
     </ul>
   </section>
   <script>
@@ -28,8 +28,26 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 
 <style>
   .not-found { max-width: 600px; }
-  pre { font-size: var(--text-xs); color: var(--fg-muted); margin-bottom: var(--space-5); white-space: pre; overflow-x: auto; }
-  h1 { font-size: var(--text-2xl); margin-bottom: var(--space-3); }
-  ul { margin-top: var(--space-5); }
+  /* The signage pre block is the only place caps body text lives — single-
+     purpose error page, accent-highlighted to read as a system message. */
+  .signage {
+    font-size: var(--text-xs);
+    color: var(--accent);
+    margin-bottom: var(--space-5);
+    white-space: pre;
+    overflow-x: auto;
+    letter-spacing: 0.04em;
+  }
+  h1 {
+    font-size: var(--text-2xl);
+    letter-spacing: -0.01em;
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-3);
+  }
+  ul { margin-top: var(--space-5); list-style: none; padding: 0; }
   li { padding: var(--space-2) 0; }
+  .ar { color: var(--accent); margin-right: 0.3em; display: inline-block; transition: transform 180ms var(--ease); }
+  @media (hover: hover) and (pointer: fine) {
+    a:hover .ar { transform: translateX(3px); }
+  }
 </style>

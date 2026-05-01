@@ -18,7 +18,7 @@ const years = Object.keys(groupedByYear)
   .sort((a, b) => b - a);
 ---
 <BaseLayout title="Posts · kevinkiklee.io" description="Archive of all posts.">
-  <h1 class="page-title">{'// POSTS'}</h1>
+  <h1 class="page-title">Posts</h1>
   {posts.length === 0 && (
     <p class="empty">No posts yet — check back soon.</p>
   )}
@@ -45,8 +45,19 @@ const years = Object.keys(groupedByYear)
 </BaseLayout>
 
 <style>
-  .page-title { font-size: var(--text-2xl); text-transform: uppercase; margin-bottom: var(--space-6); }
-  h2 { font-size: var(--text-lg); border-bottom: 2px solid var(--rule); padding-bottom: var(--space-2); margin: var(--space-6) 0 var(--space-3); }
+  .page-title {
+    font-size: var(--text-2xl);
+    letter-spacing: -0.01em;
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-6);
+  }
+  h2 {
+    font-size: var(--text-lg);
+    letter-spacing: -0.005em;
+    border-bottom: 2px solid var(--rule);
+    padding-bottom: var(--space-2);
+    margin: var(--space-6) 0 var(--space-3);
+  }
   .archive { font-variant-numeric: tabular-nums; }
   .archive li {
     padding: var(--space-2) 0;

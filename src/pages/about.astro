@@ -17,27 +17,44 @@ const mastodon = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
     })}
   />
   <article class="h-card">
-    <h1 class="page-title">// ABOUT</h1>
+    <h1 class="page-title">About</h1>
     <p class="lead">
       Hi, I'm <a class="p-name u-url" rel="me" href="https://kevinkiklee.io">Kevin Lee</a>.
       I work as a <span class="p-job-title">Developer Relations Engineer</span>
       at <span class="p-org">Google Chrome</span>.
     </p>
     <p>This site is a place for field notes — heavy on AI and the web platform, lighter on everything else. Most posts are short. Some are long. RSS welcome.</p>
-    <h2>FIND ME</h2>
+    <h2>Find me</h2>
     <ul class="links" role="list">
-      <li><a class="u-url" rel="me" href={mastodon}>↗ Mastodon — primary social</a></li>
-      <li><a class="u-url" rel="me" href="https://github.com/kevinkiklee">↗ GitHub</a></li>
-      <li><a class="u-url" rel="me" href="https://www.linkedin.com/in/kevinkiklee/">↗ LinkedIn</a></li>
+      <li><a class="u-url" rel="me" href={mastodon}><span class="ar" aria-hidden="true">↗</span> Mastodon — primary social</a></li>
+      <li><a class="u-url" rel="me" href="https://github.com/kevinkiklee"><span class="ar" aria-hidden="true">↗</span> GitHub</a></li>
+      <li><a class="u-url" rel="me" href="https://www.linkedin.com/in/kevinkiklee/"><span class="ar" aria-hidden="true">↗</span> LinkedIn</a></li>
     </ul>
     <p class="discuss">Best way to reach me is on Mastodon. I read everything.</p>
   </article>
 </BaseLayout>
 
 <style>
-  .page-title { font-size: var(--text-2xl); text-transform: uppercase; margin-bottom: var(--space-6); }
+  .page-title {
+    font-size: var(--text-2xl);
+    letter-spacing: -0.01em;
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-6);
+  }
   .lead { font-size: var(--text-lg); max-width: var(--measure); }
-  h2 { font-size: var(--text-base); border-bottom: 2px solid var(--rule); padding-bottom: var(--space-2); margin: var(--space-7) 0 var(--space-3); }
+  h2 {
+    font-size: var(--text-base);
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    border-bottom: 2px solid var(--rule);
+    padding-bottom: var(--space-2);
+    margin: var(--space-7) 0 var(--space-3);
+  }
+  .links { list-style: none; padding: 0; }
   .links li { padding: var(--space-2) 0; }
+  .links .ar { color: var(--accent); margin-right: 0.3em; display: inline-block; transition: transform 180ms var(--ease); }
+  @media (hover: hover) and (pointer: fine) {
+    .links a:hover .ar { transform: translate(2px, -2px); }
+  }
   .discuss { margin-top: var(--space-5); color: var(--fg-muted); }
 </style>

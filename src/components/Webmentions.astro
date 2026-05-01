@@ -1,5 +1,6 @@
 ---
 import { fetchWebmentions } from '~/lib/webmentions';
+import SectionTitle from './SectionTitle.astro';
 
 interface Props {
   url: string;
@@ -12,7 +13,7 @@ const reposts = mentions.filter((m) => m.type === 'repost');
 ---
 {mentions.length > 0 && (
   <section class="webmentions" aria-labelledby="wm-h">
-    <h3 id="wm-h">[ WEBMENTIONS ]</h3>
+    <SectionTitle id="wm-h" name="replies" level="h3" />
     {(likes.length + reposts.length) > 0 && (
       <p class="reactions">
         {likes.length} ♥ · {reposts.length} ↻
@@ -36,16 +37,16 @@ const reposts = mentions.filter((m) => m.type === 'repost');
 <style>
   .webmentions {
     margin-top: var(--space-7);
-    border-top: 2px solid var(--rule);
-    padding-top: var(--space-5);
-  }
-  h3 {
-    font-size: var(--text-base);
-    letter-spacing: 0.06em;
   }
   .reactions {
     color: var(--fg-muted);
     font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
   li {
     padding: var(--space-3) 0;

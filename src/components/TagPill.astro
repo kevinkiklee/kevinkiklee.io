@@ -14,9 +14,9 @@ interface Props {
 const { tag, asLink = true } = Astro.props;
 ---
 {asLink ? (
-  <a href={`/tags/${tag}`} class="pill">{tag.toUpperCase()}</a>
+  <a href={`/tags/${tag}`} class="pill">{tag}</a>
 ) : (
-  <span class="pill">{tag.toUpperCase()}</span>
+  <span class="pill">{tag}</span>
 )}
 
 <style>
@@ -31,5 +31,20 @@ const { tag, asLink = true } = Astro.props;
     min-height: 32px;
     line-height: 1.4;
     text-decoration: none;
+    transition:
+      background-color 180ms var(--ease),
+      color 180ms var(--ease);
+  }
+  /* Accent on hover/focus is the only colour state; pill stays inverted in
+     either theme so the hit area never disappears against the bg. */
+  @media (hover: hover) and (pointer: fine) {
+    a.pill:hover { background: var(--accent); }
+  }
+  a.pill:focus-visible { background: var(--accent); }
+  /* Forced-colors: lean on system Highlight so the inversion still reads. */
+  @media (forced-colors: active) {
+    .pill { background: ButtonFace; color: ButtonText; border: 1px solid ButtonText; }
+    a.pill:hover,
+    a.pill:focus-visible { background: Highlight; color: HighlightText; }
   }
 </style>

@@ -34,7 +34,11 @@ const BUNDLES: Bundle[] = [
     label: 'primary Latin',
     ranges: [
       [0x0000, 0x007f], // ASCII
-      [0x00a0, 0x00ff], // Latin-1 supplement
+      [0x00a0, 0x00ff], // Latin-1 supplement (incl. § U+00A7 used as heading anchor)
+      // Two arrows used in chrome (CTAs, external-link affordance).
+      // Pulling them into the primary subset keeps the -ext file lazy.
+      [0x2192, 0x2192], // → rightwards arrow
+      [0x2197, 0x2197], // ↗ north-east arrow
     ],
   },
   {
@@ -48,7 +52,10 @@ const BUNDLES: Bundle[] = [
       [0x2074, 0x2079],
       [0x20a0, 0x20bf],
       [0x2122, 0x2122],
-      [0x2191, 0x2199],
+      // U+2191-2199 minus the two arrows we promoted to primary above.
+      [0x2191, 0x2191],
+      [0x2193, 0x2196],
+      [0x2198, 0x2199],
       [0x2500, 0x257f],
       [0x2580, 0x259f],
     ],

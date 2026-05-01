@@ -6,6 +6,9 @@
 @media print {
   :root {
     color-scheme: light;
+    /* Drop accent colour so links and markers print as solid black. */
+    --accent: #000;
+    --accent-rule: #000;
   }
 
   html,

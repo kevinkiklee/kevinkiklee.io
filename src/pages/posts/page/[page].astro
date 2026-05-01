@@ -28,7 +28,7 @@ const prevHref = page === 2 ? '/posts' : `/posts/page/${page - 1}`;
 const nextHref = page < totalPages ? `/posts/page/${page + 1}` : null;
 ---
 <BaseLayout title={`Posts · page ${page}`} description="Older posts." canonical={canonical}>
-  <h1 class="page-title">{'// POSTS — PAGE '}{page}/{totalPages}</h1>
+  <h1 class="page-title">Posts <span class="page-num">— page {page}/{totalPages}</span></h1>
   <ul role="list" class="archive">
     {items.map((p) => (
       <li>
@@ -49,7 +49,18 @@ const nextHref = page < totalPages ? `/posts/page/${page + 1}` : null;
 </BaseLayout>
 
 <style>
-  .page-title { font-size: var(--text-2xl); text-transform: uppercase; margin-bottom: var(--space-6); }
+  .page-title {
+    font-size: var(--text-2xl);
+    letter-spacing: -0.01em;
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-6);
+  }
+  .page-num {
+    font-size: var(--text-base);
+    color: var(--fg-muted);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
   .archive { font-variant-numeric: tabular-nums; }
   .archive li {
     padding: var(--space-2) 0;

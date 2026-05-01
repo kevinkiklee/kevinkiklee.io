@@ -96,7 +96,7 @@ const jsonLd = [
     )}
     {series && (
       <nav class="series-banner" aria-label="Series navigation">
-        <span>[ SERIES: {series.name.toUpperCase()} · PART {series.order} ]</span>
+        <span>Series · {series.name} · part {series.order}</span>
       </nav>
     )}
     <div class="post-body">
@@ -127,8 +127,8 @@ const jsonLd = [
   .post header { margin-bottom: var(--space-6); }
   h1 {
     font-size: var(--text-2xl);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: -0.01em;
+    line-height: var(--leading-tight);
     margin-bottom: var(--space-3);
   }
   /* Cover hero: full-width within the post column, sharp brutalist border
@@ -150,9 +150,10 @@ const jsonLd = [
   }
   .series-banner {
     font-size: var(--text-xs);
-    letter-spacing: 0.06em;
+    letter-spacing: 0.02em;
     color: var(--fg-muted);
-    border: 1px dashed var(--rule-soft);
+    border-left: 3px solid var(--accent);
+    background: var(--code-bg);
     padding: var(--space-2) var(--space-3);
     margin-bottom: var(--space-6);
   }

@@ -10,7 +10,7 @@ const bundlePath = '/pagefind/';
 const uiOptions = { showImages: false, resetStyles: false };
 ---
 <BaseLayout title="Search · kevinkiklee.io" description="Search the archive.">
-  <h1 class="page-title">{'// SEARCH'}</h1>
+  <h1 class="page-title">Search</h1>
   <div
     id="search"
     class="pagefind-ui pagefind-uninit"
@@ -81,7 +81,8 @@ const uiOptions = { showImages: false, resetStyles: false };
 <style>
   .page-title {
     font-size: var(--text-2xl);
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: var(--leading-tight);
     margin-bottom: var(--space-6);
   }
   .hint {

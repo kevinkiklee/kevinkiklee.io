@@ -18,7 +18,7 @@ const noindex = count < 3;
 ---
 <BaseLayout title={`#${tag} · kevinkiklee.io`} description={`Posts tagged ${tag}.`}>
   {noindex && <meta name="robots" content="noindex" slot="head" />}
-  <h1 class="page-title">{'// TAG: '}{tag.toUpperCase()} <span class="count">[{count}]</span></h1>
+  <h1 class="page-title">Tag <span class="sep" aria-hidden="true">·</span> {tag} <span class="count">{count}</span></h1>
   {posts.length === 0 ? (
     <p class="empty">No posts under this tag yet.</p>
   ) : (
@@ -27,7 +27,19 @@ const noindex = count < 3;
 </BaseLayout>
 
 <style>
-  .page-title { font-size: var(--text-2xl); text-transform: uppercase; margin-bottom: var(--space-6); }
-  .count { color: var(--fg-subtle); }
+  .page-title {
+    font-size: var(--text-2xl);
+    letter-spacing: -0.01em;
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-6);
+  }
+  .page-title .sep { color: var(--accent); margin: 0 0.2em; }
+  .count {
+    color: var(--fg-subtle);
+    font-size: var(--text-base);
+    font-weight: 400;
+    margin-left: 0.4em;
+    font-variant-numeric: tabular-nums;
+  }
   .empty { color: var(--fg-muted); font-style: italic; padding: var(--space-5) 0; }
 </style>

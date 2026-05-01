@@ -2,10 +2,10 @@
 import ThemeToggle from './ThemeToggle.astro';
 const path = Astro.url.pathname;
 const links = [
-  { href: '/', label: 'HOME' },
-  { href: '/posts', label: 'POSTS' },
-  { href: '/projects', label: 'PROJECTS' },
-  { href: '/about', label: 'ABOUT' },
+  { href: '/', label: 'Home' },
+  { href: '/posts', label: 'Posts' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/about', label: 'About' },
 ];
 function isCurrent(href: string) {
   if (href === '/') return path === '/';
@@ -17,8 +17,9 @@ function isCurrent(href: string) {
 ---
 <header class="site-header">
   <div class="row">
-    <a href="/" class="brand" aria-label="kevinkiklee.io home">[ KEVINKIKLEE.IO ]</a>
-    <nav aria-label="Primary">
+    <a href="/" class="brand is-caps" aria-label="kevinkiklee.io home">kevinkiklee.io</a>
+    <small class="role">chrome devrel · seoul</small>
+    <nav class="site-nav" aria-label="Primary">
       <ul role="list">
         {links.map((l) => (
           <li><a href={l.href} aria-current={isCurrent(l.href) ? 'page' : undefined}>{l.label}</a></li>
@@ -29,7 +30,7 @@ function isCurrent(href: string) {
             id="search-trigger"
             aria-keyshortcuts="Slash Meta+K"
             aria-current={isCurrent('/search') ? 'page' : undefined}
-          >[ / SEARCH ]</a>
+          ><span class="slash" aria-hidden="true">/</span> search</a>
         </li>
       </ul>
     </nav>
@@ -45,59 +46,115 @@ function isCurrent(href: string) {
     top: 0;
     background: var(--bg);
     z-index: 10;
+    contain: layout;
+    /* Persist the header element across ClientRouter swaps so the banner
+       doesn't re-mount + reflow on every nav. */
+    view-transition-name: site-header;
   }
   .row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-5);
+    gap: var(--space-4);
     max-width: 1100px;
     margin: 0 auto;
     flex-wrap: wrap;
+    /* Reserve enough vertical room for the role strip whether it's visible
+       or hidden, so toggling the breakpoint never produces CLS. */
+    min-height: 56px;
   }
+  /*
+   * Brand: KEVINKIKLEE.IO sits between two short solid bars rendered as
+   * pseudo-elements (the "▌ ▐" motif from the spec, but as CSS shapes so the
+   * extended font subset stays lazy and the bars remain pixel-crisp).
+   */
   .brand {
+    display: inline-flex;
+    align-items: center;
     font-weight: 700;
-    letter-spacing: 0.04em;
     font-size: var(--text-sm);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
   }
-  nav ul {
+  .brand::before,
+  .brand::after {
+    content: "";
+    display: inline-block;
+    width: 0.18em;
+    height: 0.95em;
+    background: currentColor;
+    flex: 0 0 auto;
+  }
+  .brand::before { margin-right: 0.45em; }
+  .brand::after  { margin-left: 0.45em; }
+
+  .role {
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    flex: 0 1 auto;
+  }
+  /* Drop the role strip on phones below 380px so the banner doesn't wrap
+     past two lines on small devices. The same identity also lives in
+     JSON-LD Person + the About page, so nothing is lost. */
+  @media (max-width: 379px) {
+    .role { display: none; }
+  }
+
+  .site-nav ul {
     display: flex;
     gap: var(--space-5);
     list-style: none;
     padding: 0;
     margin: 0;
     font-size: var(--text-xs);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.02em;
   }
   /*
    * Tap targets: WCAG 2.5.5 / 2.5.8 wants ≥24px; Apple HIG wants ≥44px.
    * inline-flex + min-height gives us a consistent 44px regardless of
-   * the rendered text height (the [ / SEARCH ] link in particular has
-   * no descenders and was previously ~28px tall on mobile).
+   * the rendered text height.
    */
-  nav a {
+  .site-nav a {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
     padding: var(--space-2) 0;
+    color: var(--fg-muted);
+    transition: color 180ms var(--ease);
   }
-  nav a[aria-current='page'] { border-bottom: 2px solid var(--fg); }
+  .site-nav a:hover,
+  .site-nav a:focus-visible { color: var(--fg); }
+  .site-nav a[aria-current='page'] {
+    color: var(--fg);
+    font-weight: 600;
+    /* Border + weight (not colour alone) signals current state — preserved
+       for forced-colors and colour-blind users. */
+    border-bottom: 2px solid var(--accent);
+  }
+  .site-nav .slash {
+    color: var(--accent);
+    font-weight: 700;
+    margin-right: 0.15em;
+  }
+
   @media (max-width: 640px) {
     .row { gap: var(--space-3); justify-content: flex-start; }
-    nav {
-      order: 3;
+    .site-nav {
+      order: 4;
       width: 100%;
       overflow-x: auto;
       /* iOS momentum scroll for the horizontal nav strip. */
       -webkit-overflow-scrolling: touch;
     }
-    nav ul {
+    .site-nav ul {
       gap: var(--space-4);
       /* Snap to the start of each nav item so users land on whole labels
          when fling-scrolling, not mid-word. */
       scroll-snap-type: x proximity;
     }
-    nav li { scroll-snap-align: start; }
+    .site-nav li { scroll-snap-align: start; }
   }
 </style>
 
