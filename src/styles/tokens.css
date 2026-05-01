@@ -4,12 +4,12 @@
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --font-display: "IBM Plex Mono", var(--font-mono);
 
-  --text-xs: clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
-  --text-sm: clamp(0.82rem, 0.80rem + 0.13vw, 0.90rem);
-  --text-base: clamp(0.95rem, 0.92rem + 0.18vw, 1.05rem);
-  --text-lg: clamp(1.10rem, 1.05rem + 0.25vw, 1.25rem);
-  --text-xl: clamp(1.40rem, 1.30rem + 0.50vw, 1.75rem);
-  --text-2xl: clamp(1.80rem, 1.60rem + 1.0vw, 2.50rem);
+  --text-xs: clamp(0.78rem, 0.75rem + 0.12vw, 0.83rem);
+  --text-sm: clamp(0.92rem, 0.88rem + 0.18vw, 1.00rem);
+  --text-base: clamp(1.0625rem, 1rem + 0.4vw, 1.125rem);
+  --text-lg: clamp(1.20rem, 1.13rem + 0.35vw, 1.375rem);
+  --text-xl: clamp(1.50rem, 1.40rem + 0.60vw, 1.875rem);
+  --text-2xl: clamp(1.90rem, 1.70rem + 1.05vw, 2.625rem);
 
   --leading-body: 1.65;
   --leading-tight: 1.25;
@@ -25,6 +25,8 @@
   --space-8: 64px;
 
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --header-h-mobile: 96px;
+  --header-h-desktop: 80px;
 }
 
 :root[data-theme="light"] {

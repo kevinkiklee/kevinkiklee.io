@@ -41,4 +41,18 @@
     border-top: 1px dashed var(--rule-soft);
     margin: var(--space-7) 0;
   }
+
+  /* Mobile: tighter paragraph rhythm to compensate for the bumped body type. */
+  @media (max-width: 640px) {
+    .prose > * + * {
+      margin-top: var(--space-4);
+    }
+  }
+
+  /* Hyphenate body copy only — never headings (would fight `text-wrap: balance`). */
+  .prose p,
+  .prose li {
+    hyphens: auto;
+    -webkit-hyphens: auto;
+  }
 }

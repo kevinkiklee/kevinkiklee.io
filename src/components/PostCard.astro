@@ -131,4 +131,16 @@ const { title, description, pubDate, tags } = post.data;
     color: var(--accent);
     transform: translateX(4px);
   }
+  @media (max-width: 640px) {
+    .post-card { padding: var(--space-4) 0; }
+    .post-card p {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      /* The desktop-default `min-height` reservation still applies so the card
+         doesn't reflow when the variable font weight resolves; line-clamp adds
+         the visual truncation on top. */
+    }
+  }
 </style>
