@@ -54,7 +54,7 @@ export const config: VercelConfig = {
       maxAge: '10min',
       sMaxAge: '1hour',
     }),
-    routes.cacheControl('/posts/.+\\.md', {
+    routes.cacheControl('/posts/(.+)\\.md', {
       public: true,
       maxAge: '10min',
       sMaxAge: '1hour',
