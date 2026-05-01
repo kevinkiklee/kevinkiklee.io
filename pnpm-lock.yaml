@@ -102,6 +102,18 @@ importers:
       markdownlint-cli2:
         specifier: 0.15.0
         version: 0.15.0
+      mdast-util-to-markdown:
+        specifier: ^2.1.0
+        version: 2.1.2
+      remark-mdx:
+        specifier: ^3.0.0
+        version: 3.1.1
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0
+      remark-stringify:
+        specifier: ^11.0.0
+        version: 11.0.0
       rollup-plugin-visualizer:
         specifier: 5.12.0
         version: 5.12.0(rollup@4.60.2)
@@ -120,6 +132,9 @@ importers:
       unified:
         specifier: ^11.0.5
         version: 11.0.5
+      unist-util-visit:
+        specifier: ^5.0.0
+        version: 5.1.0
       vitest:
         specifier: ^2.1.0
         version: 2.1.9(@types/node@24.12.2)(jsdom@29.1.1)
