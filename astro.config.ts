@@ -9,6 +9,7 @@ import { defineConfig, envField } from 'astro/config';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { parse as parseYaml } from 'yaml';
 import imageSitemap from './src/integrations/image-sitemap';
+import { rehypeAssertImgDims } from './src/lib/assert-img-dims';
 import { remarkReadingTime } from './src/lib/reading-time';
 
 // Read post frontmatter at config-evaluation time so the sitemap can:
@@ -88,6 +89,7 @@ export default defineConfig({
   },
   markdown: {
     remarkPlugins: [remarkReadingTime],
+    rehypePlugins: [rehypeAssertImgDims],
     shikiConfig: {
       themes: { light: 'min-light', dark: 'min-dark' },
       wrap: true,

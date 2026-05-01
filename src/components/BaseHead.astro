@@ -36,6 +36,12 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 ---
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+<!-- Critical preload: font dispatched before <title> so the browser preload
+     scanner picks it up immediately. Same-origin font; `crossorigin` is
+     required to match the CSS-triggered fetch. -->
+<link rel="preload" as="font" type="font/woff2" href="/fonts/jetbrains-mono.woff2" crossorigin />
+
 <title>{finalTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />

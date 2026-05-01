@@ -63,7 +63,12 @@
     text-rendering: optimizeLegibility;
     -moz-osx-font-smoothing: grayscale;
     /* Anchor jumps shouldn't tuck content under the sticky header. */
-    scroll-padding-top: calc(var(--space-7) + var(--space-3));
+    scroll-padding-top: var(--header-h-mobile);
+  }
+  @media (min-width: 1024px) {
+    html {
+      scroll-padding-top: var(--header-h-desktop);
+    }
   }
   body {
     font-size: var(--text-base);

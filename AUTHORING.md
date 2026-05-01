@@ -95,6 +95,21 @@ Before publishing, verify the post:
 - [ ] Tags listed in frontmatter are concrete topics (not vibes).
 - [ ] Primary sources are linked inline, not parked in a footer.
 
+## Image performance
+
+- **Cover hero**: use the `cover:` frontmatter field. Astro generates an
+  AVIF + WebP preload pair with `fetchpriority="high"` automatically.
+- **First inline image** in a short post: if the image will appear in the
+  first viewport on mobile (i.e. before the reader scrolls), it can become
+  the LCP candidate. Override the default `loading="lazy"` by writing the
+  image as a manual `<Image src={...} alt="..." loading="eager" />` instead
+  of `![alt](./path.png)`.
+- **Other inline images**: write as `![alt](./relative-path.png)`.
+  The MDX pipeline sets `loading="lazy"`, `decoding="async"`, and width /
+  height automatically.
+- A build-time assertion fails the build if any `<img>` lacks dimensions
+  — see `src/lib/assert-img-dims.ts`.
+
 ## Reviewing locally
 
 ```sh

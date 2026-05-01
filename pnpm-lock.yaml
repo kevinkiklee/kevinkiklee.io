@@ -75,6 +75,9 @@ importers:
       '@lhci/cli':
         specifier: 0.14.0
         version: 0.14.0
+      '@types/hast':
+        specifier: ^3.0.4
+        version: 3.0.4
       '@types/mdast':
         specifier: ^4.0.4
         version: 4.0.4
@@ -120,6 +123,9 @@ importers:
       unified:
         specifier: ^11.0.5
         version: 11.0.5
+      unist-util-visit:
+        specifier: ^5.1.0
+        version: 5.1.0
       vitest:
         specifier: ^2.1.0
         version: 2.1.9(@types/node@24.12.2)(jsdom@29.1.1)
