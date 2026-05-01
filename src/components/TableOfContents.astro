@@ -12,6 +12,7 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
 {items.length > 0 && (
   <aside class="toc" aria-label="Table of contents" transition:persist>
     <p class="toc-label">Contents</p>
+    <span class="toc-indicator" aria-hidden="true"></span>
     <ol>
       {items.map((h) => (
         <li class:list={[`depth-${h.depth}`]}>
@@ -24,6 +25,8 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
 
 <style>
   .toc {
+    position: relative;
+    contain: layout paint;
     border: 1px solid var(--rule);
     padding: var(--space-4);
     font-family: var(--font-mono);
@@ -49,19 +52,36 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
   .toc a {
     display: inline-block;
     color: var(--fg-muted);
-    border-left: 2px solid transparent;
     padding-left: var(--space-2);
-    margin-left: calc(-1 * var(--space-2) - 2px);
-    transition: color 180ms var(--ease), border-color 180ms var(--ease);
+    margin-left: calc(-1 * var(--space-2));
+    transition: color var(--t-fast) var(--ease-out);
   }
   .toc a:hover, .toc a:focus-visible { color: var(--fg); }
-  /* Active heading: accent border-left + weight bump. Two non-colour signals
-     so a colour-blind or forced-colors user still sees the active item. */
+  /* Active heading: weight bump + colour swap. The compositor-rendered
+     indicator bar (below) is the primary signal; the weight + colour
+     keep the active item readable in forced-colors / colour-blind cases. */
   .toc a[aria-current='location'],
   .toc a.is-active {
     color: var(--fg);
     font-weight: 600;
-    border-left-color: var(--accent);
+  }
+
+  /* Active-section indicator: a 2px bar that glides between items via
+     transform: translateY(N) scaleY(R) where R = item-height / base-height.
+     Fully compositor (no height animation, no layout reflow). */
+  .toc-indicator {
+    position: absolute;
+    /* Align with the inner edge of the .toc padding so the bar reads
+       as a left-rail mark next to the link text. */
+    top: var(--space-4);
+    left: var(--space-4);
+    width: 2px;
+    height: 1.4em;
+    background: var(--accent);
+    transform-origin: top left;
+    transform: translateY(0) scaleY(0);
+    transition: transform var(--t-base) var(--ease-out);
+    pointer-events: none;
   }
 
   @media (min-width: 1024px) {
@@ -70,6 +90,92 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
       top: var(--space-6);
       max-height: calc(100dvh - var(--space-7));
       overflow-y: auto;
+      /* Re-establish positioning for the indicator inside a sticky parent. */
+      isolation: isolate;
     }
   }
 </style>
+
+<script>
+  function setupTocScrollspy(): void {
+    const tocs = document.querySelectorAll<HTMLElement>('.toc');
+    if (!tocs.length) return;
+
+    const headings = document.querySelectorAll<HTMLElement>('.prose h2[id], .prose h3[id]');
+    if (!headings.length) return;
+
+    tocs.forEach((toc) => {
+      const indicator = toc.querySelector<HTMLElement>('.toc-indicator');
+      if (!indicator) return;
+
+      const linksByHref = new Map<string, HTMLElement>();
+      toc.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
+        const href = a.getAttribute('href');
+        if (href) linksByHref.set(href, a);
+      });
+
+      const baseHeight = indicator.offsetHeight || 24;
+      let activeId: string | null = null;
+
+      function setActive(id: string): void {
+        if (id === activeId) return;
+        activeId = id;
+        const link = linksByHref.get(`#${id}`);
+        if (!link || !indicator) return;
+        const ratio = link.offsetHeight / baseHeight;
+        indicator.style.transform = `translateY(${link.offsetTop}px) scaleY(${ratio})`;
+        toc.querySelectorAll('a[aria-current]').forEach((a) => a.removeAttribute('aria-current'));
+        link.setAttribute('aria-current', 'location');
+      }
+
+      function reposition(): void {
+        if (activeId) {
+          const id = activeId;
+          activeId = null; // force re-apply
+          setActive(id);
+        }
+      }
+
+      const obs = new IntersectionObserver(
+        (entries) => {
+          if (document.visibilityState !== 'visible') return;
+          for (const entry of entries) {
+            if (entry.isIntersecting) setActive(entry.target.id);
+          }
+        },
+        { rootMargin: '0px 0px -70% 0px' },
+      );
+      headings.forEach((h) => obs.observe(h));
+
+      // Snap initial position (no animation), enable transitions next frame.
+      const firstId = headings[0]?.id;
+      if (firstId) {
+        const prevTransition = indicator.style.transition;
+        indicator.style.transition = 'none';
+        setActive(firstId);
+        requestAnimationFrame(() => {
+          indicator.style.transition = prevTransition;
+        });
+      }
+
+      // Re-position on resize / late font load — defensive against late
+      // layout shifts that would leave the indicator stranded.
+      const ro = new ResizeObserver(reposition);
+      ro.observe(toc);
+      document.fonts?.ready.then(reposition).catch(() => {});
+
+      // Cleanup on swap.
+      document.addEventListener(
+        'astro:before-swap',
+        () => {
+          obs.disconnect();
+          ro.disconnect();
+        },
+        { once: true },
+      );
+    });
+  }
+
+  setupTocScrollspy();
+  document.addEventListener('astro:page-load', setupTocScrollspy);
+</script>
