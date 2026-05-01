@@ -9,9 +9,17 @@ import PostMeta from '~/components/PostMeta.astro';
 import PostNav from '~/components/PostNav.astro';
 import RelatedPosts from '~/components/RelatedPosts.astro';
 import TableOfContents from '~/components/TableOfContents.astro';
-import { buildBlogPosting, buildBreadcrumbs } from '~/lib/schema';
+import {
+  buildBlogPosting,
+  buildBreadcrumbs,
+  buildBlog,
+  buildPageGraph,
+  buildWebSite,
+  ENTITY_IDS,
+} from '~/lib/schema';
 import { crumbsFor } from '~/lib/crumbs';
 import { getPublishedPosts, prevNextFor, sortByDateDesc } from '~/lib/posts';
+import { SITE } from '~/lib/site-config';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
@@ -54,19 +62,24 @@ if (cover) {
 
 const origin = new URL('/', Astro.site).toString().slice(0, -1);
 
-const jsonLd = [
-  buildBlogPosting({
-    url: postUrl,
-    title,
-    description,
-    pubDate,
-    updatedDate,
-    tags,
-    imageUrl: ogImageUrl,
-    wordCount,
-    minutesRead,
-    authorUrl,
-  }),
+const blogPostingArgs: Parameters<typeof buildBlogPosting>[0] = {
+  url: postUrl,
+  title,
+  description,
+  pubDate,
+  tags,
+  imageUrl: ogImageUrl,
+  authorUrl,
+};
+if (updatedDate) blogPostingArgs.updatedDate = updatedDate;
+if (typeof wordCount === 'number') blogPostingArgs.wordCount = wordCount;
+if (typeof minutesRead === 'number') blogPostingArgs.minutesRead = minutesRead;
+if (post.data.faq) blogPostingArgs.faq = post.data.faq;
+if (SITE.license) blogPostingArgs.license = SITE.license;
+
+const graph = buildPageGraph([
+  buildBlogPosting(blogPostingArgs),
+  buildBlog(),
   buildBreadcrumbs(
     [
       { name: '~', url: '/' },
@@ -75,7 +88,9 @@ const jsonLd = [
     ],
     origin,
   ),
-];
+  buildWebSite(),
+  { '@id': ENTITY_IDS.person },
+]);
 ---
 <BaseLayout
   title={`${title} · kevinkiklee.io`}
@@ -86,8 +101,12 @@ const jsonLd = [
   modifiedTime={updatedDate}
   {tags}
   {lcpImage}
+  canonical={postUrl}
+  markdownAlternateUrl={`${SITE.url}/posts/${post.id}.md`}
+  prevUrl={prev ? `${SITE.url}/posts/${prev.id}` : undefined}
+  nextUrl={next ? `${SITE.url}/posts/${next.id}` : undefined}
 >
-  <JsonLd slot="head" data={jsonLd} />
+  <JsonLd slot="head" data={graph} />
   <Breadcrumbs items={crumbs} />
   <article class="post">
     <p class="url-prompt"><span aria-hidden="true">$</span> posts/{post.id}</p>
