@@ -29,3 +29,21 @@ export async function getPublishedPosts(): Promise<Post[]> {
     return data.draft !== true;
   });
 }
+
+/**
+ * Given a post and the full sorted list (newest-first), return its prev/next
+ * siblings. Convention: `next` = newer post (chronological forward),
+ * `prev` = older post.
+ *
+ * The input list MUST be sortByDateDesc-ordered.
+ */
+export function prevNextFor(post: Post, sortedPosts: Post[]): { prev?: Post; next?: Post } {
+  const i = sortedPosts.findIndex((p) => p.id === post.id);
+  if (i === -1) return {};
+  const newer = sortedPosts[i - 1];
+  const older = sortedPosts[i + 1];
+  const out: { prev?: Post; next?: Post } = {};
+  if (newer) out.next = newer;
+  if (older) out.prev = older;
+  return out;
+}
