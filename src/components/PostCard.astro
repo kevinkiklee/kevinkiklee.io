@@ -48,6 +48,24 @@ const { title, description, pubDate, tags } = post.data;
     // Re-run after view-transition swaps so newly mounted cards get observed.
     document.addEventListener('astro:after-swap', setup);
   }
+
+  // Race-free post-title morph: set view-transition-name synchronously
+  // on pointerdown, BEFORE the click→navigation pipeline. The IO setter
+  // (above) handles the "scroll-to-card" path; this handler covers the
+  // "click a card you can see right now" path.
+  function setVTNameOnPointerDown() {
+    document.querySelectorAll<HTMLElement>('.post-card h3[data-slug]').forEach((h) => {
+      if (h.dataset.vtBound === '1') return;
+      h.dataset.vtBound = '1';
+      const card = h.closest('.post-card');
+      card?.addEventListener('pointerdown', () => {
+        const slug = h.dataset.slug;
+        if (slug) h.style.viewTransitionName = `post-title-${slug}`;
+      });
+    });
+  }
+  setVTNameOnPointerDown();
+  document.addEventListener('astro:page-load', setVTNameOnPointerDown);
 </script>
 
 <style>
