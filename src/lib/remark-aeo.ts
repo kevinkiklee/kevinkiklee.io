@@ -1,5 +1,6 @@
 import type { Heading, Paragraph, Root } from 'mdast';
 import type { VFile } from 'vfile';
+import { visit } from 'unist-util-visit';
 
 interface RemarkPluginFile extends VFile {
   data: {
@@ -62,6 +63,24 @@ export function remarkAeo() {
     if (!hasH2) {
       throw new Error(`[remark-aeo] no <h2> in ${filePath} — outline required for AEO`);
     }
+
+    const REQUIRED_IMG_ATTRS = ['alt', 'width', 'height', 'loading', 'decoding'] as const;
+    visit(tree, (node) => {
+      const isRawImg =
+        node.type === 'mdxJsxFlowElement' && (node as { name?: string }).name === 'img';
+      const isAstroImage =
+        node.type === 'mdxJsxFlowElement' && (node as { name?: string }).name === 'Image';
+      if (!isRawImg && !isAstroImage) return;
+      const attrs = (node as { attributes?: { name: string }[] }).attributes ?? [];
+      const have = new Set(attrs.map((a) => a.name));
+      const missing = REQUIRED_IMG_ATTRS.filter((r) => !have.has(r));
+      if (missing.length > 0) {
+        const tag = isRawImg ? 'img' : 'Image';
+        throw new Error(
+          `[remark-aeo] <${tag}> missing required attrs in ${filePath}: ${missing.join(', ')}`,
+        );
+      }
+    });
   };
 }
 

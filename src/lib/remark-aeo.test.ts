@@ -57,3 +57,27 @@ describe('remark-aeo: h2 outline', () => {
     expect(() => runPlugin('# Title\n\nLead.\n\n## Section\n\nBody.')).not.toThrow();
   });
 });
+
+describe('remark-aeo: image attributes', () => {
+  it('throws when raw <img> is missing required attrs', () => {
+    expect(() => runPlugin('# Title\n\nLead.\n\n## H2\n\n<img src="/x.png" alt="x" />')).toThrow(
+      /img/i,
+    );
+  });
+
+  it('throws when <Image /> MDX is missing required attrs', () => {
+    expect(() => runPlugin('# Title\n\nLead.\n\n## H2\n\n<Image src="/x.png" alt="x" />')).toThrow(
+      /Image/,
+    );
+  });
+
+  it('passes when raw <img> has all required attrs', () => {
+    const ok = `# Title\n\nLead.\n\n## H2\n\n<img src="/x.png" alt="x" width="100" height="50" loading="lazy" decoding="async" />`;
+    expect(() => runPlugin(ok)).not.toThrow();
+  });
+
+  it('passes when <Image /> has all required attrs', () => {
+    const ok = `# Title\n\nLead.\n\n## H2\n\n<Image src="/x.png" alt="x" width={100} height={50} loading="lazy" decoding="async" />`;
+    expect(() => runPlugin(ok)).not.toThrow();
+  });
+});
