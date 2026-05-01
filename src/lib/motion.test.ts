@@ -1,0 +1,157 @@
+// @vitest-environment jsdom
+// src/lib/motion.test.ts
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+// Mock matchMedia BEFORE importing motion.ts (it captures references at module load)
+function setMatchMediaMock(matchers: Record<string, boolean>) {
+  globalThis.matchMedia = ((query: string) => {
+    const matches = matchers[query] ?? false;
+    return {
+      matches,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    } as unknown as MediaQueryList;
+  }) as typeof globalThis.matchMedia;
+}
+
+function setNavigatorConnection(conn: { saveData?: boolean; effectiveType?: string } | undefined) {
+  Object.defineProperty(globalThis, 'navigator', {
+    value: { connection: conn },
+    configurable: true,
+    writable: true,
+  });
+}
+
+describe('scaledDuration', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    setMatchMediaMock({});
+    setNavigatorConnection({});
+  });
+
+  it('returns input unchanged on desktop without any reduction signal', async () => {
+    setMatchMediaMock({ '(max-width: 640px)': false });
+    const { scaledDuration } = await import('./motion');
+    expect(scaledDuration(200)).toBe(200);
+  });
+
+  it('returns 70% of input on mobile', async () => {
+    setMatchMediaMock({ '(max-width: 640px)': true });
+    const { scaledDuration } = await import('./motion');
+    expect(scaledDuration(200)).toBe(140);
+    expect(scaledDuration(280)).toBe(196);
+  });
+
+  it('returns 1 when prefers-reduced-motion is set', async () => {
+    setMatchMediaMock({ '(prefers-reduced-motion: reduce)': true });
+    const { scaledDuration } = await import('./motion');
+    expect(scaledDuration(200)).toBe(1);
+  });
+
+  it('returns 1 when prefers-reduced-data is set', async () => {
+    setMatchMediaMock({ '(prefers-reduced-data: reduce)': true });
+    const { scaledDuration } = await import('./motion');
+    expect(scaledDuration(200)).toBe(1);
+  });
+
+  it('returns 1 when prefers-reduced-transparency is set', async () => {
+    setMatchMediaMock({ '(prefers-reduced-transparency: reduce)': true });
+    const { scaledDuration } = await import('./motion');
+    expect(scaledDuration(200)).toBe(1);
+  });
+
+  it('returns 1 when navigator.connection.saveData is true', async () => {
+    setNavigatorConnection({ saveData: true });
+    const { scaledDuration } = await import('./motion');
+    expect(scaledDuration(200)).toBe(1);
+  });
+
+  it('returns 1 on 2g effective connection', async () => {
+    setNavigatorConnection({ effectiveType: '2g' });
+    const { scaledDuration } = await import('./motion');
+    expect(scaledDuration(200)).toBe(1);
+  });
+
+  it('returns 1 on slow-2g effective connection', async () => {
+    setNavigatorConnection({ effectiveType: 'slow-2g' });
+    const { scaledDuration } = await import('./motion');
+    expect(scaledDuration(200)).toBe(1);
+  });
+
+  it('treats reduced-motion as higher priority than mobile', async () => {
+    setMatchMediaMock({ '(max-width: 640px)': true, '(prefers-reduced-motion: reduce)': true });
+    const { scaledDuration } = await import('./motion');
+    expect(scaledDuration(200)).toBe(1);
+  });
+});
+
+describe('withWillChange', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    setMatchMediaMock({});
+  });
+
+  it('applies will-change before fn and clears after', async () => {
+    const { withWillChange } = await import('./motion');
+    const el = document.createElement('div');
+    let snapshotDuringFn = '';
+    await withWillChange(el, ['transform', 'opacity'], async () => {
+      snapshotDuringFn = el.style.willChange;
+    });
+    expect(snapshotDuringFn).toBe('transform, opacity');
+    expect(el.style.willChange).toBe('');
+  });
+
+  it('clears will-change even if fn throws', async () => {
+    const { withWillChange } = await import('./motion');
+    const el = document.createElement('div');
+    await expect(
+      withWillChange(el, ['transform'], async () => {
+        throw new Error('boom');
+      }),
+    ).rejects.toThrow('boom');
+    expect(el.style.willChange).toBe('');
+  });
+
+  it('restores previous will-change value rather than empty', async () => {
+    const { withWillChange } = await import('./motion');
+    const el = document.createElement('div');
+    el.style.willChange = 'opacity';
+    await withWillChange(el, ['transform'], async () => {});
+    expect(el.style.willChange).toBe('opacity');
+  });
+});
+
+describe('cancelAnimations', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    setMatchMediaMock({});
+  });
+
+  it('cancels every animation returned by getAnimations()', async () => {
+    const { cancelAnimations } = await import('./motion');
+    const cancel1 = vi.fn();
+    const cancel2 = vi.fn();
+    const el = {
+      getAnimations: () => [{ cancel: cancel1 }, { cancel: cancel2 }],
+    } as unknown as Element;
+    cancelAnimations(el);
+    expect(cancel1).toHaveBeenCalledOnce();
+    expect(cancel2).toHaveBeenCalledOnce();
+  });
+
+  it('is a no-op when getAnimations is unavailable', async () => {
+    const { cancelAnimations } = await import('./motion');
+    const el = {} as Element;
+    expect(() => cancelAnimations(el)).not.toThrow();
+  });
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});

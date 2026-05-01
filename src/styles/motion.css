@@ -13,7 +13,7 @@
   --t-slow: 280ms;
 
   --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
-  --ease-spring: cubic-bezier(0.34, 1.40, 0.64, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
   --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
 
   --stagger: 30ms;
@@ -54,6 +54,7 @@
   }
 }
 
+/* biome-ignore lint/correctness/noUnknownMediaFeatureName: Media Queries Level 5 — supported in Safari 17.4+ and progressively enhanced everywhere else. */
 @media (prefers-reduced-transparency: reduce) {
   :root {
     --t-fast: 1ms;
