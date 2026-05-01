@@ -23,17 +23,23 @@ const { tag, asLink = true } = Astro.props;
   .pill {
     background: var(--pill-bg);
     color: var(--pill-fg);
-    /* Visually compact, but expand the hit area for touch accuracy. The
-       negative margin keeps the visual rhythm of the meta line intact. */
+    /* Visually compact, but expand the hit area via an invisible
+       ::before expander on the linked variant. */
     padding: var(--space-2) var(--space-3);
     margin: -2px;
     display: inline-block;
     min-height: 32px;
     line-height: 1.4;
     text-decoration: none;
+    position: relative;
     transition:
       background-color 180ms var(--ease),
       color 180ms var(--ease);
+  }
+  a.pill::before {
+    content: "";
+    position: absolute;
+    inset: -6px -2px;
   }
   /* Accent on hover/focus is the only colour state; pill stays inverted in
      either theme so the hit area never disappears against the bg. */

@@ -143,6 +143,7 @@ function isCurrent(href: string) {
   }
 
   @media (max-width: 640px) {
+    .site-header { padding: var(--space-3) var(--space-5); }
     .row { gap: var(--space-3); justify-content: flex-start; }
     .site-nav {
       order: 4;
@@ -150,6 +151,12 @@ function isCurrent(href: string) {
       overflow-x: auto;
       /* iOS momentum scroll for the horizontal nav strip. */
       -webkit-overflow-scrolling: touch;
+      /* Right-edge fade telegraphs "more nav off-screen". Nav has no
+         absolutely-positioned children, so the mask doesn't clip
+         anything visible. Always-on (last 24px) so it reads as
+         intentional even when fully scrolled. */
+      mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+      -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
     }
     .site-nav ul {
       gap: var(--space-4);
@@ -158,6 +165,10 @@ function isCurrent(href: string) {
       scroll-snap-type: x proximity;
     }
     .site-nav li { scroll-snap-align: start; }
+  }
+
+  @media (forced-colors: active) {
+    .site-nav { mask: none; -webkit-mask: none; }
   }
 </style>
 

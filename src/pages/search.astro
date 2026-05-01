@@ -10,6 +10,10 @@ const bundlePath = '/pagefind/';
 const uiOptions = { showImages: false, resetStyles: false };
 ---
 <BaseLayout title="Search · kevinkiklee.io" description="Search the archive.">
+  <Fragment slot="head">
+    <link rel="preload" as="script" href="/pagefind/pagefind-ui.js" />
+    <link rel="preload" as="style" href="/pagefind/pagefind-ui.css" />
+  </Fragment>
   <h1 class="page-title">Search</h1>
   <div
     id="search"

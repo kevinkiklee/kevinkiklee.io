@@ -46,6 +46,11 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
   }
   ul { margin-top: var(--space-5); list-style: none; padding: 0; }
   li { padding: var(--space-2) 0; }
+  li a {
+    display: inline-block;
+    min-height: 44px;
+    line-height: 44px;
+  }
   .ar { color: var(--accent); margin-right: 0.3em; display: inline-block; transition: transform 180ms var(--ease); }
   @media (hover: hover) and (pointer: fine) {
     a:hover .ar { transform: translateX(3px); }
