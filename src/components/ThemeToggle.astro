@@ -52,7 +52,7 @@
 </style>
 
 <script>
-  import { getTheme, setTheme, initThemeListeners } from '~/lib/theme';
+  import { getTheme, setThemeAnimated, initThemeListeners } from '~/lib/theme';
   initThemeListeners();
 
   // Event delegation on document so the handler survives ClientRouter
@@ -66,10 +66,10 @@
   }
   syncLabel();
   document.addEventListener('astro:after-swap', syncLabel);
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', async (e) => {
     const target = e.target as Element | null;
     if (!target?.closest('#theme-toggle')) return;
-    setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+    await setThemeAnimated(getTheme() === 'dark' ? 'light' : 'dark');
     syncLabel();
   });
 </script>
