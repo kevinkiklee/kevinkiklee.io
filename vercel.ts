@@ -49,10 +49,16 @@ export const config: VercelConfig = {
       immutable: true,
       staleWhileRevalidate: '1day',
     }),
-    routes.cacheControl('/(rss\\.xml|feed\\.json|sitemap.*)', {
+    routes.cacheControl('/(rss\\.xml|feed\\.json|sitemap.*|llms\\.txt|llms-full\\.txt)', {
       public: true,
       maxAge: '10min',
       sMaxAge: '1hour',
+    }),
+    routes.cacheControl('/posts/.+\\.md', {
+      public: true,
+      maxAge: '10min',
+      sMaxAge: '1hour',
+      staleWhileRevalidate: '1day',
     }),
     routes.cacheControl('/(.*)\\.html', {
       public: true,
