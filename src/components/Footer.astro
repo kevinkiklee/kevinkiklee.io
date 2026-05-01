@@ -31,9 +31,9 @@ const mastodon = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
   .site-footer a {
     color: var(--fg-muted);
     transition: color 180ms var(--ease);
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     min-height: 44px;
-    line-height: 44px;
   }
   .site-footer a:hover, .site-footer a:focus-visible { color: var(--fg); }
 </style>
