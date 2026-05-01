@@ -65,7 +65,10 @@
     /* Anchor jumps shouldn't tuck content under the sticky header. */
     scroll-padding-top: var(--header-h-mobile);
   }
-  @media (min-width: 1024px) {
+  /* Desktop breakpoint matches Header.astro's 640px reflow: single-row
+     header ~80px ≥641px; two-row header ~96px ≤640px. Keeps anchor jumps
+     accurate across the full viewport range, not just ≥1024px. */
+  @media (min-width: 641px) {
     html {
       scroll-padding-top: var(--header-h-desktop);
     }
