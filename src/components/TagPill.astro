@@ -43,8 +43,11 @@ const { tag, asLink = true } = Astro.props;
   }
   /* Don't expand the hit zone when the pill is nested inside another link
      (e.g. inside a PostCard's outer wrap). The outer link already handles
-     the tap; the expander would steal hit area from the parent link. */
-  :where(a) a.pill::before { content: none; }
+     the tap; the expander would steal hit area from the parent link.
+     `:global(a)` keeps Astro's CSS scoper from cid-attributing the
+     ancestor selector — the parent anchor is in a different component's
+     scope (PostCard) and would never carry TagPill's cid attribute. */
+  :global(a) a.pill::before { content: none; }
   /* Accent on hover/focus is the only colour state; pill stays inverted in
      either theme so the hit area never disappears against the bg. */
   @media (hover: hover) and (pointer: fine) {
