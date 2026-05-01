@@ -1,7 +1,20 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import JsonLd from '~/components/JsonLd.astro';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
+import {
+  ENTITY_IDS,
+  buildBlog,
+  buildBreadcrumbs,
+  buildCollectionPage,
+  buildItemListOfBlogPostings,
+  buildPageGraph,
+  buildWebSite,
+} from '~/lib/schema';
+import { crumbsFor } from '~/lib/crumbs';
+import { SITE } from '~/lib/site-config';
 
 export const getStaticPaths = (async () => {
   // Astro hoists getStaticPaths and runs it in isolation; module-scope
@@ -26,8 +39,32 @@ const { items, page, totalPages } = Astro.props;
 const canonical = new URL(`/posts/page/${page}`, Astro.site).toString();
 const prevHref = page === 2 ? '/posts' : `/posts/page/${page - 1}`;
 const nextHref = page < totalPages ? `/posts/page/${page + 1}` : null;
+
+const itemListId = `${SITE.url}${Astro.url.pathname}#list`;
+const crumbs = crumbsFor(Astro.url.pathname);
+const graph = buildPageGraph([
+  buildCollectionPage({
+    url: canonical,
+    name: 'Posts',
+    description: 'Archive of all posts.',
+    itemListId,
+  }),
+  buildBlog(),
+  buildItemListOfBlogPostings({
+    id: itemListId,
+    posts: items.map((p) => ({
+      url: `${SITE.url}/posts/${p.id}`,
+      title: p.data.title,
+    })),
+  }),
+  buildBreadcrumbs(crumbs, SITE.url),
+  buildWebSite(),
+  { '@id': ENTITY_IDS.person },
+]);
 ---
 <BaseLayout title={`Posts · page ${page}`} description="Older posts." canonical={canonical}>
+  <JsonLd slot="head" data={graph} />
+  <Breadcrumbs items={crumbs} />
   <h1 class="page-title">Posts <span class="page-num">— page {page}/{totalPages}</span></h1>
   <ul role="list" class="archive">
     {items.map((p) => (

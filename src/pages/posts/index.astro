@@ -1,7 +1,20 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import JsonLd from '~/components/JsonLd.astro';
 import { formatMonthDay } from '~/lib/format';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
+import {
+  ENTITY_IDS,
+  buildBlog,
+  buildBreadcrumbs,
+  buildCollectionPage,
+  buildItemListOfBlogPostings,
+  buildPageGraph,
+  buildWebSite,
+} from '~/lib/schema';
+import { crumbsFor } from '~/lib/crumbs';
+import { SITE } from '~/lib/site-config';
 
 const allPosts = sortByDateDesc(await getPublishedPosts());
 const posts = allPosts.slice(0, 30);
@@ -16,8 +29,32 @@ const groupedByYear = posts.reduce<Record<number, typeof posts>>((acc, p) => {
 const years = Object.keys(groupedByYear)
   .map(Number)
   .sort((a, b) => b - a);
+
+const itemListId = `${SITE.url}/posts#list`;
+const crumbs = crumbsFor('/posts');
+const graph = buildPageGraph([
+  buildCollectionPage({
+    url: `${SITE.url}/posts`,
+    name: 'Posts',
+    description: 'Archive of all posts.',
+    itemListId,
+  }),
+  buildBlog(),
+  buildItemListOfBlogPostings({
+    id: itemListId,
+    posts: posts.map((p) => ({
+      url: `${SITE.url}/posts/${p.id}`,
+      title: p.data.title,
+    })),
+  }),
+  buildBreadcrumbs(crumbs, SITE.url),
+  buildWebSite(),
+  { '@id': ENTITY_IDS.person },
+]);
 ---
 <BaseLayout title="Posts · kevinkiklee.io" description="Archive of all posts.">
+  <JsonLd slot="head" data={graph} />
+  <Breadcrumbs items={crumbs} />
   <h1 class="page-title">Posts</h1>
   {posts.length === 0 && (
     <p class="empty">No posts yet — check back soon.</p>
