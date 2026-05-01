@@ -31,3 +31,32 @@ export function buildLlmsIndex(posts: Post[]): string {
     '',
   ].join('\n');
 }
+
+export function buildLlmsFull(posts: Post[], cap = 50): string {
+  const published = posts
+    .filter((p) => p.data.draft !== true)
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+    .slice(0, cap);
+
+  const header = [
+    '# kevinkiklee.io — full content snapshot',
+    '',
+    `Snapshot of the ${cap} most-recent published posts. The canonical index is`,
+    `at ${SITE}/llms.txt; per-post markdown lives at ${SITE}/posts/<slug>.md.`,
+    '',
+    '---',
+    '',
+  ].join('\n');
+
+  const bodies = published.map((p) =>
+    [
+      `# ${p.data.title}`,
+      `Date: ${p.data.pubDate.toISOString().slice(0, 10)}`,
+      `URL: ${SITE}/posts/${p.id}`,
+      '',
+      p.body ?? '',
+    ].join('\n'),
+  );
+
+  return header + bodies.join('\n\n---\n\n');
+}

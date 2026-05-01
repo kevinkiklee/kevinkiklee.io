@@ -63,3 +63,40 @@ describe('buildLlmsIndex', () => {
     expect(out).toContain('](https://kevinkiklee.io/about)');
   });
 });
+
+import { buildLlmsFull } from './aeo';
+
+describe('buildLlmsFull', () => {
+  const many = Array.from({ length: 60 }, (_, i) => ({
+    id: `p${i}`,
+    body: `Lead ${i}.\n\n## H2\n\nBody.`,
+    data: {
+      title: `Post ${i}`,
+      description: `D ${i}`,
+      pubDate: new Date(2026, 0, 60 - i),
+      draft: false,
+      tags: ['tag'],
+    },
+  }));
+
+  it('caps at 50 most-recent published posts', () => {
+    const out = buildLlmsFull(many as never, 50);
+    const sepCount = (out.match(/\n---\n/g) ?? []).length;
+    // 50 posts → 49 separators in the body section.
+    // Plus there's a separator in the header. So total expected: 50.
+    // We only assert that it caps at 50 by checking the count of post entries.
+    const postEntries = (out.match(/^# Post /gm) ?? []).length;
+    expect(postEntries).toBeLessThanOrEqual(50);
+    expect(postEntries).toBe(50);
+  });
+
+  it('separator pattern is "\\n\\n---\\n\\n" between posts', () => {
+    const out = buildLlmsFull(many as never, 3);
+    expect(out).toContain('\n\n---\n\n');
+  });
+
+  it('header references the canonical /llms.txt index', () => {
+    const out = buildLlmsFull(many as never, 3);
+    expect(out).toContain('https://kevinkiklee.io/llms.txt');
+  });
+});
