@@ -117,19 +117,22 @@ describe('prevNextFor', () => {
   ]);
 
   it('newest post: no next, prev is older sibling', () => {
-    const result = prevNextFor(posts[0], posts);
+    // biome-ignore lint/style/noNonNullAssertion: test fixture with known length
+    const result = prevNextFor(posts[0]!, posts);
     expect(result.next).toBeUndefined();
     expect(result.prev?.id).toBe('b');
   });
 
   it('middle post: prev = older, next = newer', () => {
-    const result = prevNextFor(posts[1], posts);
+    // biome-ignore lint/style/noNonNullAssertion: test fixture with known length
+    const result = prevNextFor(posts[1]!, posts);
     expect(result.next?.id).toBe('c');
     expect(result.prev?.id).toBe('a');
   });
 
   it('oldest post: no prev, next is newer sibling', () => {
-    const result = prevNextFor(posts[2], posts);
+    // biome-ignore lint/style/noNonNullAssertion: test fixture with known length
+    const result = prevNextFor(posts[2]!, posts);
     expect(result.next?.id).toBe('b');
     expect(result.prev).toBeUndefined();
   });

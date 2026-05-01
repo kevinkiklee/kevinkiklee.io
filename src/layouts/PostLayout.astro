@@ -22,8 +22,6 @@ const { title, description, pubDate, updatedDate, tags, cover, series } = post.d
 const postUrl = new URL(`/posts/${post.id}`, Astro.site).toString();
 const ogImageUrl = new URL(`/api/og?slug=${post.id}`, Astro.site).toString();
 const authorUrl = new URL('/about', Astro.site).toString();
-const homeUrl = new URL('/', Astro.site).toString();
-const postsUrl = new URL('/posts', Astro.site).toString();
 
 // If the post has a cover image, preload the responsive srcset so the LCP
 // element loads in parallel with the HTML parse. We emit BOTH an AVIF and a
@@ -45,6 +43,8 @@ if (cover) {
   };
 }
 
+const origin = new URL('/', Astro.site).toString().slice(0, -1);
+
 const jsonLd = [
   buildBlogPosting({
     url: postUrl,
@@ -58,11 +58,14 @@ const jsonLd = [
     minutesRead,
     authorUrl,
   }),
-  buildBreadcrumbs([
-    { name: 'Home', url: homeUrl },
-    { name: 'Posts', url: postsUrl },
-    { name: title, url: postUrl },
-  ]),
+  buildBreadcrumbs(
+    [
+      { name: '~', url: '/' },
+      { name: 'posts', url: '/posts' },
+      { name: title, url: `/posts/${post.id}` },
+    ],
+    origin,
+  ),
 ];
 ---
 <BaseLayout

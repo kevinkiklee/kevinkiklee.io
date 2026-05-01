@@ -5,23 +5,23 @@ import remarkMdx from 'remark-mdx';
 import { unified } from 'unified';
 import { remarkAeo } from './remark-aeo';
 
-function parse(source: string): Root {
-  return unified().use(remarkParse).use(remarkMdx).parse(source) as Root;
-}
-
 function runPlugin(
   source: string,
   file = { path: '/x.mdx', data: { astro: { frontmatter: { title: 'T', description: 'D' } } } },
 ): Root {
-  const tree = parse(source);
-  remarkAeo()(tree, file as never);
-  return tree;
+  const processor = unified().use(remarkParse).use(remarkMdx).use(remarkAeo);
+  const tree = processor.parse(source);
+  processor.runSync(tree, file as never);
+  return tree as Root;
 }
 
 describe('remark-aeo: lead detection', () => {
   it('attaches className="lead" to the first paragraph in the body', () => {
     const tree = runPlugin('First para.\n\nSecond.\n\n## H2\n\nBody.');
-    const para = tree.children.find((n) => n.type === 'paragraph') as Record<string, unknown>;
+    const para = tree.children.find((n) => n.type === 'paragraph') as unknown as Record<
+      string,
+      unknown
+    >;
     expect(para).toBeDefined();
     const data = para.data as { hProperties?: { className?: string[] } } | undefined;
     expect(data?.hProperties?.className).toContain('lead');
@@ -29,7 +29,10 @@ describe('remark-aeo: lead detection', () => {
 
   it('skips leading image/figure/blockquote and lands on the first paragraph', () => {
     const tree = runPlugin('![alt](x.png)\n\nFirst para.\n\n## H2');
-    const paras = tree.children.filter((n) => n.type === 'paragraph') as Record<string, unknown>[];
+    const paras = tree.children.filter((n) => n.type === 'paragraph') as unknown as Record<
+      string,
+      unknown
+    >[];
     const lead = paras.find((p) => {
       const data = p.data as { hProperties?: { className?: string[] } } | undefined;
       return data?.hProperties?.className?.includes('lead');

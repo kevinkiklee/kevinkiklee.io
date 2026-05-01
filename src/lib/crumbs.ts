@@ -27,7 +27,7 @@ export function crumbsFor(pathname: string, ctx: CrumbsContext = {}): Crumb[] {
 
   const postMatch = path.match(/^\/posts\/([^/]+)$/);
   if (postMatch && postMatch[1] !== 'page') {
-    const title = ctx.title ?? postMatch[1];
+    const title = ctx.title ?? postMatch[1] ?? 'post';
     return [
       home,
       { name: 'posts', url: '/posts' },

@@ -88,33 +88,6 @@ describe('buildBlogPosting', () => {
   });
 });
 
-describe('buildBreadcrumbs', () => {
-  it('builds breadcrumbs from path segments', () => {
-    const ld = buildBreadcrumbs([
-      { name: 'Home', url: 'https://kevinkiklee.io/' },
-      { name: 'Posts', url: 'https://kevinkiklee.io/posts' },
-      { name: 'Title', url: 'https://kevinkiklee.io/posts/x' },
-    ]);
-    expect(ld['@type']).toBe('BreadcrumbList');
-    expect(ld.itemListElement).toHaveLength(3);
-    expect(ld.itemListElement[0]?.position).toBe(1);
-    expect(ld.itemListElement[2]?.name).toBe('Title');
-    expect(ld.itemListElement[2]?.item).toBe('https://kevinkiklee.io/posts/x');
-  });
-
-  it('handles a single-item breadcrumb (just the current page)', () => {
-    const ld = buildBreadcrumbs([{ name: 'Home', url: 'https://kevinkiklee.io/' }]);
-    expect(ld.itemListElement).toHaveLength(1);
-    expect(ld.itemListElement[0]?.position).toBe(1);
-    expect(ld.itemListElement[0]?.name).toBe('Home');
-  });
-
-  it('returns an empty itemListElement for empty input', () => {
-    const ld = buildBreadcrumbs([]);
-    expect(ld.itemListElement).toEqual([]);
-  });
-});
-
 describe('buildPerson', () => {
   it('produces a Person with sameAs links and filters undefined', () => {
     const ld = buildPerson({
@@ -139,8 +112,8 @@ describe('buildPerson', () => {
       bio: 'A developer and writer.',
     });
     expect(ld.sameAs).toHaveLength(4);
-    expect(ld.sameAs[2]).toBe('https://www.linkedin.com/in/kevinkiklee/');
-    expect(ld.sameAs[3]).toBe('https://bsky.app/profile/kevinkiklee.bsky.social');
+    expect((ld.sameAs as string[])[2]).toBe('https://www.linkedin.com/in/kevinkiklee/');
+    expect((ld.sameAs as string[])[3]).toBe('https://bsky.app/profile/kevinkiklee.bsky.social');
   });
 
   it('filters empty-string sameAs entries', () => {

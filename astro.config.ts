@@ -88,7 +88,7 @@ export default defineConfig({
     assets: '_astro',
   },
   markdown: {
-    remarkPlugins: [remarkReadingTime, remarkAeo()],
+    remarkPlugins: [remarkReadingTime, remarkAeo],
     shikiConfig: {
       themes: { light: 'min-light', dark: 'min-dark' },
       wrap: true,

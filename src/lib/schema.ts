@@ -1,7 +1,6 @@
 import type { Crumb } from './crumbs';
 
 const SITE = 'https://kevinkiklee.io';
-const PERSON_REF = { '@type': 'Person', name: 'Kevin Lee', url: `${SITE}/about` } as const;
 
 export const ENTITY_IDS = {
   website: 'https://kevinkiklee.io#website',
