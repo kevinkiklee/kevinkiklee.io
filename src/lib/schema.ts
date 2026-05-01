@@ -12,6 +12,7 @@ export function buildBlogPosting(args: {
   wordCount?: number | undefined;
   minutesRead?: number | undefined;
   authorUrl: string;
+  hasHeadings?: boolean | undefined;
 }) {
   return {
     '@context': 'https://schema.org',
@@ -28,6 +29,7 @@ export function buildBlogPosting(args: {
     inLanguage: 'en-US',
     ...(args.wordCount && { wordCount: args.wordCount }),
     ...(args.minutesRead && { timeRequired: `PT${args.minutesRead}M` }),
+    ...(args.hasHeadings && { speakable: buildSpeakable() }),
   } as const;
 }
 
@@ -67,5 +69,18 @@ export function buildBreadcrumbs(items: { name: string; url: string }[]) {
       name: it.name,
       item: it.url,
     })),
+  } as const;
+}
+
+/**
+ * Speakable schema fragment for AEO read-aloud surfaces (Google Assistant,
+ * Perplexity). Points to article H2/H3 headings as the speakable content.
+ *
+ * Designed to be merged into a BlogPosting via `speakable: buildSpeakable()`.
+ */
+export function buildSpeakable() {
+  return {
+    '@type': 'SpeakableSpecification',
+    xpath: ['/html/body//article//h2', '/html/body//article//h3'],
   } as const;
 }

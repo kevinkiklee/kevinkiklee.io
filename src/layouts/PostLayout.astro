@@ -57,6 +57,7 @@ const jsonLd = [
     wordCount,
     minutesRead,
     authorUrl,
+    hasHeadings: headings.length > 0,
   }),
   buildBreadcrumbs([
     { name: 'Home', url: homeUrl },
@@ -103,7 +104,7 @@ const jsonLd = [
     <div class="post-body">
       {headings.length > 0 && (
         <div class="toc-inline">
-          <TableOfContents headings={headings} />
+          <TableOfContents {headings} variant="inline" />
         </div>
       )}
       <div class="prose">
@@ -111,7 +112,7 @@ const jsonLd = [
       </div>
       {headings.length > 0 && (
         <div class="toc-aside">
-          <TableOfContents headings={headings} />
+          <TableOfContents {headings} variant="aside" />
         </div>
       )}
     </div>

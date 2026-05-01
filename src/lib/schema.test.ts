@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { buildBlogPosting, buildBreadcrumbs, buildPerson, buildWebSite } from './schema';
+import {
+  buildBlogPosting,
+  buildBreadcrumbs,
+  buildPerson,
+  buildSpeakable,
+  buildWebSite,
+} from './schema';
 
 describe('buildBlogPosting', () => {
   it('produces a valid BlogPosting', () => {
@@ -141,5 +147,13 @@ describe('buildWebSite', () => {
     expect(ld.url).toBe('https://kevinkiklee.io');
     expect(ld.potentialAction['@type']).toBe('SearchAction');
     expect(ld.potentialAction.target.urlTemplate).toContain('/search?q={query}');
+  });
+});
+
+describe('buildSpeakable', () => {
+  it('returns a SpeakableSpecification with H2/H3 xpaths', () => {
+    const out = buildSpeakable();
+    expect(out['@type']).toBe('SpeakableSpecification');
+    expect(out.xpath).toEqual(['/html/body//article//h2', '/html/body//article//h3']);
   });
 });
