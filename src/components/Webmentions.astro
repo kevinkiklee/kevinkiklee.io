@@ -10,8 +10,13 @@ const mentions = await fetchWebmentions(url);
 const replies = mentions.filter((m) => m.type === 'reply');
 const likes = mentions.filter((m) => m.type === 'like');
 const reposts = mentions.filter((m) => m.type === 'repost');
+
+// Empty-state branch: render nothing if no mentions. The previous version
+// hid only the wrapper when total mentions were 0, but with replies + a
+// non-zero like/repost count the section showed a header with no content.
+const hasContent = replies.length > 0 || likes.length + reposts.length > 0;
 ---
-{mentions.length > 0 && (
+{hasContent && (
   <section class="webmentions" aria-labelledby="wm-h">
     <SectionTitle id="wm-h" name="replies" level="h3" />
     {(likes.length + reposts.length) > 0 && (
@@ -22,11 +27,30 @@ const reposts = mentions.filter((m) => m.type === 'repost');
     {replies.length > 0 && (
       <ul role="list">
         {replies.map((m) => (
-          <li>
-            <a href={m.author.url}><strong>{m.author.name}</strong></a>
-            {' — '}
-            <a href={m.url}>{new Date(m.published).toISOString().slice(0, 10)}</a>
-            <p>{m.content.text}</p>
+          <li itemscope itemtype="https://schema.org/Comment">
+            <div class="head">
+              {m.author.photo && (
+                <img
+                  class="avatar"
+                  src={m.author.photo}
+                  alt=""
+                  width="32"
+                  height="32"
+                  loading="lazy"
+                  decoding="async"
+                  itemprop="image"
+                />
+              )}
+              <div class="who">
+                <a href={m.author.url} itemprop="author">
+                  <strong>{m.author.name}</strong>
+                </a>
+                <a href={m.url} itemprop="url" class="when">
+                  {new Date(m.published).toISOString().slice(0, 10)}
+                </a>
+              </div>
+            </div>
+            <p itemprop="text">{m.content.text}</p>
           </li>
         ))}
       </ul>
@@ -52,11 +76,28 @@ const reposts = mentions.filter((m) => m.type === 'repost');
     padding: var(--space-3) 0;
     border-top: 1px solid var(--rule-soft);
   }
-  li > a {
-    display: inline-flex;
+  .head {
+    display: flex;
     align-items: center;
+    gap: var(--space-3);
+  }
+  .avatar {
+    border-radius: 0;        /* brutalist — no rounding */
+    flex: 0 0 auto;
+  }
+  .who {
+    display: flex;
+    flex-direction: column;
     min-height: 44px;
-    padding-right: var(--space-2);
+    justify-content: center;
+  }
+  .who a {
+    display: inline-block;
+    color: var(--fg);
+  }
+  .who .when {
+    color: var(--fg-muted);
+    font-size: var(--text-xs);
   }
   li p {
     margin-top: var(--space-2);

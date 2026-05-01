@@ -187,6 +187,20 @@ const jsonLd = [
     .toc-inline { display: none; }
     .toc-aside { display: block; }
   }
+
+  /* Below-the-fold rhythm: gap between major post-tail sections.
+     :global() because .related and .discuss are rendered by child
+     components and carry their own scoped cid attribute. */
+  .post > :global(.related),
+  .post > :global(.discuss) {
+    margin-top: var(--space-7);
+  }
+  @media (min-width: 1024px) {
+    .post > :global(.related),
+    .post > :global(.discuss) {
+      margin-top: var(--space-8);
+    }
+  }
 </style>
 
 <script>

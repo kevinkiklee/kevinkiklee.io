@@ -61,4 +61,14 @@ const blueskyShare = `https://bsky.app/intent/compose?text=${encodeURIComponent(
   @media (hover: hover) and (pointer: fine) {
     .links a:hover .ar { transform: translateX(3px); }
   }
+  @media (max-width: 640px) {
+    /* Full-width tap target on phones — feels like a button, not a link. */
+    .links a {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      border: 1px solid var(--rule-soft);
+      padding: var(--space-3) var(--space-4);
+    }
+  }
 </style>
