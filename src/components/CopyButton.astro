@@ -18,7 +18,7 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'copy-btn';
-      btn.textContent = 'COPY';
+      btn.textContent = 'copy';
       btn.setAttribute('aria-label', 'Copy code');
       // Track the in-flight reset timer so spam-clicks don't pile up
       // multiple `setTimeout`s and produce flickering label changes.
@@ -27,13 +27,13 @@
         const code = pre.querySelector('code')?.textContent ?? '';
         try {
           await navigator.clipboard.writeText(code);
-          btn.textContent = 'COPIED';
+          btn.textContent = 'copied';
         } catch {
-          btn.textContent = 'ERR';
+          btn.textContent = 'error';
         }
         if (resetTimer !== undefined) window.clearTimeout(resetTimer);
         resetTimer = window.setTimeout(() => {
-          btn.textContent = 'COPY';
+          btn.textContent = 'copy';
           resetTimer = undefined;
         }, 1200);
       });
