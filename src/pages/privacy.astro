@@ -1,7 +1,25 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import JsonLd from '~/components/JsonLd.astro';
+import { buildBreadcrumbs, buildPageGraph, buildWebPage, buildWebSite } from '~/lib/schema';
+import { crumbsFor } from '~/lib/crumbs';
+import { SITE } from '~/lib/site-config';
+
+const crumbs = crumbsFor('/privacy');
+const graph = buildPageGraph([
+  buildWebPage({
+    url: `${SITE.url}/privacy`,
+    name: 'Privacy',
+    description: 'Privacy policy.',
+  }),
+  buildBreadcrumbs(crumbs, SITE.url),
+  buildWebSite(),
+]);
 ---
 <BaseLayout title="Privacy · kevinkiklee.io" description="What this site collects and why.">
+  <JsonLd slot="head" data={graph} />
+  <Breadcrumbs items={crumbs} />
   <article class="prose" style="max-width: var(--measure);">
     <h1>// PRIVACY</h1>
     <p>This site collects the bare minimum needed to understand whether anyone is reading it and whether the site is fast.</p>
