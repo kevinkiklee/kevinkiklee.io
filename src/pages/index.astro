@@ -27,7 +27,7 @@ const projects = (await getCollection('projects'))
     <section aria-labelledby="featured">
       <SectionTitle id="featured" name="featured projects" allHref="/projects" allLabel="all projects" />
       <div class="grid">
-        {projects.map((project) => <ProjectCard project={project} />)}
+        {projects.map((project, i) => <ProjectCard project={project} index={i} />)}
       </div>
     </section>
   )}

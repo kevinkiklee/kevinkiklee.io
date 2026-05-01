@@ -13,7 +13,7 @@ const projects = (await getCollection('projects')).sort(
     <p class="empty">No projects featured yet.</p>
   ) : (
     <div class="grid">
-      {projects.map((project) => <ProjectCard project={project} />)}
+      {projects.map((project, i) => <ProjectCard project={project} index={i} />)}
     </div>
   )}
 </BaseLayout>
