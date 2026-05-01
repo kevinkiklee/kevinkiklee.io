@@ -1,5 +1,5 @@
-import type { APIRoute } from 'astro';
 import type { CollectionEntry } from 'astro:content';
+import type { APIRoute } from 'astro';
 import { mdxToMarkdown } from '~/lib/mdx-to-md';
 import { getPublishedPosts } from '~/lib/posts';
 

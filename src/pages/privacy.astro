@@ -1,9 +1,9 @@
 ---
-import BaseLayout from '~/layouts/BaseLayout.astro';
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import JsonLd from '~/components/JsonLd.astro';
-import { buildBreadcrumbs, buildPageGraph, buildWebPage, buildWebSite } from '~/lib/schema';
+import BaseLayout from '~/layouts/BaseLayout.astro';
 import { crumbsFor } from '~/lib/crumbs';
+import { buildBreadcrumbs, buildPageGraph, buildWebPage, buildWebSite } from '~/lib/schema';
 import { SITE } from '~/lib/site-config';
 
 const crumbs = crumbsFor('/privacy');

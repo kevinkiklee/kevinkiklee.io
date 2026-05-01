@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { getStaticPaths as mdPaths } from '../src/pages/posts/[slug].md';
 import { getPublishedPosts } from '../src/lib/posts';
+import { getStaticPaths as mdPaths } from '../src/pages/posts/[slug].md';
 
 describe('post route parity', () => {
   it('[slug].md.ts paths match published-post slugs', async () => {

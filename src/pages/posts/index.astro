@@ -1,7 +1,8 @@
 ---
-import BaseLayout from '~/layouts/BaseLayout.astro';
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import JsonLd from '~/components/JsonLd.astro';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { crumbsFor } from '~/lib/crumbs';
 import { formatMonthDay } from '~/lib/format';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
 import {
@@ -13,7 +14,6 @@ import {
   buildPageGraph,
   buildWebSite,
 } from '~/lib/schema';
-import { crumbsFor } from '~/lib/crumbs';
 import { SITE } from '~/lib/site-config';
 
 const allPosts = sortByDateDesc(await getPublishedPosts());

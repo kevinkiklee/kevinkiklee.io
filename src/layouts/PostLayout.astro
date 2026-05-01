@@ -9,16 +9,16 @@ import PostMeta from '~/components/PostMeta.astro';
 import PostNav from '~/components/PostNav.astro';
 import RelatedPosts from '~/components/RelatedPosts.astro';
 import TableOfContents from '~/components/TableOfContents.astro';
-import {
-  buildBlogPosting,
-  buildBreadcrumbs,
-  buildBlog,
-  buildPageGraph,
-  buildWebSite,
-  ENTITY_IDS,
-} from '~/lib/schema';
 import { crumbsFor } from '~/lib/crumbs';
 import { getPublishedPosts, prevNextFor, sortByDateDesc } from '~/lib/posts';
+import {
+  ENTITY_IDS,
+  buildBlog,
+  buildBlogPosting,
+  buildBreadcrumbs,
+  buildPageGraph,
+  buildWebSite,
+} from '~/lib/schema';
 import { SITE } from '~/lib/site-config';
 import BaseLayout from './BaseLayout.astro';
 

@@ -4,6 +4,7 @@ import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import JsonLd from '~/components/JsonLd.astro';
 import ProjectCard from '~/components/ProjectCard.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import { crumbsFor } from '~/lib/crumbs';
 import {
   buildBreadcrumbs,
   buildCollectionPage,
@@ -11,7 +12,6 @@ import {
   buildPageGraph,
   buildWebSite,
 } from '~/lib/schema';
-import { crumbsFor } from '~/lib/crumbs';
 import { SITE } from '~/lib/site-config';
 
 const projects = (await getCollection('projects')).sort(

@@ -1,8 +1,8 @@
 import type { Root } from 'mdast';
-import { describe, expect, it } from 'vitest';
-import remarkParse from 'remark-parse';
 import remarkMdx from 'remark-mdx';
+import remarkParse from 'remark-parse';
 import { unified } from 'unified';
+import { describe, expect, it } from 'vitest';
 import { remarkAeo } from './remark-aeo';
 
 function runPlugin(

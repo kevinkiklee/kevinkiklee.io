@@ -1,8 +1,9 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import BaseLayout from '~/layouts/BaseLayout.astro';
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import JsonLd from '~/components/JsonLd.astro';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { crumbsFor } from '~/lib/crumbs';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
 import {
   ENTITY_IDS,
@@ -13,7 +14,6 @@ import {
   buildPageGraph,
   buildWebSite,
 } from '~/lib/schema';
-import { crumbsFor } from '~/lib/crumbs';
 import { SITE } from '~/lib/site-config';
 
 export const getStaticPaths = (async () => {

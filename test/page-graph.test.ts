@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ENTITY_IDS,
   buildBlog,
   buildBlogPosting,
   buildBreadcrumbs,
   buildPageGraph,
   buildPerson,
   buildWebSite,
-  ENTITY_IDS,
 } from '../src/lib/schema';
 
 describe('page @graph composition', () => {
