@@ -42,7 +42,9 @@ export function buildPageGraph(parts: GraphPart[]): {
   };
 }
 
-export function buildBlogPosting(args: {
+const HEADLINE_MAX = 110;
+
+export interface BlogPostingArgs {
   url: string;
   title: string;
   description: string;
@@ -53,23 +55,49 @@ export function buildBlogPosting(args: {
   wordCount?: number | undefined;
   minutesRead?: number | undefined;
   authorUrl: string;
-}) {
-  return {
-    '@context': 'https://schema.org',
+  faq?: { q: string; a: string }[] | undefined;
+  license?: string | undefined;
+}
+
+export function buildBlogPosting(args: BlogPostingArgs) {
+  if (args.title.length > HEADLINE_MAX) {
+    throw new Error(`headline exceeds ${HEADLINE_MAX} chars: ${args.title.length}`);
+  }
+  const out: Record<string, unknown> = {
     '@type': 'BlogPosting',
+    '@id': args.url,
     mainEntityOfPage: { '@type': 'WebPage', '@id': args.url },
+    isPartOf: { '@id': ENTITY_IDS.blog },
     headline: args.title,
     description: args.description,
     image: args.imageUrl,
+    primaryImageOfPage: { '@type': 'ImageObject', url: args.imageUrl },
     datePublished: args.pubDate.toISOString(),
     dateModified: (args.updatedDate ?? args.pubDate).toISOString(),
-    author: PERSON_REF,
-    publisher: PERSON_REF,
+    author: buildAuthorRef(),
+    publisher: buildAuthorRef(),
     keywords: args.tags.join(','),
     inLanguage: 'en-US',
-    ...(args.wordCount && { wordCount: args.wordCount }),
-    ...(args.minutesRead && { timeRequired: `PT${args.minutesRead}M` }),
-  } as const;
+    speakable: buildSpeakable(),
+  };
+  if (args.tags[0]) out.articleSection = args.tags[0];
+  if (args.wordCount) out.wordCount = args.wordCount;
+  if (args.minutesRead) out.timeRequired = `PT${args.minutesRead}M`;
+  if (args.faq && args.faq.length > 0) {
+    out.mainEntity = {
+      '@type': 'FAQPage',
+      mainEntity: args.faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    };
+  }
+  if (args.license) {
+    out.license = args.license;
+    out.copyrightYear = args.pubDate.getUTCFullYear();
+  }
+  return out;
 }
 
 export function buildPerson(args: { mastodon: string; github: string; linkedin?: string }) {

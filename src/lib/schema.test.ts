@@ -213,3 +213,78 @@ describe('SPEAKABLE_SELECTORS / buildSpeakable', () => {
     });
   });
 });
+
+describe('buildBlogPosting (refactored)', () => {
+  const base = {
+    url: 'https://kevinkiklee.io/posts/x',
+    title: 'Title',
+    description: 'Desc',
+    pubDate: new Date('2026-01-01'),
+    tags: ['perf', 'web'],
+    imageUrl: 'https://kevinkiklee.io/og/x.png',
+    authorUrl: 'https://kevinkiklee.io/about',
+  };
+
+  it('uses author + publisher refs by @id', () => {
+    const out = buildBlogPosting(base);
+    expect(out.author).toEqual({ '@id': ENTITY_IDS.person });
+    expect(out.publisher).toEqual({ '@id': ENTITY_IDS.person });
+  });
+
+  it('links isPartOf to Blog by @id', () => {
+    expect(buildBlogPosting(base).isPartOf).toEqual({ '@id': ENTITY_IDS.blog });
+  });
+
+  it('sets articleSection from first tag', () => {
+    expect(buildBlogPosting(base).articleSection).toBe('perf');
+  });
+
+  it('omits articleSection when no tags', () => {
+    const out = buildBlogPosting({ ...base, tags: [] });
+    expect(out.articleSection).toBeUndefined();
+  });
+
+  it('includes speakable + primaryImageOfPage', () => {
+    const out = buildBlogPosting(base);
+    expect(out.speakable).toEqual({
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['.lead', 'h1'],
+    });
+    expect(out.primaryImageOfPage).toEqual({ '@type': 'ImageObject', url: base.imageUrl });
+  });
+
+  it('throws on headline > 110 chars', () => {
+    expect(() => buildBlogPosting({ ...base, title: 'a'.repeat(111) })).toThrow(/headline/);
+  });
+
+  it('embeds FAQPage when faq is provided', () => {
+    const out = buildBlogPosting({
+      ...base,
+      faq: [{ q: 'Q1?', a: 'A1.' }],
+    });
+    expect(out.mainEntity).toEqual({
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Q1?',
+          acceptedAnswer: { '@type': 'Answer', text: 'A1.' },
+        },
+      ],
+    });
+  });
+
+  it('omits mainEntity when faq is empty/missing', () => {
+    expect(buildBlogPosting(base).mainEntity).toBeUndefined();
+    expect(buildBlogPosting({ ...base, faq: [] }).mainEntity).toBeUndefined();
+  });
+
+  it('emits license + copyrightYear when provided', () => {
+    const out = buildBlogPosting({
+      ...base,
+      license: 'https://creativecommons.org/licenses/by/4.0/',
+    });
+    expect(out.license).toBe('https://creativecommons.org/licenses/by/4.0/');
+    expect(out.copyrightYear).toBe(2026);
+  });
+});
