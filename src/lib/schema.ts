@@ -100,16 +100,42 @@ export function buildBlogPosting(args: BlogPostingArgs) {
   return out;
 }
 
-export function buildPerson(args: { mastodon: string; github: string; linkedin?: string }) {
-  return {
-    '@context': 'https://schema.org',
+const KNOWS_ABOUT = [
+  'Web platform',
+  'Chrome DevTools',
+  'Developer Relations',
+  'JavaScript',
+  'AI tooling',
+  'Web performance',
+  'Browser engines',
+] as const;
+
+export interface PersonArgs {
+  mastodon: string;
+  github: string;
+  bio: string;
+  linkedin?: string | undefined;
+  bluesky?: string | undefined;
+  portraitUrl?: string | undefined;
+}
+
+export function buildPerson(args: PersonArgs) {
+  const sameAs = [args.mastodon, args.github, args.linkedin, args.bluesky].filter(
+    (s): s is string => typeof s === 'string' && s.length > 0,
+  );
+  const out: Record<string, unknown> = {
     '@type': 'Person',
+    '@id': ENTITY_IDS.person,
     name: 'Kevin Lee',
-    url: `${SITE}/about`,
+    url: 'https://kevinkiklee.io/about',
     jobTitle: 'Developer Relations Engineer',
     worksFor: { '@type': 'Organization', name: 'Google Chrome' },
-    sameAs: [args.mastodon, args.github, args.linkedin].filter(Boolean),
-  } as const;
+    description: args.bio,
+    knowsAbout: [...KNOWS_ABOUT],
+    sameAs,
+  };
+  if (args.portraitUrl) out.image = args.portraitUrl;
+  return out;
 }
 
 export function buildWebSite() {

@@ -114,6 +114,7 @@ describe('buildPerson', () => {
     const ld = buildPerson({
       mastodon: 'https://mastodon.social/@kevinkiklee',
       github: 'https://github.com/kevinkiklee',
+      bio: 'A developer and writer.',
     });
     expect(ld['@type']).toBe('Person');
     expect(ld.name).toBe('Kevin Lee');
@@ -123,23 +124,24 @@ describe('buildPerson', () => {
     ]);
   });
 
-  it('includes linkedin when provided', () => {
+  it('includes linkedin and bluesky when provided', () => {
     const ld = buildPerson({
       mastodon: 'https://mastodon.social/@kevinkiklee',
       github: 'https://github.com/kevinkiklee',
       linkedin: 'https://www.linkedin.com/in/kevinkiklee/',
+      bluesky: 'https://bsky.app/profile/kevinkiklee.bsky.social',
+      bio: 'A developer and writer.',
     });
-    expect(ld.sameAs).toHaveLength(3);
+    expect(ld.sameAs).toHaveLength(4);
     expect(ld.sameAs[2]).toBe('https://www.linkedin.com/in/kevinkiklee/');
+    expect(ld.sameAs[3]).toBe('https://bsky.app/profile/kevinkiklee.bsky.social');
   });
 
-  it('drops empty-string sameAs entries (filter(Boolean))', () => {
-    // The helper uses `.filter(Boolean)` which filters undefined AND
-    // empty strings. This test pins that behaviour so a future refactor
-    // (e.g. switching to `.filter((x) => x !== undefined)`) will trip.
+  it('filters empty-string sameAs entries', () => {
     const ld = buildPerson({
       mastodon: 'https://mastodon.social/@kevinkiklee',
       github: '',
+      bio: 'A developer and writer.',
     });
     expect(ld.sameAs).toEqual(['https://mastodon.social/@kevinkiklee']);
   });
@@ -286,5 +288,47 @@ describe('buildBlogPosting (refactored)', () => {
     });
     expect(out.license).toBe('https://creativecommons.org/licenses/by/4.0/');
     expect(out.copyrightYear).toBe(2026);
+  });
+});
+
+describe('buildPerson (refactored)', () => {
+  const base = {
+    mastodon: 'https://m.example/@k',
+    github: 'https://github.com/k',
+    bio: 'Field-notes writer.',
+  };
+
+  it('uses the canonical @id', () => {
+    expect(buildPerson(base)['@id']).toBe(ENTITY_IDS.person);
+  });
+
+  it('exposes specific knowsAbout topics', () => {
+    expect(buildPerson(base).knowsAbout).toEqual([
+      'Web platform',
+      'Chrome DevTools',
+      'Developer Relations',
+      'JavaScript',
+      'AI tooling',
+      'Web performance',
+      'Browser engines',
+    ]);
+  });
+
+  it('omits image when portraitUrl unset', () => {
+    expect(buildPerson(base).image).toBeUndefined();
+  });
+
+  it('emits image when portraitUrl is set', () => {
+    const out = buildPerson({ ...base, portraitUrl: 'https://example.com/p.jpg' });
+    expect(out.image).toBe('https://example.com/p.jpg');
+  });
+
+  it('filters undefined sameAs entries', () => {
+    const out = buildPerson({ ...base, linkedin: undefined, bluesky: undefined });
+    expect(out.sameAs).toEqual([base.mastodon, base.github]);
+  });
+
+  it('includes description from bio', () => {
+    expect(buildPerson(base).description).toBe(base.bio);
   });
 });
