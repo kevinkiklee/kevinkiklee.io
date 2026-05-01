@@ -38,6 +38,8 @@ export const CSP = [
     'https://avatars.githubusercontent.com',
   ].join(' '),
   // No frame-src needed — we don't embed any third-party iframes.
+  // Web app manifest fetched on every page load by Chrome.
+  "manifest-src 'self'",
   [
     'connect-src',
     "'self'",

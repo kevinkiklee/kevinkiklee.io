@@ -28,7 +28,7 @@ interface Props {
 const { title, description = '', ...rest } = Astro.props;
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <BaseHead title={title} description={description} {...rest} />
     <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />

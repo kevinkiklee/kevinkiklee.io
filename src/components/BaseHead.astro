@@ -35,7 +35,7 @@ const isHome = Astro.url.pathname === '/';
 const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 ---
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>{finalTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
@@ -74,6 +74,8 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
 <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
 <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png" />
+<meta name="apple-mobile-web-app-title" content="kevinkiklee" />
+<link rel="manifest" href="/manifest.webmanifest" />
 
 {lcpImage?.avifSrcset && (
   <link
