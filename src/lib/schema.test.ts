@@ -6,9 +6,14 @@ import {
   buildBlog,
   buildBlogPosting,
   buildBreadcrumbs,
+  buildCollectionPage,
+  buildItemListOfBlogPostings,
+  buildItemListOfDefinedTerms,
+  buildItemListOfSoftwareSourceCode,
   buildPageGraph,
   buildPerson,
   buildSpeakable,
+  buildWebPage,
   buildWebSite,
 } from './schema';
 
@@ -330,5 +335,116 @@ describe('buildPerson (refactored)', () => {
 
   it('includes description from bio', () => {
     expect(buildPerson(base).description).toBe(base.bio);
+  });
+});
+
+describe('buildCollectionPage', () => {
+  it('points mainEntity at the ItemList @id', () => {
+    const out = buildCollectionPage({
+      url: 'https://kevinkiklee.io/posts',
+      name: 'Posts',
+      description: 'All posts',
+      itemListId: 'https://kevinkiklee.io/posts#list',
+    });
+    expect(out['@type']).toBe('CollectionPage');
+    expect(out['@id']).toBe('https://kevinkiklee.io/posts');
+    expect(out.mainEntity).toEqual({ '@id': 'https://kevinkiklee.io/posts#list' });
+    expect(out.inLanguage).toBe('en-US');
+  });
+});
+
+describe('buildItemListOfBlogPostings', () => {
+  it('emits ListItem with @id refs to each post', () => {
+    const out = buildItemListOfBlogPostings({
+      id: 'https://kevinkiklee.io/posts#list',
+      posts: [
+        { url: 'https://kevinkiklee.io/posts/a', title: 'A' },
+        { url: 'https://kevinkiklee.io/posts/b', title: 'B' },
+      ],
+    });
+    expect(out['@type']).toBe('ItemList');
+    expect(out['@id']).toBe('https://kevinkiklee.io/posts#list');
+    expect(out.itemListElement).toEqual([
+      {
+        '@type': 'ListItem',
+        position: 1,
+        url: 'https://kevinkiklee.io/posts/a',
+        name: 'A',
+        item: { '@id': 'https://kevinkiklee.io/posts/a' },
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        url: 'https://kevinkiklee.io/posts/b',
+        name: 'B',
+        item: { '@id': 'https://kevinkiklee.io/posts/b' },
+      },
+    ]);
+  });
+});
+
+describe('buildItemListOfSoftwareSourceCode', () => {
+  it('maps repoUrl → codeRepository, tech → programmingLanguage', () => {
+    const out = buildItemListOfSoftwareSourceCode({
+      id: 'https://kevinkiklee.io/projects#list',
+      projects: [
+        {
+          name: 'photo-tools',
+          url: 'https://github.com/k/photo-tools',
+          repoUrl: 'https://github.com/k/photo-tools',
+          blurb: 'A toolkit.',
+          tech: ['nextjs', 'typescript'],
+        },
+      ],
+    });
+    expect(out.itemListElement).toHaveLength(1);
+    const first = (out.itemListElement as Record<string, unknown>[])[0];
+    expect(first).toBeDefined();
+    if (first) {
+      expect(first.position).toBe(1);
+      expect(first.item).toMatchObject({
+        '@type': 'SoftwareSourceCode',
+        name: 'photo-tools',
+        url: 'https://github.com/k/photo-tools',
+        codeRepository: 'https://github.com/k/photo-tools',
+        description: 'A toolkit.',
+        programmingLanguage: ['nextjs', 'typescript'],
+      });
+    }
+  });
+});
+
+describe('buildItemListOfDefinedTerms', () => {
+  it('emits DefinedTerm items with name + url', () => {
+    const out = buildItemListOfDefinedTerms({
+      id: 'https://kevinkiklee.io/tags#list',
+      tags: [{ name: 'perf', url: 'https://kevinkiklee.io/tags/perf' }],
+    });
+    const first = (out.itemListElement as Record<string, unknown>[])[0];
+    expect(first).toBeDefined();
+    if (first) {
+      expect(first.item).toMatchObject({
+        '@type': 'DefinedTerm',
+        name: 'perf',
+        url: 'https://kevinkiklee.io/tags/perf',
+      });
+    }
+  });
+});
+
+describe('buildWebPage', () => {
+  it('returns a WebPage with stable @id', () => {
+    const out = buildWebPage({
+      url: 'https://kevinkiklee.io/privacy',
+      name: 'Privacy',
+      description: 'Privacy policy',
+    });
+    expect(out).toMatchObject({
+      '@type': 'WebPage',
+      '@id': 'https://kevinkiklee.io/privacy',
+      name: 'Privacy',
+      description: 'Privacy policy',
+      inLanguage: 'en-US',
+    });
   });
 });

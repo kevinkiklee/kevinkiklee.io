@@ -188,3 +188,100 @@ export function buildBlog() {
     publisher: { '@id': ENTITY_IDS.person },
   } as const;
 }
+
+export function buildWebPage(args: { url: string; name: string; description: string }) {
+  return {
+    '@type': 'WebPage',
+    '@id': args.url,
+    name: args.name,
+    description: args.description,
+    inLanguage: 'en-US',
+  } as const;
+}
+
+export function buildCollectionPage(args: {
+  url: string;
+  name: string;
+  description: string;
+  itemListId: string;
+}) {
+  return {
+    '@type': 'CollectionPage',
+    '@id': args.url,
+    name: args.name,
+    description: args.description,
+    inLanguage: 'en-US',
+    mainEntity: { '@id': args.itemListId },
+  } as const;
+}
+
+export function buildItemListOfBlogPostings(args: {
+  id: string;
+  posts: { url: string; title: string }[];
+}) {
+  return {
+    '@type': 'ItemList',
+    '@id': args.id,
+    itemListElement: args.posts.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: p.url,
+      name: p.title,
+      item: { '@id': p.url },
+    })),
+  } as const;
+}
+
+export function buildItemListOfSoftwareSourceCode(args: {
+  id: string;
+  projects: {
+    name: string;
+    url: string;
+    repoUrl?: string | undefined;
+    blurb: string;
+    tech: string[];
+  }[];
+}) {
+  return {
+    '@type': 'ItemList',
+    '@id': args.id,
+    itemListElement: args.projects.map((p, i) => {
+      const item: Record<string, unknown> = {
+        '@type': 'SoftwareSourceCode',
+        name: p.name,
+        url: p.url,
+        description: p.blurb,
+      };
+      if (p.repoUrl) item.codeRepository = p.repoUrl;
+      if (p.tech.length > 0) item.programmingLanguage = p.tech;
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        url: p.url,
+        name: p.name,
+        item,
+      };
+    }),
+  } as const;
+}
+
+export function buildItemListOfDefinedTerms(args: {
+  id: string;
+  tags: { name: string; url: string }[];
+}) {
+  return {
+    '@type': 'ItemList',
+    '@id': args.id,
+    itemListElement: args.tags.map((t, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: t.url,
+      name: t.name,
+      item: {
+        '@type': 'DefinedTerm',
+        name: t.name,
+        url: t.url,
+      },
+    })),
+  } as const;
+}
