@@ -1,6 +1,7 @@
 import type { Heading, Paragraph, Root } from 'mdast';
 import type { VFile } from 'vfile';
 import { visit } from 'unist-util-visit';
+import { DESCRIPTION_MAX, TITLE_MAX, validateDescriptionLength, validateTitleLength } from './meta';
 
 interface RemarkPluginFile extends VFile {
   data: {
@@ -21,6 +22,20 @@ interface RemarkPluginFile extends VFile {
 export function remarkAeo() {
   return function transform(tree: Root, file: RemarkPluginFile) {
     const filePath = file.path ?? '<unknown>';
+
+    const fm = file.data.astro?.frontmatter;
+    if (fm) {
+      if (typeof fm.title === 'string' && !validateTitleLength(fm.title)) {
+        throw new Error(
+          `[remark-aeo] frontmatter title exceeds ${TITLE_MAX} chars in ${filePath} (got ${fm.title.length})`,
+        );
+      }
+      if (typeof fm.description === 'string' && !validateDescriptionLength(fm.description)) {
+        throw new Error(
+          `[remark-aeo] frontmatter description exceeds ${DESCRIPTION_MAX} chars in ${filePath} (got ${fm.description.length})`,
+        );
+      }
+    }
 
     const h1Index = tree.children.findIndex(
       (n) => n.type === 'heading' && (n as Heading).depth === 1,

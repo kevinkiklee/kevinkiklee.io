@@ -81,3 +81,21 @@ describe('remark-aeo: image attributes', () => {
     expect(() => runPlugin(ok)).not.toThrow();
   });
 });
+
+describe('remark-aeo: frontmatter limits', () => {
+  it('throws on title > 60', () => {
+    const file = {
+      path: '/x.mdx',
+      data: { astro: { frontmatter: { title: 'a'.repeat(61), description: 'OK' } } },
+    };
+    expect(() => runPlugin('# Title\n\nLead.\n\n## H2\n\nBody.', file)).toThrow(/title/i);
+  });
+
+  it('throws on description > 160', () => {
+    const file = {
+      path: '/x.mdx',
+      data: { astro: { frontmatter: { title: 'OK', description: 'a'.repeat(161) } } },
+    };
+    expect(() => runPlugin('# Title\n\nLead.\n\n## H2\n\nBody.', file)).toThrow(/description/i);
+  });
+});
