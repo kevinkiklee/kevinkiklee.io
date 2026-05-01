@@ -1,6 +1,47 @@
 const SITE = 'https://kevinkiklee.io';
 const PERSON_REF = { '@type': 'Person', name: 'Kevin Lee', url: `${SITE}/about` } as const;
 
+export const ENTITY_IDS = {
+  website: 'https://kevinkiklee.io#website',
+  person: 'https://kevinkiklee.io/about#person',
+  blog: 'https://kevinkiklee.io/posts#blog',
+} as const;
+
+type GraphPart = Record<string, unknown>;
+
+/**
+ * Compose multiple JSON-LD entities into a single @graph wrapper.
+ * Deduplicates by @id: a "full" entity (more keys) replaces a bare ref.
+ */
+export function buildPageGraph(parts: GraphPart[]): {
+  '@context': 'https://schema.org';
+  '@graph': GraphPart[];
+} {
+  const byId = new Map<string, GraphPart>();
+  const noId: GraphPart[] = [];
+
+  for (const part of parts) {
+    const id = part['@id'];
+    if (typeof id !== 'string') {
+      noId.push(part);
+      continue;
+    }
+    const existing = byId.get(id);
+    if (!existing) {
+      byId.set(id, part);
+      continue;
+    }
+    if (Object.keys(part).length > Object.keys(existing).length) {
+      byId.set(id, part);
+    }
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [...byId.values(), ...noId],
+  };
+}
+
 export function buildBlogPosting(args: {
   url: string;
   title: string;

@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { buildBlogPosting, buildBreadcrumbs, buildPerson, buildWebSite } from './schema';
+import {
+  ENTITY_IDS,
+  buildBlogPosting,
+  buildBreadcrumbs,
+  buildPageGraph,
+  buildPerson,
+  buildWebSite,
+} from './schema';
 
 describe('buildBlogPosting', () => {
   it('produces a valid BlogPosting', () => {
@@ -141,5 +148,35 @@ describe('buildWebSite', () => {
     expect(ld.url).toBe('https://kevinkiklee.io');
     expect(ld.potentialAction['@type']).toBe('SearchAction');
     expect(ld.potentialAction.target.urlTemplate).toContain('/search?q={query}');
+  });
+});
+
+describe('buildPageGraph', () => {
+  it('exposes stable @ids', () => {
+    expect(ENTITY_IDS.website).toBe('https://kevinkiklee.io#website');
+    expect(ENTITY_IDS.person).toBe('https://kevinkiklee.io/about#person');
+    expect(ENTITY_IDS.blog).toBe('https://kevinkiklee.io/posts#blog');
+  });
+
+  it('wraps parts in @context + @graph', () => {
+    const out = buildPageGraph([{ '@type': 'WebPage', '@id': 'x' }]);
+    expect(out['@context']).toBe('https://schema.org');
+    expect(Array.isArray(out['@graph'])).toBe(true);
+    expect(out['@graph']).toHaveLength(1);
+  });
+
+  it('deduplicates by @id, prefers full object over ref', () => {
+    const ref = { '@id': 'https://example.com#x' };
+    const full = { '@type': 'Person', '@id': 'https://example.com#x', name: 'A' };
+    const out = buildPageGraph([ref, full, ref]);
+    expect(out['@graph']).toHaveLength(1);
+    expect(out['@graph'][0]).toEqual(full);
+  });
+
+  it('keeps entities without @id as-is (no dedup applies)', () => {
+    const a = { '@type': 'Thing', name: 'A' };
+    const b = { '@type': 'Thing', name: 'B' };
+    const out = buildPageGraph([a, b]);
+    expect(out['@graph']).toHaveLength(2);
   });
 });
