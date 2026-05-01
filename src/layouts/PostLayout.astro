@@ -187,3 +187,22 @@ const jsonLd = [
     .toc-aside { display: block; }
   }
 </style>
+
+<script>
+  // Set / clear data-progress on body around post navigations.
+  function setProgress() { document.body.setAttribute('data-progress', ''); }
+  function clearProgress() { document.body.removeAttribute('data-progress'); }
+
+  // Fired on initial load and after each ClientRouter navigation.
+  document.addEventListener('astro:page-load', () => {
+    if (document.querySelector('.post')) setProgress();
+    else clearProgress();
+  });
+  // Cleared before navigating away.
+  document.addEventListener('astro:before-swap', clearProgress);
+
+  // Fallback for browsers without CSS scroll-driven animations.
+  if (!CSS.supports('animation-timeline', '--x')) {
+    import('~/lib/reading-progress-fallback').then(({ attach }) => attach());
+  }
+</script>

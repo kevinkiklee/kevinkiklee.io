@@ -1,0 +1,51 @@
+@layer components {
+  /*
+   * Reading progress indicator: replaces the static header underline on
+   * post pages. Animates 0% → 100% as the reader progresses through
+   * the article. On non-post pages, the underline stays static at 100%.
+   *
+   * Implementation:
+   *   - Chrome 115+ / Safari 26+: scroll-driven CSS animation (zero JS).
+   *   - Older Safari/Firefox: tiny JS fallback (~150 b) updates the
+   *     `--rp` custom property; the rule below picks it up.
+   */
+  body[data-progress] .site-header {
+    border-bottom-color: transparent;
+  }
+  body[data-progress] .site-header::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -2px;
+    height: 2px;
+    background: var(--fg);
+    transform: scaleX(var(--rp, 0));
+    transform-origin: left;
+    /* Don't morph during view transitions — bar is page-state, not content. */
+    view-transition-name: none;
+  }
+
+  @supports (animation-timeline: --x) {
+    .post {
+      view-timeline-name: --post;
+    }
+    body[data-progress] .site-header::after {
+      animation: rp linear both;
+      animation-timeline: --post;
+      animation-range: cover 0% cover 100%;
+    }
+    @keyframes rp {
+      to {
+        transform: scaleX(1);
+      }
+    }
+  }
+
+  @media print, (forced-colors: active) {
+    body[data-progress] .site-header::after {
+      animation: none;
+      transform: scaleX(1);
+      background: CanvasText;
+    }
+  }
+}
