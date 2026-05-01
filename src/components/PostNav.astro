@@ -1,0 +1,61 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+type Post = CollectionEntry<'posts'>;
+
+interface Props {
+  prev?: Post | undefined;
+  next?: Post | undefined;
+}
+const { prev, next } = Astro.props;
+---
+{(prev || next) && (
+  <nav aria-label="Post navigation" class="post-nav">
+    {prev && (
+      <a class="prev" href={`/posts/${prev.id}`} rel="prev">
+        <span class="label">← previous</span>
+        <span class="title">{prev.data.title}</span>
+      </a>
+    )}
+    {next && (
+      <a class="next" href={`/posts/${next.id}`} rel="next">
+        <span class="label">next →</span>
+        <span class="title">{next.data.title}</span>
+      </a>
+    )}
+  </nav>
+)}
+
+<style>
+  .post-nav {
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+  @media (max-width: 480px) {
+    .post-nav { grid-template-columns: 1fr; }
+  }
+  .post-nav a {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    text-decoration: none;
+    color: var(--fg);
+    min-height: 44px;
+  }
+  .post-nav a:hover { background: var(--code-bg); }
+  .post-nav .next { text-align: right; }
+  .post-nav .label { color: var(--fg-subtle); font-size: var(--text-xs); }
+  .post-nav .title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
