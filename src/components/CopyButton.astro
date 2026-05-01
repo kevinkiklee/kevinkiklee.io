@@ -20,6 +20,7 @@
       btn.className = 'copy-btn';
       btn.textContent = 'copy';
       btn.setAttribute('aria-label', 'Copy code');
+      btn.setAttribute('aria-live', 'polite');
       // Track the in-flight reset timer so spam-clicks don't pile up
       // multiple `setTimeout`s and produce flickering label changes.
       let resetTimer: number | undefined;

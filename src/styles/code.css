@@ -19,11 +19,40 @@
     padding: var(--space-4);
     overflow-x: auto;
     border: 1px solid var(--rule-soft);
+    line-height: 1.55;
+    /* Inset shadow on right edge fades scroll boundary without clipping
+       absolutely-positioned children (copy button stays opaque). */
+    box-shadow: inset -8px 0 8px -8px var(--rule);
   }
   .prose pre code {
     background: transparent;
     padding: 0;
   }
+
+  /* Language label — Shiki emits `data-language` on <pre> via Astro's
+     built-in markdown integration. */
+  .prose pre[data-language] {
+    padding-top: var(--space-5);
+  }
+  .prose pre[data-language]::before {
+    content: attr(data-language);
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-3);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    color: var(--fg-subtle);
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  /* Inline-code wrap protection: long identifiers / URLs in <p>/<li>
+     should never cause horizontal page scroll on phones. */
+  .prose :not(pre) > code {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
   .copy-btn {
     position: absolute;
     top: var(--space-2);
@@ -46,6 +75,31 @@
   @media (hover: none) {
     .copy-btn {
       opacity: 1;
+    }
+  }
+
+  /* Mobile: shrink code to keep ~50ch per line under the bumped body type;
+     preserve tap target via invisible ::before expander to 44×44. */
+  @media (max-width: 640px) {
+    .prose pre,
+    .prose pre code {
+      font-size: 0.875em;
+    }
+    .copy-btn {
+      min-height: 36px;
+      padding: var(--space-2) var(--space-3);
+    }
+    .copy-btn::before {
+      content: "";
+      position: absolute;
+      inset: -4px;
+    }
+  }
+
+  /* Forced-colors mode — drop the inset shadow so the system contrast wins. */
+  @media (forced-colors: active) {
+    .prose pre {
+      box-shadow: none;
     }
   }
 
