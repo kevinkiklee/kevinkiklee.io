@@ -22,6 +22,9 @@ function compute(): number {
 
 function tick(): void {
   raf = 0;
+  // Short-circuit on non-post pages: listeners stay attached but do no
+  // work. Cheaper than detach/reattach on every route change.
+  if (!document.body.hasAttribute('data-progress')) return;
   document.body.style.setProperty('--rp', String(compute()));
 }
 
