@@ -81,10 +81,6 @@ describe('buildLlmsFull', () => {
 
   it('caps at 50 most-recent published posts', () => {
     const out = buildLlmsFull(many as never, 50);
-    const sepCount = (out.match(/\n---\n/g) ?? []).length;
-    // 50 posts → 49 separators in the body section.
-    // Plus there's a separator in the header. So total expected: 50.
-    // We only assert that it caps at 50 by checking the count of post entries.
     const postEntries = (out.match(/^# Post /gm) ?? []).length;
     expect(postEntries).toBeLessThanOrEqual(50);
     expect(postEntries).toBe(50);
