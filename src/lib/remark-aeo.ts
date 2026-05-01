@@ -57,6 +57,11 @@ export function remarkAeo() {
     const cls = lead.data.hProperties.className ?? [];
     if (!cls.includes('lead')) cls.push('lead');
     lead.data.hProperties.className = cls;
+
+    const hasH2 = tree.children.some((n) => n.type === 'heading' && (n as Heading).depth === 2);
+    if (!hasH2) {
+      throw new Error(`[remark-aeo] no <h2> in ${filePath} — outline required for AEO`);
+    }
   };
 }
 

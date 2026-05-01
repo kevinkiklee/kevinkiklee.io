@@ -20,7 +20,7 @@ function runPlugin(
 
 describe('remark-aeo: lead detection', () => {
   it('attaches className="lead" to the first paragraph after h1', () => {
-    const tree = runPlugin('# Title\n\nFirst para.\n\nSecond.');
+    const tree = runPlugin('# Title\n\nFirst para.\n\nSecond.\n\n## H2\n\nBody.');
     const para = tree.children.find((n) => n.type === 'paragraph') as Record<string, unknown>;
     expect(para).toBeDefined();
     const data = para.data as { hProperties?: { className?: string[] } } | undefined;
@@ -43,5 +43,17 @@ describe('remark-aeo: lead detection', () => {
 
   it('throws when no paragraph follows h1', () => {
     expect(() => runPlugin('# Title\n\n## H2 only')).toThrow(/TL;DR|paragraph/i);
+  });
+});
+
+describe('remark-aeo: h2 outline', () => {
+  it('throws when no h2 follows the lead', () => {
+    expect(() => runPlugin('# Title\n\nLead paragraph.\n\nMore prose, no headings.')).toThrow(
+      /h2/i,
+    );
+  });
+
+  it('passes when at least one h2 exists', () => {
+    expect(() => runPlugin('# Title\n\nLead.\n\n## Section\n\nBody.')).not.toThrow();
   });
 });
