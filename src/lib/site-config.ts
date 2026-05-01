@@ -10,9 +10,14 @@ export const SITE = {
   url: 'https://kevinkiklee.io',
   tagline: 'Field notes from a Chrome DevRel',
   description: 'Field notes from a Chrome DevRel — AI, web platform, and tangents.',
+  bio: 'Developer Relations Engineer at Google Chrome. Writes about the web platform, AI tooling, and browser internals.',
   defaultMastodon: 'https://mastodon.social/@kevinkiklee',
   bsky: 'https://bsky.app/profile/kevinkiklee.bsky.social',
   github: 'https://github.com/kevinkiklee',
   linkedin: 'https://www.linkedin.com/in/kevinkiklee/',
   locale: 'en_US',
+  /** Set to a portrait URL to enable Person.image in JSON-LD. */
+  portraitUrl: undefined as string | undefined,
+  /** Set to a license URL (e.g. CC-BY) to emit license/copyrightYear on posts. */
+  license: undefined as string | undefined,
 } as const;
