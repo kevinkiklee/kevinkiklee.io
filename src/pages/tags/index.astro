@@ -1,11 +1,42 @@
 ---
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import JsonLd from '~/components/JsonLd.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import { crumbsFor } from '~/lib/crumbs';
 import { getPublishedPosts, tagCounts } from '~/lib/posts';
+import {
+  buildBreadcrumbs,
+  buildCollectionPage,
+  buildItemListOfDefinedTerms,
+  buildPageGraph,
+  buildWebSite,
+} from '~/lib/schema';
+import { SITE } from '~/lib/site-config';
 
 const counts = tagCounts(await getPublishedPosts());
 const tags = Object.entries(counts).sort(([, a], [, b]) => b - a);
+
+const tagsForList = Object.keys(counts).map((tag) => ({
+  name: tag,
+  url: `${SITE.url}/tags/${tag}`,
+}));
+const itemListId = `${SITE.url}/tags#list`;
+const crumbs = crumbsFor('/tags');
+const graph = buildPageGraph([
+  buildCollectionPage({
+    url: `${SITE.url}/tags`,
+    name: 'Tags',
+    description: 'All tags.',
+    itemListId,
+  }),
+  buildItemListOfDefinedTerms({ id: itemListId, tags: tagsForList }),
+  buildBreadcrumbs(crumbs, SITE.url),
+  buildWebSite(),
+]);
 ---
 <BaseLayout title="Tags · kevinkiklee.io" description="Browse posts by tag.">
+  <JsonLd slot="head" data={graph} />
+  <Breadcrumbs items={crumbs} />
   <h1 class="page-title">Tags</h1>
   {tags.length === 0 ? (
     <p class="empty">No tags yet — tags appear once posts are published.</p>

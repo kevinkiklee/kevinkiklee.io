@@ -10,6 +10,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import { parse as parseYaml } from 'yaml';
 import imageSitemap from './src/integrations/image-sitemap';
 import { remarkReadingTime } from './src/lib/reading-time';
+import { remarkAeo } from './src/lib/remark-aeo';
 
 // Read post frontmatter at config-evaluation time so the sitemap can:
 //  - exclude drafts in production builds
@@ -87,7 +88,7 @@ export default defineConfig({
     assets: '_astro',
   },
   markdown: {
-    remarkPlugins: [remarkReadingTime],
+    remarkPlugins: [remarkReadingTime, remarkAeo],
     shikiConfig: {
       themes: { light: 'min-light', dark: 'min-dark' },
       wrap: true,

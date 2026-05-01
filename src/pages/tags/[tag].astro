@@ -1,8 +1,19 @@
 ---
 import type { GetStaticPaths } from 'astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import JsonLd from '~/components/JsonLd.astro';
 import PostCard from '~/components/PostCard.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import { crumbsFor } from '~/lib/crumbs';
 import { getPublishedPosts, sortByDateDesc, tagCounts } from '~/lib/posts';
+import {
+  buildBreadcrumbs,
+  buildCollectionPage,
+  buildItemListOfBlogPostings,
+  buildPageGraph,
+  buildWebSite,
+} from '~/lib/schema';
+import { SITE } from '~/lib/site-config';
 
 export const getStaticPaths = (async () => {
   const posts = await getPublishedPosts();
@@ -15,9 +26,31 @@ export const getStaticPaths = (async () => {
 
 const { tag, posts, count } = Astro.props;
 const noindex = count < 3;
+
+const itemListId = `${SITE.url}${Astro.url.pathname}#list`;
+const crumbs = crumbsFor(Astro.url.pathname);
+const graph = buildPageGraph([
+  buildCollectionPage({
+    url: `${SITE.url}${Astro.url.pathname}`,
+    name: `Tagged: ${tag}`,
+    description: `Posts tagged ${tag}.`,
+    itemListId,
+  }),
+  buildItemListOfBlogPostings({
+    id: itemListId,
+    posts: posts.map((p) => ({
+      url: `${SITE.url}/posts/${p.id}`,
+      title: p.data.title,
+    })),
+  }),
+  buildBreadcrumbs(crumbs, SITE.url),
+  buildWebSite(),
+]);
 ---
 <BaseLayout title={`#${tag} · kevinkiklee.io`} description={`Posts tagged ${tag}.`}>
+  <JsonLd slot="head" data={graph} />
   {noindex && <meta name="robots" content="noindex" slot="head" />}
+  <Breadcrumbs items={crumbs} />
   <h1 class="page-title">Tag <span class="sep" aria-hidden="true">·</span> {tag} <span class="count">{count}</span></h1>
   {posts.length === 0 ? (
     <p class="empty">No posts under this tag yet.</p>

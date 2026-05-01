@@ -2,12 +2,24 @@
 import { Picture, getImage } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import type { MarkdownHeading } from 'astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import DiscussFooter from '~/components/DiscussFooter.astro';
 import JsonLd from '~/components/JsonLd.astro';
 import PostMeta from '~/components/PostMeta.astro';
+import PostNav from '~/components/PostNav.astro';
 import RelatedPosts from '~/components/RelatedPosts.astro';
 import TableOfContents from '~/components/TableOfContents.astro';
-import { buildBlogPosting, buildBreadcrumbs } from '~/lib/schema';
+import { crumbsFor } from '~/lib/crumbs';
+import { getPublishedPosts, prevNextFor, sortByDateDesc } from '~/lib/posts';
+import {
+  ENTITY_IDS,
+  buildBlog,
+  buildBlogPosting,
+  buildBreadcrumbs,
+  buildPageGraph,
+  buildWebSite,
+} from '~/lib/schema';
+import { SITE } from '~/lib/site-config';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
@@ -19,11 +31,14 @@ interface Props {
 const { post, minutesRead, wordCount, headings = [] } = Astro.props;
 const { title, description, pubDate, updatedDate, tags, cover, series } = post.data;
 
+const allPosts = sortByDateDesc(await getPublishedPosts());
+const { prev, next } = prevNextFor(post, allPosts);
+const crumbs = crumbsFor(Astro.url.pathname, { title: post.data.title });
+const faq = post.data.faq ?? [];
+
 const postUrl = new URL(`/posts/${post.id}`, Astro.site).toString();
 const ogImageUrl = new URL(`/api/og?slug=${post.id}`, Astro.site).toString();
 const authorUrl = new URL('/about', Astro.site).toString();
-const homeUrl = new URL('/', Astro.site).toString();
-const postsUrl = new URL('/posts', Astro.site).toString();
 
 // If the post has a cover image, preload the responsive srcset so the LCP
 // element loads in parallel with the HTML parse. We emit BOTH an AVIF and a
@@ -45,25 +60,37 @@ if (cover) {
   };
 }
 
-const jsonLd = [
-  buildBlogPosting({
-    url: postUrl,
-    title,
-    description,
-    pubDate,
-    updatedDate,
-    tags,
-    imageUrl: ogImageUrl,
-    wordCount,
-    minutesRead,
-    authorUrl,
-  }),
-  buildBreadcrumbs([
-    { name: 'Home', url: homeUrl },
-    { name: 'Posts', url: postsUrl },
-    { name: title, url: postUrl },
-  ]),
-];
+const origin = new URL('/', Astro.site).toString().slice(0, -1);
+
+const blogPostingArgs: Parameters<typeof buildBlogPosting>[0] = {
+  url: postUrl,
+  title,
+  description,
+  pubDate,
+  tags,
+  imageUrl: ogImageUrl,
+  authorUrl,
+};
+if (updatedDate) blogPostingArgs.updatedDate = updatedDate;
+if (typeof wordCount === 'number') blogPostingArgs.wordCount = wordCount;
+if (typeof minutesRead === 'number') blogPostingArgs.minutesRead = minutesRead;
+if (post.data.faq) blogPostingArgs.faq = post.data.faq;
+if (SITE.license) blogPostingArgs.license = SITE.license;
+
+const graph = buildPageGraph([
+  buildBlogPosting(blogPostingArgs),
+  buildBlog(),
+  buildBreadcrumbs(
+    [
+      { name: '~', url: '/' },
+      { name: 'posts', url: '/posts' },
+      { name: title, url: `/posts/${post.id}` },
+    ],
+    origin,
+  ),
+  buildWebSite(),
+  { '@id': ENTITY_IDS.person },
+]);
 ---
 <BaseLayout
   title={`${title} · kevinkiklee.io`}
@@ -74,8 +101,13 @@ const jsonLd = [
   modifiedTime={updatedDate}
   {tags}
   {lcpImage}
+  canonical={postUrl}
+  markdownAlternateUrl={`${SITE.url}/posts/${post.id}.md`}
+  prevUrl={prev ? `${SITE.url}/posts/${prev.id}` : undefined}
+  nextUrl={next ? `${SITE.url}/posts/${next.id}` : undefined}
 >
-  <JsonLd slot="head" data={jsonLd} />
+  <JsonLd slot="head" data={graph} />
+  <Breadcrumbs items={crumbs} />
   <article class="post">
     <p class="url-prompt"><span aria-hidden="true">$</span> posts/{post.id}</p>
     <header>
@@ -116,6 +148,20 @@ const jsonLd = [
       )}
     </div>
     <RelatedPosts post={post} />
+    {faq.length > 0 && (
+      <section class="faq" aria-labelledby="faq-heading">
+        <h2 id="faq-heading">FAQ</h2>
+        <dl>
+          {faq.map((qa) => (
+            <>
+              <dt>{qa.q}</dt>
+              <dd>{qa.a}</dd>
+            </>
+          ))}
+        </dl>
+      </section>
+    )}
+    <PostNav prev={prev} next={next} />
     <DiscussFooter
       postUrl={postUrl}
       postTitle={title}
@@ -169,6 +215,10 @@ const jsonLd = [
     margin-bottom: var(--space-6);
   }
   .prose { max-width: var(--measure); }
+  .faq { margin-top: var(--space-6); }
+  .faq h2 { font-size: var(--text-lg); margin-bottom: var(--space-3); }
+  .faq dt { font-weight: 600; margin-top: var(--space-3); }
+  .faq dd { margin: 0 0 var(--space-2) 0; }
   /* Default: stack the inline TOC at the top, hide the sticky aside. */
   .toc-inline { margin-bottom: var(--space-6); }
   .toc-aside { display: none; }

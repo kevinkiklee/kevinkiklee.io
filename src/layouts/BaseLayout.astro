@@ -16,11 +16,17 @@ interface Props {
   title: string;
   description?: string | undefined;
   canonical?: string | undefined;
-  ogType?: 'website' | 'article' | undefined;
+  ogType?: 'website' | 'article' | 'profile' | undefined;
   ogImageUrl?: string | undefined;
   publishedTime?: Date | undefined;
   modifiedTime?: Date | undefined;
   tags?: string[] | undefined;
+  noindex?: boolean | undefined;
+  prevUrl?: string | undefined;
+  nextUrl?: string | undefined;
+  markdownAlternateUrl?: string | undefined;
+  profileFirstName?: string | undefined;
+  profileLastName?: string | undefined;
   lcpImage?:
     | { sizes: string; avifSrcset?: string | undefined; webpSrcset?: string | undefined }
     | undefined;

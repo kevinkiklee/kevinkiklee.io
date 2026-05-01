@@ -16,8 +16,8 @@ const posts = defineCollection({
   }),
   schema: ({ image }) =>
     z.object({
-      title: z.string().max(80),
-      description: z.string().max(160),
+      title: z.string().min(1).max(60),
+      description: z.string().min(1).max(160),
       pubDate: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
       tags: z
@@ -30,6 +30,7 @@ const posts = defineCollection({
       cover: z.object({ src: image(), alt: z.string().min(1) }).optional(),
       mastodonUrl: z.string().url().optional(),
       series: z.object({ name: z.string(), order: z.number().int().positive() }).optional(),
+      faq: z.array(z.object({ q: z.string(), a: z.string() })).optional(),
     }),
 });
 

@@ -1,29 +1,38 @@
 ---
 import { MASTODON_INSTANCE_URL } from 'astro:env/client';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import JsonLd from '~/components/JsonLd.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import { buildPerson } from '~/lib/schema';
+import { crumbsFor } from '~/lib/crumbs';
+import { buildBreadcrumbs, buildPageGraph, buildPerson, buildWebSite } from '~/lib/schema';
 import { SITE } from '~/lib/site-config';
 
 const mastodon = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
+const person = buildPerson({
+  mastodon,
+  github: SITE.github,
+  linkedin: SITE.linkedin,
+  bluesky: SITE.bsky,
+  bio: SITE.bio,
+  portraitUrl: SITE.portraitUrl,
+});
+const crumbs = crumbsFor('/about');
+const graph = buildPageGraph([person, buildBreadcrumbs(crumbs, SITE.url), buildWebSite()]);
 ---
-<BaseLayout title="About · kevinkiklee.io" description="Who I am, what I work on, how to reach me.">
-  <JsonLd
-    slot="head"
-    data={buildPerson({
-      mastodon,
-      github: SITE.github,
-      linkedin: SITE.linkedin,
-    })}
-  />
+<BaseLayout title="About · kevinkiklee.io" description="Who I am, what I work on, how to reach me." ogType="profile" profileFirstName="Kevin" profileLastName="Lee">
+  <JsonLd slot="head" data={graph} />
+  <Breadcrumbs items={crumbs} />
   <article class="h-card">
     <h1 class="page-title">About</h1>
     <p class="lead">
-      Hi, I'm <a class="p-name u-url" rel="me" href="https://kevinkiklee.io">Kevin Lee</a>.
+      Hi, I'm <a class="p-name u-url" rel="me author" href="https://kevinkiklee.io">Kevin Lee</a>.
       I work as a <span class="p-job-title">Developer Relations Engineer</span>
       at <span class="p-org">Google Chrome</span>.
     </p>
     <p>This site is a place for field notes — heavy on AI and the web platform, lighter on everything else. Most posts are short. Some are long. RSS welcome.</p>
+    <p class="credentials">
+      Previously: Software Engineer. Speaks/writes about: web platform, AI tooling, browser internals.
+    </p>
     <h2>Find me</h2>
     <ul class="links" role="list">
       <li><a class="u-url" rel="me" href={mastodon}><span class="ar" aria-hidden="true">↗</span> Mastodon — primary social</a></li>
@@ -42,6 +51,7 @@ const mastodon = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
     margin-bottom: var(--space-6);
   }
   .lead { font-size: var(--text-lg); max-width: var(--measure); }
+  .credentials { color: var(--fg-muted); margin-top: var(--space-3); }
   h2 {
     font-size: var(--text-base);
     font-weight: 600;

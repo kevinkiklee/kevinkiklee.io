@@ -103,3 +103,38 @@ pnpm check        # typecheck + biome + cspell + markdownlint
 pnpm build        # surface schema errors (e.g. unknown tag)
 pnpm preview      # serve dist/ with Pagefind index + OG endpoint live
 ```
+
+## Writing for AI answer engines
+
+Posts must follow three rules. The build (`pnpm build`, `pnpm check`) fails
+loudly otherwise — the remark-aeo plugin enforces them.
+
+1. **Open with a TL;DR paragraph.** The first paragraph in the body is treated
+   as the lead. It receives `class="lead"` automatically and is what AI
+   answer engines (and Google's Speakable spec) quote first. Keep it tight —
+   one or two sentences.
+2. **Use `##` headings to chunk content.** At least one is required. AI
+   engines use the outline to pick which section to cite.
+3. **All images must declare `alt`, `width`, `height`, `loading`, and
+   `decoding`.** Both raw `<img>` and Astro's `<Image />` are checked.
+
+### Frontmatter limits
+
+- `title`: ≤ 60 chars. (Google truncates search result titles around this length.)
+- `description`: ≤ 160 chars.
+
+### Optional: FAQ schema
+
+When a post genuinely has a Q&A section, add a `faq` block to frontmatter:
+
+```yaml
+faq:
+  - q: How do I do X?
+    a: You do X by doing Y.
+  - q: When does X apply?
+    a: It applies whenever Z.
+```
+
+The Q&A also renders visibly at the foot of the post (Google requires the
+schema content to match visible markup). FAQ schema is opt-in — only add it
+when the post structure genuinely is FAQ-shaped.

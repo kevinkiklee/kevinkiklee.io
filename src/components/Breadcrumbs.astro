@@ -1,0 +1,55 @@
+---
+import type { Crumb } from '~/lib/crumbs';
+
+interface Props {
+  items: Crumb[];
+}
+const { items } = Astro.props;
+---
+{items.length > 0 && (
+  <nav aria-label="Breadcrumb" class="crumbs">
+    <ol role="list">
+      {items.map((c, i) => {
+        const isLast = i === items.length - 1;
+        const isHome = i === 0;
+        return (
+          <>
+            {i > 0 && <li aria-hidden="true">/</li>}
+            <li>
+              {isLast
+                ? <span aria-current="page">{c.name}</span>
+                : isHome
+                  ? <a href={c.url} aria-label="home">{c.name}</a>
+                  : <a href={c.url}>{c.name}</a>
+              }
+            </li>
+          </>
+        );
+      })}
+    </ol>
+  </nav>
+)}
+
+<style>
+  .crumbs {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--fg-subtle);
+    min-height: 1.5rem;
+    margin-bottom: var(--space-3);
+  }
+  .crumbs ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    margin: 0;
+  }
+  .crumbs a {
+    color: var(--fg-subtle);
+    text-decoration: none;
+  }
+  .crumbs a:hover { color: var(--fg); text-decoration: underline; }
+  .crumbs [aria-current="page"] { color: var(--fg); }
+</style>
