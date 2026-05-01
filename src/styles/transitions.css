@@ -247,4 +247,40 @@
       transform: none;
     }
   }
+
+  /*
+   * MOBILE TAP FEEDBACK (item o)
+   * Quick outline pulse on :active for block-level interactive surfaces
+   * on touch-only devices. Inline links keep their existing :active
+   * background flash (would extend below the line if absolute-positioned).
+   */
+  @media (hover: none) and (pointer: coarse) {
+    button,
+    .post-card,
+    .pill,
+    [role="button"] {
+      position: relative;
+    }
+    button:active::after,
+    .post-card:active::after,
+    .pill:active::after,
+    [role="button"]:active::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border: 2px solid currentColor;
+      pointer-events: none;
+      animation: tap-pulse var(--t-fast) var(--ease-out);
+    }
+    @keyframes tap-pulse {
+      from {
+        transform: scale(1);
+        opacity: 1;
+      }
+      to {
+        transform: scale(1.04);
+        opacity: 0;
+      }
+    }
+  }
 }
