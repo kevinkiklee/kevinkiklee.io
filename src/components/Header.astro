@@ -17,9 +17,9 @@ function isCurrent(href: string) {
 ---
 <header class="site-header">
   <div class="row">
-    <a href="/" class="brand is-caps" aria-label="kevinkiklee.io home">kevinkiklee.io</a>
+    <a href="/" class="brand is-caps" aria-label="kevinkiklee.io home" style="view-transition-name: site-brand; view-transition-class: persistent;">kevinkiklee.io</a>
     <small class="role">chrome devrel · seoul</small>
-    <nav class="site-nav" aria-label="Primary">
+    <nav class="site-nav" aria-label="Primary" style="view-transition-name: site-nav; view-transition-class: persistent;">
       <ul role="list">
         {links.map((l) => (
           <li><a href={l.href} aria-current={isCurrent(l.href) ? 'page' : undefined}>{l.label}</a></li>
@@ -29,12 +29,15 @@ function isCurrent(href: string) {
             href="/search"
             id="search-trigger"
             aria-keyshortcuts="Slash Meta+K"
+            aria-expanded="false"
             aria-current={isCurrent('/search') ? 'page' : undefined}
           ><span class="slash" aria-hidden="true">/</span> search</a>
         </li>
       </ul>
     </nav>
-    <ThemeToggle />
+    <span style="view-transition-name: theme-toggle-host; view-transition-class: persistent;">
+      <ThemeToggle />
+    </span>
   </div>
 </header>
 
@@ -168,4 +171,20 @@ function isCurrent(href: string) {
     e.preventDefault();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: '/' }));
   });
+
+  // Sync aria-expanded on the trigger to the dialog's open state, so
+  // screen readers know whether the palette is open.
+  function syncSearchTriggerExpanded() {
+    const trigger = document.getElementById('search-trigger');
+    const palette = document.getElementById('search-palette');
+    if (!trigger || !palette) return;
+    trigger.setAttribute('aria-expanded', String(palette.hasAttribute('open')));
+  }
+  syncSearchTriggerExpanded();
+  const palette = document.getElementById('search-palette');
+  if (palette) {
+    palette.addEventListener('toggle', syncSearchTriggerExpanded);
+    palette.addEventListener('close', syncSearchTriggerExpanded);
+  }
+  document.addEventListener('astro:page-load', syncSearchTriggerExpanded);
 </script>

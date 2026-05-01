@@ -1,25 +1,88 @@
 @layer utilities {
-  ::view-transition-old(root) {
-    animation: 180ms cubic-bezier(0.32, 0.72, 0, 1) both fade-out;
-  }
-  ::view-transition-new(root) {
-    animation: 180ms cubic-bezier(0.32, 0.72, 0, 1) both fade-in;
+  /* All view-transition rules are gated behind the feature query so
+     non-supporting browsers (Firefox <132, Safari <18.2) don't ship
+     unused CSS. Browser fallback is an instant swap, which is fine. */
+  @supports (view-transition-name: x) {
+    /* DEFAULT — forward / unspecified: gentle fade */
+    ::view-transition-old(root) {
+      animation: var(--t-base) var(--ease-out) both fade-out;
+    }
+    ::view-transition-new(root) {
+      animation: var(--t-base) var(--ease-out) both fade-in;
+    }
+
+    /* LATERAL — same-section navigation (e.g. /posts ↔ /posts/page/2):
+       quick double fade so it doesn't feel like a glitch but is faster
+       than a regular forward. */
+    html[data-nav-direction="lateral"] ::view-transition-old(root) {
+      animation-duration: var(--t-fast);
+    }
+    html[data-nav-direction="lateral"] ::view-transition-new(root) {
+      animation-duration: var(--t-fast);
+    }
+
+    /* FORWARD-INTO-POST — emphasize the "post opens out of the card" */
+    html[data-nav-direction="forward-into-post"] ::view-transition-old(root) {
+      animation: var(--t-slow) var(--ease-out) both scale-fade-out;
+    }
+    html[data-nav-direction="forward-into-post"] ::view-transition-new(root) {
+      animation: var(--t-slow) var(--ease-out) both scale-fade-in;
+    }
+
+    /* BACK — browser back/forward: horizontal slide, slightly slower than
+       a regular forward to feel intentional. */
+    html[data-nav-direction="back"] ::view-transition-old(root) {
+      animation: var(--t-base) var(--ease-out) both slide-out-back;
+    }
+    html[data-nav-direction="back"] ::view-transition-new(root) {
+      animation: var(--t-base) var(--ease-out) both slide-in-back;
+    }
+
+    /* BACK-INTO-POST — same shape as forward-into-post but at --t-base
+       speed, since the user has been here before. */
+    html[data-nav-direction="back-into-post"] ::view-transition-old(root) {
+      animation: var(--t-base) var(--ease-out) both scale-fade-out;
+    }
+    html[data-nav-direction="back-into-post"] ::view-transition-new(root) {
+      animation: var(--t-base) var(--ease-out) both scale-fade-in;
+    }
+
+    /* Mobile (item s): drop scale transforms — opacity-only is cheaper
+       on mid-tier Android GPUs and reads identically. */
+    @media (max-width: 640px) {
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        transform: none !important;
+      }
+    }
+
+    /* Lock used by ThemeToggle / SearchPalette to suppress conflicting
+       transitions during a navigation swap. */
+    :root[data-transitioning] *,
+    :root[data-transitioning] {
+      transition: none !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: none;
+      }
+    }
+
+    /* Persistent group (Chrome 125+): targets header singletons so they
+       hold position rather than animate. Falls back gracefully when
+       view-transition-class is unsupported (rule simply doesn't match). */
+    /* biome-ignore lint/correctness/noUnknownProperty: view-transition-class is a Chrome 125+ feature query, intentionally probed here. */
+    @supports (view-transition-class: x) {
+      ::view-transition-group(.persistent) {
+        animation-duration: 0ms;
+      }
+    }
   }
 
-  html[data-nav-direction="forward-into-post"] ::view-transition-old(root) {
-    animation-name: scale-fade-out;
-  }
-  html[data-nav-direction="forward-into-post"] ::view-transition-new(root) {
-    animation-name: scale-fade-in;
-  }
-
-  html[data-nav-direction="back"] ::view-transition-old(root) {
-    animation-name: slide-out-back;
-  }
-  html[data-nav-direction="back"] ::view-transition-new(root) {
-    animation-name: slide-in-back;
-  }
-
+  /* Keyframes are global (used by the rules above and re-used by
+     scoped component animations). */
   @keyframes fade-in {
     from {
       opacity: 0;
@@ -77,22 +140,11 @@
     }
   }
 
-  :root[data-transitioning] *,
-  :root[data-transitioning] {
-    transition: none !important;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-      animation: none;
-    }
-  }
-
   /*
    * Scroll-reveal: progressively enhance with the modern
    * `animation-timeline: view()` syntax, fall back to IntersectionObserver
    * for browsers that don't support it (handled in src/lib/scroll-reveal.ts).
+   * Phase 3 will refactor this section.
    */
   .reveal {
     opacity: 0;
