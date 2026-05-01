@@ -1,0 +1,64 @@
+/* src/styles/motion.css
+ * Single source of truth for animation timing across the site.
+ * Imported under @layer tokens in global.css. Components reference
+ * --t-fast / --t-base / --t-slow / --ease-* / --stagger / --header-height
+ * instead of hardcoding milliseconds and easing curves.
+ *
+ * Mobile + a11y kill-switches collapse all durations to 1ms via media
+ * queries, so consumers don't need to feature-detect anywhere.
+ */
+:root {
+  --t-fast: 120ms;
+  --t-base: 200ms;
+  --t-slow: 280ms;
+
+  --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.40, 0.64, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+
+  --stagger: 30ms;
+  --stagger-cap: 240ms;
+
+  --header-height: 56px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --header-height: 80px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --t-fast: 90ms;
+    --t-base: 140ms;
+    --t-slow: 200ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-fast: 1ms;
+    --t-base: 1ms;
+    --t-slow: 1ms;
+    --stagger: 0ms;
+  }
+}
+
+@media (prefers-reduced-data: reduce) {
+  :root {
+    --t-fast: 1ms;
+    --t-base: 1ms;
+    --t-slow: 1ms;
+    --stagger: 0ms;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --t-fast: 1ms;
+    --t-base: 1ms;
+    --t-slow: 1ms;
+    --stagger: 0ms;
+  }
+}
