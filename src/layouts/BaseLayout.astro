@@ -7,6 +7,7 @@ import CopyButton from '~/components/CopyButton.astro';
 import Footer from '~/components/Footer.astro';
 import Header from '~/components/Header.astro';
 import KeyboardShortcuts from '~/components/KeyboardShortcuts.astro';
+import PostBodyReveal from '~/components/PostBodyReveal.astro';
 import PrerenderRules from '~/components/PrerenderRules.astro';
 import SearchPalette from '~/components/SearchPalette.astro';
 import ShortcutsOverlay from '~/components/ShortcutsOverlay.astro';
@@ -34,6 +35,11 @@ const { title, description = '', ...rest } = Astro.props;
     <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#f5f4ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+    <script is:inline>
+      // First-paint marker: read + cleared by astro:after-swap to skip the
+      // post-body reveal on initial load (LCP candidate paints immediately).
+      document.documentElement.dataset.firstPaint = '1';
+    </script>
     <script is:inline>
       (function () {
         function apply() {
@@ -66,9 +72,23 @@ const { title, description = '', ...rest } = Astro.props;
     <ShortcutsOverlay />
     <KeyboardShortcuts />
     <CopyButton />
+    <PostBodyReveal />
     <script>
       import '~/lib/nav';
       import '~/lib/scroll-reveal';
+    </script>
+    <script>
+      // Engages animation initial states (.reveal opacity:0, etc) AFTER
+      // first paint. Crawlers / no-JS visitors see static content; real
+      // users see animations engage post-paint.
+      requestAnimationFrame(() => {
+        document.documentElement.dataset.anim = '';
+      });
+      // Re-set after every ClientRouter swap (the html element is preserved
+      // but be defensive against future Astro changes).
+      document.addEventListener('astro:page-load', () => {
+        document.documentElement.dataset.anim = '';
+      });
     </script>
   </body>
 </html>

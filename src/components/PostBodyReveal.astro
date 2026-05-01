@@ -1,0 +1,71 @@
+---
+// PostBodyReveal.astro
+//
+// Mounts a single <script> that runs the reveal sequence on every
+// astro:after-swap that lands on a post page. Skipped on first paint
+// (LCP candidate paints immediately, gated by [data-firstPaint] flag
+// set in BaseLayout).
+//
+// Sequence (durations sourced from scaledDuration):
+//   0ms    .url-prompt fades in
+//   90ms   .post h1 fades up  (skipped: data-no-anim on h1)
+//   280ms  .post-meta fades in
+//   380ms  .prose > *:first-child fades up
+// Total elapsed: ≤ 800ms.
+---
+<script>
+  import { scaledDuration, withWillChange, EASE_OUT } from '~/lib/motion';
+
+  type Kind = 'fade' | 'fade-up';
+
+  function getKeyframes(kind: Kind): Keyframe[] {
+    if (kind === 'fade-up') {
+      return [
+        { opacity: 0, transform: 'translateY(4px)' },
+        { opacity: 1, transform: 'none' },
+      ];
+    }
+    return [{ opacity: 0 }, { opacity: 1 }];
+  }
+
+  function isPostPage(): boolean {
+    return /^\/posts\/(?!page\/)[^/]+\/?$/.test(location.pathname);
+  }
+
+  function runPostRevealSequence(): void {
+    if (document.visibilityState !== 'visible') return;
+    const dur = scaledDuration(180);
+    const seq: Array<{ sel: string; delay: number; kind: Kind }> = [
+      { sel: '.url-prompt',                 delay: 0,   kind: 'fade' },
+      { sel: '.post h1',                    delay: 90,  kind: 'fade-up' },
+      { sel: '.post-meta',                  delay: 280, kind: 'fade' },
+      { sel: '.prose > *:first-child',      delay: 380, kind: 'fade-up' },
+    ];
+    for (const { sel, delay, kind } of seq) {
+      const el = document.querySelector(sel) as HTMLElement | null;
+      if (!el) continue;
+      if (el.hasAttribute('data-no-anim')) continue;
+      requestAnimationFrame(() => {
+        void withWillChange(el, ['opacity', 'transform'], () =>
+          el.animate(getKeyframes(kind), {
+            duration: dur,
+            delay,
+            easing: EASE_OUT,
+            fill: 'both',
+          }).finished,
+        );
+      });
+    }
+  }
+
+  function onAfterSwap() {
+    if (document.documentElement.dataset.firstPaint === '1') {
+      delete document.documentElement.dataset.firstPaint;
+      return;
+    }
+    if (!isPostPage()) return;
+    runPostRevealSequence();
+  }
+
+  document.addEventListener('astro:after-swap', onAfterSwap);
+</script>
