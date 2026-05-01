@@ -29,4 +29,37 @@ describe('decideDirection', () => {
   it('handles undefined navigationType safely', () => {
     expect(decideDirection(undefined, url('/'), url('/about'), 0)).toBe('forward');
   });
+
+  it('returns back-into-post when traversing into a /posts/[slug]', () => {
+    expect(
+      decideDirection(
+        'traverse',
+        new URL('https://kevinkiklee.io/posts'),
+        new URL('https://kevinkiklee.io/posts/hello-world'),
+        2,
+      ),
+    ).toBe('back-into-post');
+  });
+
+  it('returns back (not back-into-post) when traversing to the archive', () => {
+    expect(
+      decideDirection(
+        'traverse',
+        new URL('https://kevinkiklee.io/posts/hello-world'),
+        new URL('https://kevinkiklee.io/posts'),
+        2,
+      ),
+    ).toBe('back');
+  });
+
+  it('treats paginator (/posts/page/2) as lateral, not forward-into-post', () => {
+    expect(
+      decideDirection(
+        'push',
+        new URL('https://kevinkiklee.io/posts'),
+        new URL('https://kevinkiklee.io/posts/page/2'),
+        1,
+      ),
+    ).toBe('lateral');
+  });
 });

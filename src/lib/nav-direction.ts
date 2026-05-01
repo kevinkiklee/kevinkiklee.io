@@ -3,8 +3,14 @@
  * module so tests can import it without pulling in the DOM-side-effecting
  * `nav.ts` (which calls `document.addEventListener` at module load).
  */
-export type Dir = 'forward' | 'back' | 'lateral' | 'forward-into-post';
+export type Dir = 'forward' | 'back' | 'lateral' | 'forward-into-post' | 'back-into-post';
 export type NavType = 'traverse' | 'push' | 'replace' | 'reload' | undefined;
+
+function isPostDetail(path: string | undefined): boolean {
+  return (
+    !!path && path.startsWith('/posts/') && path !== '/posts' && !path.startsWith('/posts/page/')
+  );
+}
 
 export function decideDirection(
   navType: NavType,
@@ -12,22 +18,19 @@ export function decideDirection(
   toUrl: URL | undefined,
   _fromDepth: number,
 ): Dir {
-  if (navType === 'traverse') return 'back';
-  const toPath = toUrl?.pathname;
-  const fromPath = fromUrl?.pathname;
+  const toIsPost = isPostDetail(toUrl?.pathname);
 
-  // A "post detail" is /posts/<slug> where <slug> is NOT the paginator
-  // (`/posts/page/N`). Paginator pages stay treated as the listing.
-  const toIsPost =
-    !!toPath &&
-    toPath.startsWith('/posts/') &&
-    toPath !== '/posts' &&
-    !toPath.startsWith('/posts/page/');
+  if (navType === 'traverse') {
+    return toIsPost ? 'back-into-post' : 'back';
+  }
+
   if (toIsPost) return 'forward-into-post';
 
   // Otherwise, navigation that stays inside the same top-level section
-  // (e.g. /posts ↔ /posts/page/2, /posts/tag/ai ↔ /posts) is lateral.
+  // (e.g. /posts ↔ /posts/page/2, /tags/ai ↔ /tags) is lateral.
   const seg = (p: string) => p.split('/')[1] ?? '';
+  const toPath = toUrl?.pathname;
+  const fromPath = fromUrl?.pathname;
   if (toPath && fromPath && seg(toPath) === seg(fromPath) && seg(toPath) !== '') {
     return 'lateral';
   }
