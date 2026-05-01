@@ -110,3 +110,27 @@ export function buildBreadcrumbs(items: { name: string; url: string }[]) {
     })),
   } as const;
 }
+
+export const SPEAKABLE_SELECTORS = ['.lead', 'h1'] as const;
+
+export function buildSpeakable() {
+  return {
+    '@type': 'SpeakableSpecification',
+    cssSelector: [...SPEAKABLE_SELECTORS],
+  } as const;
+}
+
+export function buildAuthorRef() {
+  return { '@id': ENTITY_IDS.person } as const;
+}
+
+export function buildBlog() {
+  return {
+    '@type': 'Blog',
+    '@id': ENTITY_IDS.blog,
+    name: 'kevinkiklee.io',
+    url: 'https://kevinkiklee.io/posts',
+    inLanguage: 'en-US',
+    publisher: { '@id': ENTITY_IDS.person },
+  } as const;
+}

@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
   ENTITY_IDS,
+  SPEAKABLE_SELECTORS,
+  buildAuthorRef,
+  buildBlog,
   buildBlogPosting,
   buildBreadcrumbs,
   buildPageGraph,
   buildPerson,
+  buildSpeakable,
   buildWebSite,
 } from './schema';
 
@@ -178,5 +182,34 @@ describe('buildPageGraph', () => {
     const b = { '@type': 'Thing', name: 'B' };
     const out = buildPageGraph([a, b]);
     expect(out['@graph']).toHaveLength(2);
+  });
+});
+
+describe('buildBlog', () => {
+  it('returns a Blog entity at the stable @id', () => {
+    const out = buildBlog();
+    expect(out['@type']).toBe('Blog');
+    expect(out['@id']).toBe(ENTITY_IDS.blog);
+    expect(out.name).toBe('kevinkiklee.io');
+    expect(out.url).toBe('https://kevinkiklee.io/posts');
+  });
+});
+
+describe('buildAuthorRef', () => {
+  it('returns a {@id} reference to the canonical Person', () => {
+    expect(buildAuthorRef()).toEqual({ '@id': ENTITY_IDS.person });
+  });
+});
+
+describe('SPEAKABLE_SELECTORS / buildSpeakable', () => {
+  it('exports lead and h1 as speakable selectors', () => {
+    expect(SPEAKABLE_SELECTORS).toEqual(['.lead', 'h1']);
+  });
+
+  it('builds a SpeakableSpecification', () => {
+    expect(buildSpeakable()).toEqual({
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['.lead', 'h1'],
+    });
   });
 });
