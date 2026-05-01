@@ -7,9 +7,15 @@
  * ClientRouter swap) and walks every `.prose pre` to attach a button.
  * The `if (pre.querySelector('.copy-btn')) return;` guard makes the
  * walk idempotent.
+ *
+ * Success path uses a 200ms spring scale (peak 1.08 at offset 0.4) via
+ * WAAPI so the button "punches" briefly. Reduced-motion / Save-Data
+ * collapse the duration to 1ms (invisible), text-only feedback remains.
  */
 ---
 <script>
+  import { scaledDuration, withWillChange, EASE_SPRING } from '~/lib/motion';
+
   type AnyPre = HTMLPreElement;
 
   function attach(): void {
@@ -25,17 +31,38 @@
       let resetTimer: number | undefined;
       btn.addEventListener('click', async () => {
         const code = pre.querySelector('code')?.textContent ?? '';
+        let ok = false;
         try {
           await navigator.clipboard.writeText(code);
-          btn.textContent = 'copied';
+          ok = true;
         } catch {
-          btn.textContent = 'error';
+          // Swallow — we'll surface the error via the button text below.
         }
+        if (!ok) {
+          btn.textContent = 'error';
+          if (resetTimer !== undefined) window.clearTimeout(resetTimer);
+          resetTimer = window.setTimeout(() => {
+            btn.textContent = 'copy';
+            resetTimer = undefined;
+          }, 1200);
+          return;
+        }
+        await withWillChange(btn, ['transform'], () =>
+          btn.animate(
+            [
+              { transform: 'scale(1)' },
+              { transform: 'scale(1.08)', offset: 0.4 },
+              { transform: 'scale(1)' },
+            ],
+            { duration: scaledDuration(200), easing: EASE_SPRING, fill: 'both' },
+          ).finished,
+        );
+        btn.textContent = '✓ copied';
         if (resetTimer !== undefined) window.clearTimeout(resetTimer);
         resetTimer = window.setTimeout(() => {
           btn.textContent = 'copy';
           resetTimer = undefined;
-        }, 1200);
+        }, 1000);
       });
       pre.style.position = 'relative';
       pre.appendChild(btn);
