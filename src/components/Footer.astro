@@ -6,7 +6,7 @@ const mastodon = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
 ---
 <footer class="site-footer">
   <div class="row">
-    <span>© {year} Kevin Lee</span>
+    <span><span class="eof" aria-hidden="true">$ exit </span>© {year} Kevin Lee</span>
     <ul role="list">
       <li><a href={mastodon} rel="me">mastodon</a></li>
       <li><a href="https://github.com/kevinkiklee" rel="me">github</a></li>
@@ -36,4 +36,12 @@ const mastodon = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
     min-height: 44px;
   }
   .site-footer a:hover, .site-footer a:focus-visible { color: var(--fg); }
+  .site-footer .eof {
+    color: var(--accent);
+    margin-right: 0.5em;
+    font-weight: 600;
+  }
+  @media (forced-colors: active) {
+    .site-footer .eof { color: LinkText; }
+  }
 </style>
