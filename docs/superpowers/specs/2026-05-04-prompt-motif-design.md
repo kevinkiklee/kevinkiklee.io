@@ -121,13 +121,22 @@ CSS (scoped style block in `index.astro`):
 
 **File:** `src/layouts/PostLayout.astro`
 
-**Markup added immediately above the existing `<h1>`:**
+**`PostLayout.astro` today already renders a similar element** above the H1:
+```astro
+<p class="url-prompt"><span aria-hidden="true">$</span> posts/{post.id}</p>
+```
+
+This eyebrow **replaces** that block — same purpose, different format. The new format reads as a shell session ("cat the file") rather than a URL hint, which is what the prompt motif is going for.
+
+**Replacement markup:**
 ```astro
 <p class="eyebrow" aria-hidden="true">
-  <span class="dol">$</span> cat {entry.id}.md
+  <span class="dol">$</span> cat {post.id}.md
 </p>
-<h1>{entry.data.title}</h1>
+<h1>{title}</h1>
 ```
+
+The associated `.url-prompt` styles in `PostLayout.astro` are removed in the same change.
 
 CSS (note: `.eyebrow .dol` is a separate selector from `.brand .dol`; same name, same color rule, different parent context):
 - `.eyebrow`: `font-size: var(--text-xs)`, `color: var(--fg-muted)`, `letter-spacing: 0.02em`, `margin-bottom: var(--space-2)`, `font-family: var(--font-mono)` (matches the chrome).
@@ -167,7 +176,7 @@ CSS:
 - Tags `<dd>` uses `display: flex; flex-wrap: wrap; gap: var(--space-1)`
 - Mobile (≤640px): media query collapses to single column — each `dt` renders above its `dd` (uses `display: block` on dt/dd inside the media query and adds a small `margin-top` on dt to keep rhythm).
 
-**Word count:** already computed at build time alongside `minutesRead` (`src/lib/reading-time.ts`). Just expose it through the existing `remarkPluginFrontmatter` channel and accept it as an optional prop.
+**Word count:** already exposed end-to-end. `src/lib/reading-time.ts` writes `wordCount` into `remarkPluginFrontmatter`; `src/pages/posts/[...slug].astro` reads it and forwards to `PostLayout`; `PostLayout` already accepts the prop. The only missing link is forwarding it from `PostLayout` into the `<PostMeta variant="rail">` call.
 
 ---
 
@@ -189,10 +198,9 @@ No new tokens. Reuses:
 | `src/components/Header.astro` | Replace `::before/::after` bars with `.dol` + `.cursor`; add blink keyframe. |
 | `src/components/Footer.astro` | Add `.eof` span before the copyright. |
 | `src/pages/index.astro` | Inline status-line markup + scoped styles above the latest section. |
-| `src/layouts/PostLayout.astro` | Render eyebrow above H1; switch `<PostMeta>` to `variant="rail"`. |
-| `src/components/PostMeta.astro` | Add `variant` prop; new rail markup + styles. |
-| `src/lib/site-config.ts` | Add `nowStatus: string` field with the initial copy. |
-| `src/lib/reading-time.ts` | Expose `wordCount` alongside `minutesRead` (already computed). |
+| `src/layouts/PostLayout.astro` | Replace existing `.url-prompt` block with eyebrow; switch `<PostMeta>` call to `variant="rail"` and pass `wordCount`; remove `.url-prompt` styles. |
+| `src/components/PostMeta.astro` | Add `variant` prop and optional `wordCount`; new rail markup + styles. |
+| `src/lib/site-config.ts` | Add `nowStatus: string` field with the initial placeholder copy. |
 
 ### 2.3 Reduced motion, forced colors, contrast
 
