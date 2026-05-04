@@ -18,7 +18,7 @@ The work is style and small markup, scoped to existing components. No new depend
 - **One coherent new motif** — the prompt rail reads as the site's signature device wherever it appears.
 - **Lift the three weak surfaces** without redesigning them — home gets a status line, the post page gets an eyebrow + light meta rail, the chrome gets a finishing line in the footer.
 - **Zero CWV regression** — LCP ≤ 1.5 s, INP ≤ 100 ms, CLS = 0 stay green.
-- **No new font fetches** — caret renders as a CSS pseudo-element with the existing `_` glyph already in the primary subset.
+- **No new font fetches** — caret renders as a CSS shape (an `inline-block` block element with `width`/`height`), not the `_` glyph, so the JetBrains Mono extended subset stays lazy.
 - **No SEO/AEO regression** — eyebrow is decorative; the real `<h1>` text is unchanged.
 - **Reduced-motion safe** — caret blink disables under `prefers-reduced-motion: reduce`.
 
@@ -41,7 +41,7 @@ The work is style and small markup, scoped to existing components. No new depend
 | P1 | **Prompt motif at "medium" intensity** | Header + post eyebrow only. Strong enough to read as identity; doesn't fight content. |
 | P2 | **Brand mark: `$ KEVINKIKLEE.IO_`** — replace bars with prompt + caret | Two motifs (frame bars + caret) doing similar duty competes; replacing shifts identity from "framed wordmark" to "active session." |
 | P3 | **Eyebrow on post pages: `$ cat <slug>.md`** above the real H1 | Gives the post page identity without sabotaging H1 hierarchy or AEO extraction. |
-| P4 | **Caret blink: 1.1s, 2-step, `_` glyph** | Already in primary font subset; matches existing terminal-prompt pattern noted in the original spec (§4.4). |
+| P4 | **Caret blink: 1.1s, 2-step, CSS-shape block** | Renders as a CSS shape (not the `_` glyph), so the extended font subset stays lazy and the caret stays pixel-crisp. Matches existing terminal-prompt pattern noted in the original spec (§4.4). |
 | P5 | **Home status line** with `// now` prefix and accent left rule | Single-sentence personal note; addresses "home jumps straight to latest" weakness without becoming a masthead. |
 | P6 | **Post-page meta rail** — light dt/dl block (PUBLISHED / UPDATED / READ / TAGS) | Replaces the inline `date · 7 min · tags` line. Lighter than option D's manpage rail but more spec-sheet than today. |
 | P7 | **Footer finisher: `$ exit` in accent** before the copyright | Closes the "session" framing started by the brand mark. |
