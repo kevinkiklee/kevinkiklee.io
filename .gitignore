@@ -13,3 +13,6 @@ stats.html
 
 # Local font sources — keep TTFs out of git, ship only subsetted WOFF2.
 fonts/source/
+
+# Git worktrees for parallel feature work.
+.worktrees/
