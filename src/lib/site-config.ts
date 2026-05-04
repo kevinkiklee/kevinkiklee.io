@@ -11,6 +11,8 @@ export const SITE = {
   tagline: 'Field notes from a Chrome DevRel',
   description: 'Field notes from a Chrome DevRel — AI, web platform, and tangents.',
   bio: 'Developer Relations Engineer at Google Chrome. Writes about the web platform, AI tooling, and browser internals.',
+  /** One-sentence "now" status shown on the home page. Update this when context changes. */
+  nowStatus: 'TODO — Kevin to write a one-sentence "now" status before merge.',
   defaultMastodon: 'https://mastodon.social/@kevinkiklee',
   bsky: 'https://bsky.app/profile/kevinkiklee.bsky.social',
   github: 'https://github.com/kevinkiklee',
