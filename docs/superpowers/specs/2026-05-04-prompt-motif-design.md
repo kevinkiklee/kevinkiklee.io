@@ -98,36 +98,24 @@ CSS:
 
 ### 1.3 Home — Status line
 
-**File:** `src/pages/index.astro` and a new component `src/components/StatusLine.astro`.
+**File:** `src/pages/index.astro` (inline; no new component).
 
-**Why a component:** The status line is one sentence, but pulling it into its own component keeps `index.astro` readable, and lets the copy live in one place if it ever needs to render elsewhere (e.g., About page later).
-
-**Markup:**
+**Markup**, placed above the existing `<SectionTitle id="latest" …>` on the home route only:
 ```astro
-<StatusLine prefix="now" text="Shipping AI features in Chrome DevRel; writing about model context, evals, and the web platform." />
-```
-
-Renders as:
-```html
-<aside class="status" aria-label="Now">
+<p class="status">
   <span class="key" aria-hidden="true">// now</span>
-  <span class="text">Shipping AI features…</span>
-</aside>
+  <span class="text">{SITE.nowStatus}</span>
+</p>
 ```
 
-CSS:
-- `border-left: 2px solid var(--accent)`
-- `padding: var(--space-1) var(--space-3)`
-- `margin-bottom: var(--space-6)`
-- `max-width: 60ch`
+CSS (scoped style block in `index.astro`):
+- `.status`: `border-left: 2px solid var(--accent)`, `padding: var(--space-1) var(--space-3)`, `margin: 0 0 var(--space-6)`, `max-width: 60ch`, `font-family: var(--font-mono)`
 - `.status .key`: `color: var(--fg-muted)`, `margin-right: var(--space-2)`, `font-size: var(--text-xs)`
 - `.status .text`: `font-size: var(--text-sm)`, `line-height: 1.55`, `color: var(--fg)`
 
-**Copy:** lives in `src/lib/site-config.ts` as a new `nowStatus` field so Kevin can update it without touching component code. Initial value matches the brainstorming mockup (the sentence above).
+**Copy:** lives in `src/lib/site-config.ts` as a new `nowStatus: string` field so Kevin can update it without touching component code. **The initial value is a placeholder Kevin should rewrite before merge** — anything from the brainstorming mockup is illustrative, not factual.
 
-**Placement:** above the existing `<SectionTitle id="latest" …>` on the home route only. Other pages unaffected.
-
-**A11y:** wrapped in an `<aside>` with `aria-label="Now"` so it's a discoverable landmark but doesn't clash with the page `<main>` heading hierarchy.
+**A11y:** plain `<p>` element — *not* an `<aside>` (the status line is an opening note, not tangential content; promoting it to a landmark would clutter the landmarks list for screen-reader users). The `// now` prefix is `aria-hidden` so AT users hear only the sentence.
 
 ### 1.4 Post page — Eyebrow
 
@@ -174,7 +162,7 @@ This is a refactor of the existing inline meta line into a 2-column dt/dl block,
 CSS:
 - `display: grid`, `grid-template-columns: max-content 1fr`, `gap: var(--space-1) var(--space-4)`
 - `border-top: 1px solid var(--rule-soft)`, `border-bottom: 1px solid var(--rule-soft)`, `padding: var(--space-3) 0`, `margin: var(--space-3) 0 var(--space-6)`
-- `dt`: `color: var(--fg-muted)`, `letter-spacing: 0.04em`, `font-size: var(--text-xs)`, `text-transform: lowercase` (matches the rest of the chrome's casing rule)
+- `dt`: `color: var(--fg-muted)`, `letter-spacing: 0.04em`, `font-size: var(--text-xs)`. **Mixed case**, not uppercase — the brainstorming mockup showed uppercase, but that contradicts decision A3 from the prior aesthetics spec ("caps reserved for chrome / signage / wordmark; meta is mixed case"). Source markup is already mixed case (`Published`, `Updated`, …); no `text-transform`.
 - `dd`: `color: var(--fg)`, `font-size: var(--text-xs)`, `margin: 0`, `font-variant-numeric: tabular-nums slashed-zero`
 - Tags `<dd>` uses `display: flex; flex-wrap: wrap; gap: var(--space-1)`
 - Mobile (≤640px): media query collapses to single column — each `dt` renders above its `dd` (uses `display: block` on dt/dd inside the media query and adds a small `margin-top` on dt to keep rhythm).
@@ -200,8 +188,7 @@ No new tokens. Reuses:
 |---|---|
 | `src/components/Header.astro` | Replace `::before/::after` bars with `.dol` + `.cursor`; add blink keyframe. |
 | `src/components/Footer.astro` | Add `.eof` span before the copyright. |
-| `src/components/StatusLine.astro` | New component (≤25 lines incl. styles). |
-| `src/pages/index.astro` | Render `<StatusLine>` above the latest section. |
+| `src/pages/index.astro` | Inline status-line markup + scoped styles above the latest section. |
 | `src/layouts/PostLayout.astro` | Render eyebrow above H1; switch `<PostMeta>` to `variant="rail"`. |
 | `src/components/PostMeta.astro` | Add `variant` prop; new rail markup + styles. |
 | `src/lib/site-config.ts` | Add `nowStatus: string` field with the initial copy. |
