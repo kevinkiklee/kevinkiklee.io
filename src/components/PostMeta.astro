@@ -7,19 +7,59 @@ interface Props {
   updatedDate?: Date | undefined;
   tags: string[];
   minutesRead?: number | undefined;
+  /** Word count from the reading-time remark plugin. Only rendered in the `'rail'` variant. */
+  wordCount?: number | undefined;
+  /** 'inline' = compact one-liner used by PostCard. 'rail' = manpage-style
+      dt/dl block used by the post page itself. */
+  variant?: 'inline' | 'rail' | undefined;
 }
-const { pubDate, updatedDate, tags, minutesRead } = Astro.props;
+const { pubDate, updatedDate, tags, minutesRead, wordCount, variant = 'inline' } = Astro.props;
+
+const readLabel =
+  minutesRead && wordCount
+    ? `${minutesRead} min · ${wordCount.toLocaleString('en-US')} words`
+    : minutesRead
+      ? `${minutesRead} min read`
+      : undefined;
 ---
-<div class="meta">
-  <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
-  {updatedDate && <span> · updated {formatDate(updatedDate)}</span>}
-  {minutesRead && <span> · {minutesRead} min read</span>}
-  {tags.length > 0 && (
-    <span> · {tags.map((t, i) => (
-      <>{i > 0 && ' '}<TagPill tag={t} /></>
-    ))}</span>
-  )}
-</div>
+{variant === 'inline' && (
+  <div class="meta">
+    <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+    {updatedDate && <span> · updated {formatDate(updatedDate)}</span>}
+    {minutesRead && <span> · {minutesRead} min read</span>}
+    {tags.length > 0 && (
+      <span> · {tags.map((t, i) => (
+        <>{i > 0 && ' '}<TagPill tag={t} /></>
+      ))}</span>
+    )}
+  </div>
+)}
+{variant === 'rail' && (
+  <dl class="meta meta-rail">
+    <dt>Published</dt>
+    <dd><time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time></dd>
+    {updatedDate && (
+      <>
+        <dt>Updated</dt>
+        <dd><time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time></dd>
+      </>
+    )}
+    {readLabel && (
+      <>
+        <dt>Read</dt>
+        <dd>{readLabel}</dd>
+      </>
+    )}
+    {tags.length > 0 && (
+      <>
+        <dt>Tags</dt>
+        <dd class="tags">
+          {tags.map((t) => <TagPill tag={t} />)}
+        </dd>
+      </>
+    )}
+  </dl>
+)}
 
 <style>
   .meta {
@@ -27,5 +67,43 @@ const { pubDate, updatedDate, tags, minutesRead } = Astro.props;
     color: var(--fg-muted);
     letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums slashed-zero;
+  }
+  .meta-rail {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--space-1) var(--space-4);
+    border-top: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+    padding: var(--space-3) 0;
+    margin: var(--space-3) 0 var(--space-6);
+  }
+  .meta-rail dt {
+    color: var(--fg-muted);
+    letter-spacing: 0.04em;
+    font-size: var(--text-xs);
+  }
+  .meta-rail dd {
+    color: var(--fg);
+    font-size: var(--text-xs);
+    margin: 0;
+    font-variant-numeric: tabular-nums slashed-zero;
+  }
+  .meta-rail dd.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+  /* On narrow viewports, collapse to one column: each label sits above its
+     value. Keep the borders and the same vertical rhythm. */
+  @media (max-width: 640px) {
+    .meta-rail {
+      display: block;
+    }
+    .meta-rail dt {
+      display: block;
+      margin-top: var(--space-2);
+    }
+    .meta-rail dt:first-of-type { margin-top: 0; }
+    .meta-rail dd { display: block; }
   }
 </style>

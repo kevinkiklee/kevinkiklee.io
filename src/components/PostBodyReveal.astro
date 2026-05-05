@@ -7,9 +7,9 @@
 // set in BaseLayout).
 //
 // Sequence (durations sourced from scaledDuration):
-//   0ms    .url-prompt fades in
+//   0ms    .eyebrow fades in
 //   90ms   .post h1 fades up  (skipped: data-no-anim on h1)
-//   280ms  .post-meta fades in
+//   280ms  .meta-rail fades in
 //   380ms  .prose > *:first-child fades up
 // Total elapsed: ≤ 800ms.
 ---
@@ -36,9 +36,9 @@
     if (document.visibilityState !== 'visible') return;
     const dur = scaledDuration(180);
     const seq: Array<{ sel: string; delay: number; kind: Kind }> = [
-      { sel: '.url-prompt',                 delay: 0,   kind: 'fade' },
+      { sel: '.eyebrow',                     delay: 0,   kind: 'fade' },
       { sel: '.post h1',                    delay: 90,  kind: 'fade-up' },
-      { sel: '.post-meta',                  delay: 280, kind: 'fade' },
+      { sel: '.meta-rail',                  delay: 280, kind: 'fade' },
       { sel: '.prose > *:first-child',      delay: 380, kind: 'fade-up' },
     ];
     for (const { sel, delay, kind } of seq) {

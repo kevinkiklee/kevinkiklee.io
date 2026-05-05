@@ -17,7 +17,9 @@ function isCurrent(href: string) {
 ---
 <header class="site-header">
   <div class="row">
-    <a href="/" class="brand is-caps" aria-label="kevinkiklee.io home" style="view-transition-name: site-brand; view-transition-class: persistent;">kevinkiklee.io</a>
+    <a href="/" class="brand is-caps" aria-label="kevinkiklee.io home" style="view-transition-name: site-brand; view-transition-class: persistent;">
+      <span class="dol" aria-hidden="true">$</span>kevinkiklee.io<span class="cursor" aria-hidden="true"></span>
+    </a>
     <small class="role">chrome devrel · seoul</small>
     <nav class="site-nav" aria-label="Primary" style="view-transition-name: site-nav; view-transition-class: persistent;">
       <ul role="list">
@@ -67,9 +69,11 @@ function isCurrent(href: string) {
     min-height: 56px;
   }
   /*
-   * Brand: KEVINKIKLEE.IO sits between two short solid bars rendered as
-   * pseudo-elements (the "▌ ▐" motif from the spec, but as CSS shapes so the
-   * extended font subset stays lazy and the bars remain pixel-crisp).
+   * Brand: leading orange `$` (session prompt) + the wordmark + a blinking
+   * block caret. Caret renders as a CSS shape so the JetBrains Mono extended
+   * subset stays lazy. Blink keyframe runs forever; the global
+   * prefers-reduced-motion override in global.css collapses
+   * animation-duration to 0.01ms, so reduced-motion users see a steady caret.
    */
   .brand {
     display: inline-flex;
@@ -79,17 +83,34 @@ function isCurrent(href: string) {
     letter-spacing: 0.06em;
     white-space: nowrap;
   }
-  .brand::before,
-  .brand::after {
-    content: "";
-    display: inline-block;
-    width: 0.18em;
-    height: 0.95em;
-    background: currentColor;
+  .brand .dol {
+    color: var(--accent);
+    margin-right: 0.45em;
+    font-weight: 700;
     flex: 0 0 auto;
   }
-  .brand::before { margin-right: 0.45em; }
-  .brand::after  { margin-left: 0.45em; }
+  .brand .cursor {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 0.55em;
+    height: 0.95em;
+    background: currentColor;
+    margin-left: 0.18em;
+    vertical-align: -0.1em;
+    animation: caret-blink 1.1s steps(2) infinite;
+  }
+  @keyframes caret-blink {
+    50% { opacity: 0; }
+  }
+  /* `.brand .dol` uses `var(--accent)` which `tokens.css` already remaps to
+     `LinkText` in forced-colors mode. The cursor is `currentColor`-driven and
+     animated, so it needs an explicit override. */
+  @media (forced-colors: active) {
+    .brand .cursor {
+      background: CanvasText;
+      animation: none;
+    }
+  }
 
   .role {
     font-size: var(--text-xs);
