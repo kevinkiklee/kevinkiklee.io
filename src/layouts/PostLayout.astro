@@ -180,13 +180,12 @@ const graph = buildPageGraph([
     letter-spacing: 0.02em;
     font-family: var(--font-mono);
   }
+  /* `.eyebrow .dol` color is `var(--accent)`; `tokens.css` already remaps
+     that to `LinkText` under forced-colors. No per-component override needed. */
   .eyebrow .dol {
     color: var(--accent);
     margin-right: 0.35em;
     font-weight: 700;
-  }
-  @media (forced-colors: active) {
-    .eyebrow .dol { color: LinkText; }
   }
   .post header { margin-bottom: var(--space-6); }
   h1 {

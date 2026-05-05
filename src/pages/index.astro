@@ -62,7 +62,6 @@ const projects = (await getCollection('projects'))
     line-height: 1.55;
     color: var(--fg);
   }
-  @media (forced-colors: active) {
-    .status { border-left-color: LinkText; }
-  }
+  /* Border uses `var(--accent)` which `tokens.css` already remaps to
+     `LinkText` in forced-colors mode. */
 </style>

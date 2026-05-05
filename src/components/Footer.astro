@@ -36,12 +36,11 @@ const mastodon = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
     min-height: 44px;
   }
   .site-footer a:hover, .site-footer a:focus-visible { color: var(--fg); }
+  /* `.eof` color is `var(--accent)`; `tokens.css` already remaps that to
+     `LinkText` under forced-colors, so no per-component override is needed. */
   .site-footer .eof {
     color: var(--accent);
     margin-right: 0.5em;
     font-weight: 600;
-  }
-  @media (forced-colors: active) {
-    .site-footer .eof { color: LinkText; }
   }
 </style>

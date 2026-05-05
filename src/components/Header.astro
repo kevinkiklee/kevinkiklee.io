@@ -102,8 +102,10 @@ function isCurrent(href: string) {
   @keyframes caret-blink {
     50% { opacity: 0; }
   }
+  /* `.brand .dol` uses `var(--accent)` which `tokens.css` already remaps to
+     `LinkText` in forced-colors mode. The cursor is `currentColor`-driven and
+     animated, so it needs an explicit override. */
   @media (forced-colors: active) {
-    .brand .dol { color: LinkText; }
     .brand .cursor {
       background: CanvasText;
       animation: none;
