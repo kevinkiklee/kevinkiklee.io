@@ -13,7 +13,6 @@ describe('SITE', () => {
         "license": undefined,
         "linkedin": "https://www.linkedin.com/in/kevinkiklee/",
         "locale": "en_US",
-        "nowStatus": "TODO — Kevin to write a one-sentence "now" status before merge.",
         "portraitUrl": undefined,
         "tagline": "Field notes from a Chrome DevRel",
         "title": "kevinkiklee.io",

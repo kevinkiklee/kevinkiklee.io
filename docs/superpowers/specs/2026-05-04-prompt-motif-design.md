@@ -5,6 +5,8 @@
 **Status:** Approved (brainstorming complete)
 **Builds on:** [`2026-04-30-aesthetics-improvement-design.md`](./2026-04-30-aesthetics-improvement-design.md)
 
+> **Post-implementation amendment (2026-05-04):** §1.3 ("Home — Status line") was **removed** before merging the implementation PR. The status-line markup, the `.status` styles in `index.astro`, and the `SITE.nowStatus` field were all dropped. Reason: Kevin chose not to ship the placeholder copy and didn't want a feature whose value depended on a sentence he hadn't written yet. The rest of the spec (header brand, footer finisher, post eyebrow, meta rail) shipped as designed.
+
 ---
 
 ## Overview

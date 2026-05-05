@@ -7,7 +7,6 @@ import SectionTitle from '~/components/SectionTitle.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
 import { ENTITY_IDS, buildBlog, buildPageGraph, buildWebSite } from '~/lib/schema';
-import { SITE } from '~/lib/site-config';
 
 const posts = sortByDateDesc(await getPublishedPosts()).slice(0, 5);
 const projects = (await getCollection('projects'))
@@ -23,11 +22,6 @@ const projects = (await getCollection('projects'))
     buildBlog(),
     { '@id': ENTITY_IDS.person },
   ])} />
-  <p class="status">
-    <span class="key" aria-hidden="true">// now</span>
-    <span class="text">{SITE.nowStatus}</span>
-  </p>
-
   <section aria-labelledby="latest">
     <SectionTitle id="latest" name="latest" allHref="/posts" allLabel="all posts" />
     {posts.map((post, i) => <PostCard post={post} index={i} />)}
@@ -45,23 +39,4 @@ const projects = (await getCollection('projects'))
 
 <style>
   .grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-  .status {
-    border-left: 2px solid var(--accent);
-    padding: var(--space-1) var(--space-3);
-    margin: 0 0 var(--space-6);
-    max-width: 60ch;
-    font-family: var(--font-mono);
-  }
-  .status .key {
-    color: var(--fg-muted);
-    margin-right: var(--space-2);
-    font-size: var(--text-xs);
-  }
-  .status .text {
-    font-size: var(--text-sm);
-    line-height: 1.55;
-    color: var(--fg);
-  }
-  /* Border uses `var(--accent)` which `tokens.css` already remaps to
-     `LinkText` in forced-colors mode. */
 </style>
