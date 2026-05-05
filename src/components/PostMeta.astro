@@ -7,6 +7,7 @@ interface Props {
   updatedDate?: Date | undefined;
   tags: string[];
   minutesRead?: number | undefined;
+  /** Word count from the reading-time remark plugin. Only rendered in the `'rail'` variant. */
   wordCount?: number | undefined;
   /** 'inline' = compact one-liner used by PostCard. 'rail' = manpage-style
       dt/dl block used by the post page itself. */
@@ -102,7 +103,7 @@ const readLabel =
       display: block;
       margin-top: var(--space-2);
     }
-    .meta-rail dt:first-child { margin-top: 0; }
+    .meta-rail dt:first-of-type { margin-top: 0; }
     .meta-rail dd { display: block; }
   }
 </style>
