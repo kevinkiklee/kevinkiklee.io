@@ -30,4 +30,7 @@ describe('remarkImgAlt', () => {
   it('fails <img> with no alt attribute', async () => {
     await expect(process('<img src="cat.jpg" />')).rejects.toThrow(/missing alt/);
   });
+  it('passes <img alt="" role="none">', async () => {
+    await expect(process('<img src="cat.jpg" alt="" role="none" />')).resolves.toBeDefined();
+  });
 });
