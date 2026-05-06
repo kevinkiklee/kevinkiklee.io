@@ -1,0 +1,3 @@
+{
+  "skip": ["dist/client/index.html:single-h1:count=0"]
+}
