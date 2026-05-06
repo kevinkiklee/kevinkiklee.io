@@ -4,7 +4,7 @@ export const tokens = {
     bg: '#f5f4ee',
     fg: '#0a0a0a',
     fgMuted: '#4a4a4a',
-    fgSubtle: '#767676',
+    fgSubtle: '#525252',
     rule: '#0a0a0a',
     ruleSoft: '#c8c5b8',
     pillBg: '#0a0a0a',

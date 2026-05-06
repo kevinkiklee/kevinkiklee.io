@@ -1,5 +1,3 @@
 {
-  "skip": [
-    "light:fgSubtle/bg:aaa"
-  ]
+  "skip": []
 }

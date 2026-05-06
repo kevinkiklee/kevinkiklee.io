@@ -33,7 +33,7 @@
   --bg: #f5f4ee;
   --fg: #0a0a0a;
   --fg-muted: #4a4a4a;
-  --fg-subtle: #767676;
+  --fg-subtle: #525252;     /* bumped to AAA per spec §4 P7 — 7.09:1 on --bg */
   --rule: #0a0a0a;
   --rule-soft: #c8c5b8;
   --pill-bg: #0a0a0a;
