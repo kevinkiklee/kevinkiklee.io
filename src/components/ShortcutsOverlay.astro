@@ -37,6 +37,12 @@
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(2px);
   }
+  @media (prefers-reduced-transparency: reduce) {
+    dialog::backdrop {
+      backdrop-filter: none;
+      background: var(--bg);
+    }
+  }
   .frame { padding: var(--space-5); }
   header {
     display: flex;
