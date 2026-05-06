@@ -1,0 +1,12 @@
+{
+  "skip": [
+    "about:focus-visible",
+    "about:trap:a",
+    "archive:trap:a",
+    "home:trap:a",
+    "post-short:trap:a",
+    "search-palette:trap:a",
+    "search:focus-visible",
+    "search:trap:a"
+  ]
+}

@@ -22,3 +22,7 @@ audit-axe-raw.json
 audit-static-review.md
 a11y-findings.md
 a11y-findings.json
+
+# Playwright output
+playwright-report/
+test-results/
