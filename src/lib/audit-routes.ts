@@ -1,0 +1,53 @@
+export type RouteId =
+  | 'home'
+  | 'archive'
+  | 'archive-page2'
+  | 'post-short'
+  | 'post-long'
+  | 'post-cover'
+  | 'post-faq'
+  | 'post-code'
+  | 'post-footnotes'
+  | 'tags-index'
+  | 'tag-populated'
+  | 'tag-thin'
+  | 'projects'
+  | 'about'
+  | 'search'
+  | 'search-palette'
+  | 'privacy'
+  | 'accessibility'
+  | '404';
+
+export interface AuditRoute {
+  id: RouteId;
+  path: string;
+  primary: boolean;
+  /** True once `/accessibility` ships in PR 3.6. */
+  exists?: boolean;
+}
+
+export const routes: AuditRoute[] = [
+  { id: 'home', path: '/', primary: true },
+  { id: 'archive', path: '/posts', primary: true },
+  { id: 'archive-page2', path: '/posts/page/2', primary: false },
+  { id: 'post-short', path: '/posts/hello-world', primary: true },
+  { id: 'post-long', path: '/posts/hello-world', primary: false },
+  { id: 'post-cover', path: '/posts/hello-world', primary: false },
+  { id: 'post-faq', path: '/posts/hello-world', primary: false },
+  { id: 'post-code', path: '/posts/hello-world', primary: false },
+  { id: 'post-footnotes', path: '/posts/hello-world', primary: false },
+  { id: 'tags-index', path: '/tags', primary: false },
+  { id: 'tag-populated', path: '/tags/intro', primary: false },
+  { id: 'tag-thin', path: '/tags/intro', primary: false },
+  { id: 'projects', path: '/projects', primary: false },
+  { id: 'about', path: '/about', primary: true },
+  { id: 'search', path: '/search', primary: true },
+  { id: 'search-palette', path: '/?palette=open', primary: true },
+  { id: 'privacy', path: '/privacy', primary: false },
+  { id: 'accessibility', path: '/accessibility', primary: true, exists: false },
+  { id: '404', path: '/this-route-does-not-exist', primary: false },
+];
+
+export const themes = ['light', 'dark'] as const;
+export const motionPrefs = ['default', 'reduce'] as const;
