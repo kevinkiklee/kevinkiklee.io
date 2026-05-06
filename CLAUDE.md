@@ -78,3 +78,11 @@ vercel.ts        # typed CSP, cache headers, crons
 
 Read the spec's "Implementation status" section to find which file
 implements a given feature, then read that file before changing it.
+
+## Accessibility
+
+- **Target:** WCAG 2.2 AA, AAA body contrast.
+- **Source of truth for known issues:** [`docs/superpowers/specs/2026-05-04-accessibility-audit-findings.md`](./docs/superpowers/specs/2026-05-04-accessibility-audit-findings.md). Items with `Status: wontfix-rationale` auto-render on `/accessibility` via `src/components/a11y/KnownLimits.astro`.
+- **Gates running on every PR:** `pnpm a11y:audit:primary` (axe-playwright), `pnpm a11y:html` (post-build HTML structural assertion), `pnpm a11y:keyboard` (keyboard-traversal smoke), `pnpm test` (token contrast + remark lints + KnownLimits parser).
+- **Baselines:** `axe-baseline.json`, `html-checks-baseline.json`, `keyboard-baseline.json`, `tokens-baseline.json` capture currently-accepted violations. New violations (not in a baseline) fail PR CI. To resolve a baseline entry, fix the underlying issue and remove the entry; or, if it's an intentional design tradeoff, document it as `wontfix-rationale` in the audit findings doc.
+- **Adding a new finding:** open a GitHub issue with route + AT + reproduction steps. Triage to severity per spec §2 rubric. Either fix in a PR (and drain the baseline) or add a `wontfix-rationale` entry.

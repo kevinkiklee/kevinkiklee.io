@@ -61,3 +61,11 @@ prerenders
 speculationrules
 turbopack
 unciteable
+linkedom
+WCAG
+wontfix
+remarkimg
+fgsubtle
+labelledby
+prefers
+posttooluse
