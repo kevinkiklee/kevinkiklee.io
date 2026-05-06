@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { expect, test } from '@playwright/test';
 import { routes } from '../../src/lib/audit-routes.ts';
 
 const baseline: { skip: string[] } = (() => {
