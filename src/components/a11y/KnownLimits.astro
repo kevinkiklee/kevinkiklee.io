@@ -1,0 +1,25 @@
+---
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { parseKnownLimits } from '~/lib/known-limits';
+
+const findingsPath = fileURLToPath(
+  new URL(
+    '../../../docs/superpowers/specs/2026-05-04-accessibility-audit-findings.md',
+    import.meta.url,
+  ),
+);
+const md = readFileSync(findingsPath, 'utf8');
+const limits = parseKnownLimits(md);
+---
+{limits.length === 0 ? (
+  <p>None currently. (If a <code>wontfix-rationale</code> finding lands later, this list updates automatically at next deploy.)</p>
+) : (
+  <ul>
+    {limits.map((l) => (
+      <li>
+        <strong>{l.title}</strong> ({l.severity}, WCAG {l.wcag}) — {l.description}
+      </li>
+    ))}
+  </ul>
+)}

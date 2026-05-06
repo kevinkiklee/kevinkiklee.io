@@ -1,0 +1,60 @@
+---
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import JsonLd from '~/components/JsonLd.astro';
+import KnownLimits from '~/components/a11y/KnownLimits.astro';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { crumbsFor } from '~/lib/crumbs';
+import { buildBreadcrumbs, buildPageGraph, buildWebPage, buildWebSite } from '~/lib/schema';
+import { SITE } from '~/lib/site-config';
+
+const crumbs = crumbsFor('/accessibility');
+const graph = buildPageGraph([
+  buildWebPage({
+    url: `${SITE.url}/accessibility`,
+    name: 'Accessibility',
+    description: 'Accessibility statement and reporting channel for kevinkiklee.io.',
+    accessibilityFeature: ['structuralNavigation', 'highContrastDisplay'],
+    accessibilityHazard: 'none',
+    accessibilityAPI: 'ARIA',
+  }),
+  buildBreadcrumbs(crumbs, SITE.url),
+  buildWebSite(),
+]);
+---
+<BaseLayout title="Accessibility · kevinkiklee.io" description="Accessibility statement and reporting channel for kevinkiklee.io.">
+  <JsonLd slot="head" data={graph} />
+  <Breadcrumbs items={crumbs} />
+  <article class="prose" style="max-width: var(--measure);">
+    <h1>// ACCESSIBILITY</h1>
+    <p>This site targets <strong>WCAG 2.2 Level AA</strong> conformance, plus AAA contrast for body text. The full design lives in the
+      <a href="https://github.com/kevinkiklee/kevinkiklee.io/blob/main/docs/superpowers/specs/2026-05-04-accessibility-improvements-design.md">accessibility design doc</a>.</p>
+
+    <h2>What's tested in CI</h2>
+    <ul>
+      <li>axe-core via Playwright on every PR</li>
+      <li>Lighthouse accessibility category, every audited route</li>
+      <li>Token contrast unit tests (AAA body, AA decorative)</li>
+      <li>Heading-increment + img-alt MDX lints</li>
+      <li>Post-build HTML structural assertion (single h1, single main, named navs, no positive tabindex, accessible names on buttons/links)</li>
+      <li>Keyboard-traversal smoke (no traps, focus visible)</li>
+    </ul>
+
+    <h2>Third-party scope</h2>
+    <p>The following surfaces are tested at the container level only; their internals are upstream:</p>
+    <ul>
+      <li><strong>Giscus comments</strong> — the iframe wrapper is gated; iframe contents are not.</li>
+      <li><strong>webmention.io</strong> — the response shape is upstream; the rendered list is gated.</li>
+      <li><strong>Pagefind UI</strong> — default styles on <code>/search</code>; we scope-override where needed.</li>
+    </ul>
+
+    <h2>Known limits</h2>
+    <KnownLimits />
+
+    <h2>Reporting an issue</h2>
+    <p>Either DM me on
+      <a rel="me" href="https://hachyderm.io/@kevin">Mastodon</a>
+      or
+      <a href="https://github.com/kevinkiklee/kevinkiklee.io/issues/new">open a GitHub issue</a>.
+    </p>
+  </article>
+</BaseLayout>
