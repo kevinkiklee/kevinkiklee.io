@@ -1,7 +1,7 @@
-import type { Image, Root } from 'mdast';
+import type { Image, Node, Root } from 'mdast';
 import { visit } from 'unist-util-visit';
 
-type JsxAttr = { type: string; name: string; value: string | unknown };
+type JsxAttr = { type: string; name: string; value: unknown };
 type JsxNode = { type: string; name: string; attributes: JsxAttr[] };
 
 function attrValue(node: JsxNode, name: string): string | null {
@@ -11,16 +11,17 @@ function attrValue(node: JsxNode, name: string): string | null {
 }
 
 export function remarkImgAlt() {
-  return (tree: Root, file: { fail: (msg: string) => never }) => {
+  return (tree: Root, file: { fail: (msg: string, node?: Node) => never }) => {
     visit(tree, (node) => {
       if (node.type === 'image') {
         const img = node as Image;
         if (img.alt === undefined || img.alt === null) {
-          file.fail(`image missing alt: ${img.url}`);
+          file.fail(`image missing alt: ${img.url}`, node);
         }
         if (img.alt === '') {
           file.fail(
             `image has empty alt without decorative intent (use <img alt="" role="presentation"> instead): ${img.url}`,
+            node,
           );
         }
       }
@@ -30,10 +31,10 @@ export function remarkImgAlt() {
         const alt = attrValue(jsx, 'alt');
         const role = attrValue(jsx, 'role');
         if (alt === null) {
-          file.fail('<img> missing alt attribute');
+          file.fail('<img> missing alt attribute', node);
         }
-        if (alt === '' && role !== 'presentation') {
-          file.fail('<img> has empty alt without role="presentation"');
+        if (alt === '' && role !== 'presentation' && role !== 'none') {
+          file.fail('<img> has empty alt without role="presentation"', node);
         }
       }
     });
