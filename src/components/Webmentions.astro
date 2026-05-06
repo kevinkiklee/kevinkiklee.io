@@ -21,36 +21,47 @@ const hasContent = replies.length > 0 || likes.length + reposts.length > 0;
     <SectionTitle id="wm-h" name="replies" level="h3" />
     {(likes.length + reposts.length) > 0 && (
       <p class="reactions">
-        {likes.length} ♥ · {reposts.length} ↻
+        {/* aria-label replaces the Unicode symbol name AT would otherwise read
+            (e.g. "BLACK HEART SUIT" / "ANTICLOCKWISE OPEN CIRCLE ARROW").
+            P13 — Phase 1 audit finding. */}
+        <span aria-label={`${likes.length} liked`}>{likes.length} ♥</span>
+        {' · '}
+        <span aria-label={`${reposts.length} shared`}>{reposts.length} ↻</span>
       </p>
     )}
     {replies.length > 0 && (
       <ul role="list">
         {replies.map((m) => (
-          <li itemscope itemtype="https://schema.org/Comment">
-            <div class="head">
-              {m.author.photo && (
-                <img
-                  class="avatar"
-                  src={m.author.photo}
-                  alt=""
-                  width="32"
-                  height="32"
-                  loading="lazy"
-                  decoding="async"
-                  itemprop="image"
-                />
-              )}
-              <div class="who">
-                <a href={m.author.url} itemprop="author">
-                  <strong>{m.author.name}</strong>
-                </a>
-                <a href={m.url} itemprop="url" class="when">
-                  {new Date(m.published).toISOString().slice(0, 10)}
-                </a>
+          <li>
+            <article class="h-entry" itemscope itemtype="https://schema.org/Comment">
+              <div class="head">
+                {m.author.photo && (
+                  <img
+                    class="avatar"
+                    src={m.author.photo}
+                    alt=""
+                    width="32"
+                    height="32"
+                    loading="lazy"
+                    decoding="async"
+                    itemprop="image"
+                  />
+                )}
+                <div class="who">
+                  <a href={m.author.url} class="p-author h-card" itemprop="author">
+                    <strong class="p-name">{m.author.name}</strong>
+                  </a>
+                  <a href={m.url} itemprop="url" class="when">
+                    {/* datetime attribute carries the machine-readable ISO value;
+                        visible text is the human-friendly date. P13. */}
+                    <time class="dt-published" datetime={new Date(m.published).toISOString()}>
+                      {new Date(m.published).toISOString().slice(0, 10)}
+                    </time>
+                  </a>
+                </div>
               </div>
-            </div>
-            <p itemprop="text">{m.content.text}</p>
+              <p class="p-content e-content" itemprop="text">{m.content.text}</p>
+            </article>
           </li>
         ))}
       </ul>

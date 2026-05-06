@@ -25,8 +25,18 @@
       btn.type = 'button';
       btn.className = 'copy-btn';
       btn.textContent = 'copy';
+      // Keep aria-label static so AT announces the control name, not transient
+      // state. The live announcement comes from the sibling status span below.
       btn.setAttribute('aria-label', 'Copy code');
-      btn.setAttribute('aria-live', 'polite');
+
+      // Dedicated sr-only live region for AT announcements (P11). Placing
+      // aria-live on the <button> itself causes some AT to re-read the entire
+      // control name on every mutation; a sibling span isolates the signal.
+      const status = document.createElement('span');
+      status.className = 'sr-only';
+      status.setAttribute('aria-live', 'polite');
+      status.setAttribute('aria-atomic', 'true');
+
       // Track the in-flight reset timer so spam-clicks don't pile up
       // multiple `setTimeout`s and produce flickering label changes.
       let resetTimer: number | undefined;
@@ -41,9 +51,11 @@
         }
         if (!ok) {
           btn.textContent = 'error';
+          status.textContent = 'Failed to copy';
           if (resetTimer !== undefined) window.clearTimeout(resetTimer);
           resetTimer = window.setTimeout(() => {
             btn.textContent = 'copy';
+            status.textContent = '';
             resetTimer = undefined;
           }, 1200);
           return;
@@ -59,14 +71,19 @@
           ).finished,
         );
         btn.textContent = '✓ copied';
+        status.textContent = 'Copied';
         if (resetTimer !== undefined) window.clearTimeout(resetTimer);
         resetTimer = window.setTimeout(() => {
           btn.textContent = 'copy';
+          status.textContent = '';
           resetTimer = undefined;
         }, 1000);
       });
       pre.style.position = 'relative';
       pre.appendChild(btn);
+      // Insert status span after the button — same pre parent, invisible to
+      // sighted users but picked up by the live-region announcement pipeline.
+      pre.appendChild(status);
     });
   }
 
