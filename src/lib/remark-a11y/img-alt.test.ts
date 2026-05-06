@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
 import remarkMdx from 'remark-mdx';
 import remarkParse from 'remark-parse';
 import remarkStringify from 'remark-stringify';
 import { unified } from 'unified';
+import { describe, expect, it } from 'vitest';
 import { remarkImgAlt } from './img-alt.ts';
 
 function process(md: string): Promise<string> {

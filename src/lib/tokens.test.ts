@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import baseline from '../../tokens-baseline.json' with { type: 'json' };
 import { contrastRatio } from './contrast.ts';
-import { tokens, aaaPairs, aaPairs } from './tokens.ts';
+import { aaPairs, aaaPairs, tokens } from './tokens.ts';
 
 const skip = new Set<string>(baseline.skip);
 
