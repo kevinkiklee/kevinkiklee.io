@@ -47,7 +47,14 @@
         const dlg = document.getElementById('shortcuts-overlay') as HTMLDialogElement | null;
         if (dlg && !dlg.open) {
           e.preventDefault();
+          const shortcutsOpener = (document.activeElement instanceof HTMLElement && document.activeElement !== document.body)
+            ? document.activeElement
+            : null;
           dlg.showModal();
+          dlg.addEventListener('close', () => {
+            const target = shortcutsOpener ?? (document.getElementById('main') as HTMLElement | null);
+            target?.focus({ preventScroll: true });
+          }, { once: true });
         }
         clearChord();
         return;

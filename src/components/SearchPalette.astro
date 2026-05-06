@@ -31,6 +31,7 @@
       <button type="submit" aria-label="Close search palette" title="Close (Esc)">Esc</button>
     </div>
     <div id="palette-results" class="results" aria-label="Search results"></div>
+    <p id="palette-status" class="sr-only" aria-live="polite" aria-atomic="true"></p>
     <p class="palette-hint">
       <kbd>↵</kbd> open · <kbd>Esc</kbd> close · full results: <a href="/search">/search</a>
     </p>
@@ -163,6 +164,13 @@
     }
   }
 
+  @media (prefers-reduced-transparency: reduce) {
+    dialog::backdrop {
+      backdrop-filter: none;
+      background: var(--bg);
+    }
+  }
+
   /* Mobile: drop the scale, slide up from bottom edge instead. */
   @media (max-width: 640px) {
     #search-palette {
@@ -210,13 +218,24 @@
     let pagefindLoaded: PagefindModule | null = null;
     let pagefindLoadFailed = false;
 
+    let opener: HTMLElement | null = null;
+
     function open() {
+      opener = (document.activeElement instanceof HTMLElement && document.activeElement !== document.body)
+        ? document.activeElement
+        : null;
       if (!dlg!.open) dlg!.showModal();
       // Defer focus so Safari/Firefox don't fight the dialog open animation.
       setTimeout(() => input!.focus(), 0);
       void loadPagefind();
     }
     function close() { if (dlg!.open) dlg!.close(); }
+
+    dlg.addEventListener('close', () => {
+      const target = opener ?? (document.getElementById('main') as HTMLElement | null);
+      target?.focus({ preventScroll: true });
+      opener = null;
+    });
 
     async function loadPagefind(): Promise<PagefindModule | null> {
       if (pagefindLoaded) return pagefindLoaded;
@@ -258,25 +277,29 @@
         const q = input!.value.trim();
         if (!q) {
           results!.innerHTML = '';
+          document.getElementById('palette-status')!.textContent = '';
           return;
         }
         const search = await pf.search(q);
         if (search.results.length === 0) {
           results!.innerHTML = '<p class="empty">No results.</p>';
+          document.getElementById('palette-status')!.textContent = `No results for ${q}`;
           return;
         }
         const top = await Promise.all(
           search.results.slice(0, 8).map((r) => r.data()),
         );
-        results!.innerHTML = top
+        results!.innerHTML = '<ul role="list">' + top
           .map((d) => {
             const title = escapeHtml(d.meta.title ?? d.url);
             const url = escapeHtml(d.url);
             // Pagefind returns excerpts pre-wrapped with <mark> highlighting.
             // We deliberately don't escape `excerpt` to preserve those marks.
-            return `<a href="${url}" aria-label="Open: ${title}"><strong>${title}</strong><small>${d.excerpt}</small></a>`;
+            return `<li><a href="${url}" aria-label="Open: ${title}"><strong>${title}</strong><small>${d.excerpt}</small></a></li>`;
           })
-          .join('');
+          .join('') + '</ul>';
+        document.getElementById('palette-status')!.textContent =
+          `${top.length} result${top.length === 1 ? '' : 's'} for ${q}`;
       }, SEARCH_DEBOUNCE_MS);
     });
 
