@@ -95,6 +95,13 @@ Before publishing, verify the post:
 - [ ] Tags listed in frontmatter are concrete topics (not vibes).
 - [ ] Primary sources are linked inline, not parked in a footer.
 
+## Non-English passages
+
+Use `<span lang="…">…</span>` (e.g., `<span lang="ja">こんにちは</span>`)
+when quoting non-English text in posts. This lets screen readers select
+the right voice. The build does not lint for this — it's an author
+convention.
+
 ## Image performance
 
 - **Cover hero**: use the `cover:` frontmatter field. The site emits an
