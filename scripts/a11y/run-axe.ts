@@ -1,6 +1,6 @@
-import { chromium, type Browser } from 'playwright';
 import { AxeBuilder } from '@axe-core/playwright';
-import { routes, themes, type AuditRoute } from '../../src/lib/audit-routes.ts';
+import { type Browser, chromium } from 'playwright';
+import { type AuditRoute, routes, themes } from '../../src/lib/audit-routes.ts';
 
 export interface AxeViolation {
   id: string;

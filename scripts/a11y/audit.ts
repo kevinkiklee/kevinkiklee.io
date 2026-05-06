@@ -1,7 +1,7 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { toMarkdown } from './format-findings.ts';
 import { runAxe } from './run-axe.ts';
 import { runLhci } from './run-lhci.ts';
-import { toMarkdown } from './format-findings.ts';
-import { writeFile, readFile } from 'node:fs/promises';
 
 const baseUrl = process.env.A11Y_BASE_URL ?? 'http://localhost:4321';
 const primaryOnly = process.argv.includes('--primary-only');
