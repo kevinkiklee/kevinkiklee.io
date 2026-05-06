@@ -276,3 +276,53 @@ const graph = buildPageGraph([
     import('~/lib/reading-progress-fallback').then(({ attach }) => attach());
   }
 </script>
+
+<script>
+  // P4: Conditional code-block keyboard scroll region.
+  // Only adds tabindex / role / aria-label when the block actually overflows.
+  function applyCodeBlockA11y() {
+    document.querySelectorAll('main pre').forEach((pre) => {
+      const el = pre as HTMLElement;
+      if (el.scrollWidth > el.clientWidth) {
+        el.tabIndex = 0;
+        el.setAttribute('role', 'region');
+        const codeEl = el.querySelector('code');
+        const langClass =
+          Array.from(el.classList).find((c) => c.startsWith('language-')) ??
+          Array.from(codeEl?.classList ?? []).find((c) => c.startsWith('language-'));
+        const lang = langClass?.replace('language-', '');
+        el.setAttribute(
+          'aria-label',
+          lang && lang !== 'plaintext' && lang !== 'text' ? `Code, ${lang}` : 'Code',
+        );
+      }
+    });
+  }
+
+  // P5: Conditional table scroll region.
+  // Wraps overflowing tables in a role=region div; idempotent on re-runs.
+  function applyTableA11y() {
+    document.querySelectorAll('main table').forEach((table) => {
+      const t = table as HTMLElement;
+      // Skip if already wrapped (e.g., on view transition re-run).
+      if (t.parentElement?.getAttribute('role') === 'region') return;
+      requestAnimationFrame(() => {
+        if (t.scrollWidth <= t.clientWidth) return;
+        const wrap = document.createElement('div');
+        wrap.setAttribute('role', 'region');
+        wrap.setAttribute('aria-label', 'Table');
+        wrap.tabIndex = 0;
+        wrap.style.overflowX = 'auto';
+        t.parentNode?.insertBefore(wrap, t);
+        wrap.appendChild(t);
+      });
+    });
+  }
+
+  applyCodeBlockA11y();
+  applyTableA11y();
+  document.addEventListener('astro:page-load', () => {
+    applyCodeBlockA11y();
+    applyTableA11y();
+  });
+</script>
