@@ -23,6 +23,7 @@
     "preview:static": "serve dist/client -l 4321 --no-clipboard",
     "a11y:audit": "tsx scripts/a11y/audit.ts",
     "a11y:audit:primary": "tsx scripts/a11y/audit.ts --primary-only",
+    "a11y:keyboard": "playwright test tests/a11y/keyboard.spec.ts",
     "lighthouse": "lhci collect --url=http://localhost:4321"
   },
   "dependencies": {
