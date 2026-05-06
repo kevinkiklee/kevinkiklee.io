@@ -44,10 +44,12 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
+    "@axe-core/playwright": "^4.11.3",
     "@biomejs/biome": "1.9.4",
     "@commitlint/cli": "19.6.0",
     "@commitlint/config-conventional": "19.6.0",
     "@lhci/cli": "0.14.0",
+    "@playwright/test": "^1.59.1",
     "@types/hast": "^3.0.4",
     "@types/mdast": "^4.0.4",
     "@types/node": "24.12.2",
@@ -58,6 +60,7 @@
     "lint-staged": "15.2.10",
     "markdownlint-cli2": "0.15.0",
     "mdast-util-to-markdown": "^2.1.0",
+    "playwright": "^1.59.1",
     "remark-mdx": "^3.0.0",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
@@ -75,7 +78,13 @@
     "commit-msg": "pnpm exec commitlint --edit $1"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,astro}": ["biome format --write", "biome lint"],
-    "*.{md,mdx}": ["cspell --no-progress --no-must-find-files", "markdownlint-cli2"]
+    "*.{ts,tsx,js,jsx,astro}": [
+      "biome format --write",
+      "biome lint"
+    ],
+    "*.{md,mdx}": [
+      "cspell --no-progress --no-must-find-files",
+      "markdownlint-cli2"
+    ]
   }
 }
