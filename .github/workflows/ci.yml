@@ -44,6 +44,47 @@ jobs:
         uses: actions/upload-artifact@v4
         with: { name: stats-html, path: stats.html, if-no-files-found: ignore }
 
+  a11y:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: 'pnpm' }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm build
+      - run: |
+          pnpm preview:static &
+          PREVIEW_PID=$!
+          sleep 5
+          pnpm a11y:audit:primary
+          STATUS=$?
+          kill $PREVIEW_PID 2>/dev/null
+          exit $STATUS
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-findings
+          path: |
+            a11y-findings.md
+            a11y-findings.json
+      - if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const md = fs.readFileSync('a11y-findings.md', 'utf8');
+            const body = `## a11y findings\n\n${md.slice(0, 60000)}`;
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
   lighthouse:
     if: github.event_name == 'pull_request'
     needs: build
