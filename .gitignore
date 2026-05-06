@@ -16,3 +16,7 @@ fonts/source/
 
 # Git worktrees for parallel feature work.
 .worktrees/
+
+# Transient a11y audit outputs
+a11y-findings.md
+a11y-findings.json
