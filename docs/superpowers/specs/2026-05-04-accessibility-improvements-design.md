@@ -28,7 +28,7 @@
 - Mobile-AT field testing (TalkBack, VoiceOver-iOS).
 - i18n a11y (`hreflang` per locale, RTL, lang variants) — site is `en-US`-only.
 - Cookie-consent banner a11y — site is cookieless, no banner exists.
-- Continuous re-audit cadence — we rely on CI gates, not a recurring manual pass.
+- Recurring manual re-audit cadence — we rely on CI gates running per PR / per push, not a periodic human-driven re-audit.
 
 ---
 
@@ -96,13 +96,13 @@ The audit is a snapshot. These gates make it durable. Each gate is an independen
 
 | # | Gate | What it asserts | Trigger | Failure mode |
 |---|---|---|---|---|
-| G1 | **`pnpm a11y:audit` job** | `@axe-core/playwright` against the route matrix. Pinned `axe-core@4.10.x`. | PR: **primary path** only (home, archive, post sample, search palette open, /accessibility) × 2 themes × default motion. Push-to-main: full matrix incl. tag/projects/about/404/reduced-motion/reduced-data. | PR fails on `Blocker` + `Major`; comment posted via `actions/github-script` |
+| G1 | **`pnpm a11y:audit` job** | `@axe-core/playwright` against the route matrix. Pinned `axe-core@4.10.x`. | PR: **primary path** only (home, archive, post sample, search palette open; `/accessibility` added once it exists from PR 3.6) × 2 themes × default motion. Push-to-main: full matrix incl. tag/projects/about/404/reduced-motion/reduced-data. | PR fails on `Blocker` + `Major`; comment posted via `actions/github-script` |
 | G2 | **Expanded LHCI** | LH accessibility = 1.0 on every audited route. | PR: primary path. Push-to-main: full route matrix. | PR fails on a11y < 1.0 |
 | G3 | **MDX a11y lints (`src/lib/remark-a11y/`)** | Small custom plugins: heading-increment validator + img-alt validator (non-empty `alt`, or explicit `alt="" role="presentation"` for decorative). | every PR (`pnpm check`) | Build fails with file:line |
 | G4 | **Post-build HTML structural assertion** | Parse every `dist/**/*.html` with `linkedom`; assert: single `<h1>`, single `<main>`, every `<nav>` has accessible name, no `tabindex > 0`, every `<button>`/`<a>` has computed accessible name. New `scripts/a11y-html-check.ts`. | PR (after `astro build`) | Fails with route + selector |
 | G5 | **Playwright keyboard-traversal smoke** (shares Playwright project with G1) | Tab from skip-link through footer on primary-path routes; assert: no trap, focus visible at every step (Playwright screenshot diff between focused + non-focused state — non-zero pixel delta required), focus returns to opener after `<dialog>` close, falls back to skip-link target when no opener (search palette opened via `/` shortcut from idle), focus lands on `main h1` after view transition. | every PR | PR fails with the failing step's screenshot |
 | G6 | **Token-contrast unit tests** | TS test of every `(bg, fg)` token pair in light + dark using WCAG 2.x relative-luminance contrast (vendored ~30-line helper, no deps). Catches token edits that drop ratios. | every PR (`pnpm test`) | Fails with token name + ratio |
-| G7 | **`/accessibility` page generator + sanity test** | Build step renders the page's "known limits" section from `accessibility-audit-findings.md`'s `wontfix-rationale` entries (single source of truth). A `pnpm test` case asserts the generator produced non-empty output and parsed every `wontfix` entry. | every PR | Test fails listing parse errors |
+| G7 | **`/accessibility` page generator + sanity test** | Build step renders the page's "known limits" section from `accessibility-audit-findings.md`'s `wontfix-rationale` entries (single source of truth). A `pnpm test` case asserts the generator produced non-empty output and parsed every `wontfix` entry. | every PR **once it lands** (G7 ships in PR 3.6 alongside the `/accessibility` page; before that, the gate doesn't exist) | Test fails listing parse errors |
 
 (Existing `size.yml` covers bundle-size; nothing new there.)
 
@@ -188,7 +188,7 @@ Each item lists: **what**, **why** (WCAG ref or rationale), **where** (file or s
 Output: `docs/superpowers/specs/2026-05-04-accessibility-audit-findings.md`. No source changes. Contains:
 
 - Route matrix (the canonical source for Phase 2's `audit-routes.ts`).
-- Findings from `@axe-core/playwright` + LHCI run locally.
+- Findings from `@axe-core/playwright` + LHCI run locally via **ad-hoc one-off invocations** (e.g., a temporary script committed only to a working branch, or `npx` calls). The formalized `pnpm a11y:audit` script + the `@axe-core/playwright` dep land in Phase 2 — Phase 1 doesn't yet need permanent tooling, just findings.
 - Findings from the static-review checklist.
 - Each polish item (P1–P17) cross-referenced to either a validated finding or a `verify-in-audit` checkbox (P8, P10).
 
@@ -200,7 +200,7 @@ Each gate ships independently with **a baseline appropriate to its mechanism** s
 
 | PR | Gate(s) | Baseline mechanism |
 |---|---|---|
-| 2.0 (prep) | `audit-routes.ts` config + shared Playwright project skeleton | n/a |
+| 2.0 (prep) | Install `@axe-core/playwright`, `playwright`, `@playwright/test` deps; add `audit-routes.ts` config; add shared Playwright project skeleton; add the `pnpm a11y:audit` script (wrapper that runs axe + LH and writes markdown). No assertions yet — just the plumbing. | n/a |
 | 2.1 | G3 (MDX lints) + G6 (token-contrast unit tests) | G3: empty (existing MDX should pass; if not, fix in PR). G6: skip-list of currently-failing token pairs in `tokens-baseline.json`, removed token-by-token in P7. |
 | 2.2 | G1 (`@axe-core/playwright` PR job, primary path only) | `axe-baseline.json` of current violations (axe's native diff format). New violations fail CI. |
 | 2.3 | G2 (expanded LHCI) | Per-URL floor in `lighthouserc.cjs` set to current LH a11y score at PR creation; PR fails on regression below floor. (1.0 target lifts in Phase 4.) |
