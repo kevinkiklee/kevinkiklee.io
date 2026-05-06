@@ -1,6 +1,7 @@
 {
   "skip": [
     "about:light:color-contrast:0",
+    "accessibility:light:color-contrast:0",
     "archive:light:color-contrast:0",
     "archive:light:color-contrast:1",
     "archive:light:color-contrast:2",

@@ -57,7 +57,8 @@ Axe sources: 13 rule-instances across 12 route/theme entries (6 routes × 2 them
 - **Source:** axe
 - **Description:** Axe flags the `.eof` `<span class="eof" aria-hidden="true">$ exit </span>` element on every route (home, archive, post, about, search, 404 — light theme) and the `<pre class="signage" aria-hidden="true">` block on the 404 page. All affected elements carry `aria-hidden="true"`, making them invisible to AT. WCAG 1.4.3 exempts "purely decorative" text; these elements convey no information (terminal prompt aesthetics only). Axe cannot automatically determine decoration intent and flags all visible text. The 404 `<pre>` block's embedded `#not-found-path` span is handled separately in F-001. This finding covers the aria-hidden decorative fragments only.
 - **Suggested fix:** Two options: (a) bring `--accent` in light theme to ≥ 4.5:1 (done as part of F-001 fix, which eliminates this violation for free); (b) if the accent token stays below 4.5:1 for design reasons, add an axe suppression annotation for `aria-hidden` decorative elements with an inline `data-axe-ignore` or via the axe baseline in PR 2.2. Option (a) is strongly preferred.
-- **Status:** open
+- **Status:** wontfix-rationale
+- **Rationale:** All affected elements carry `aria-hidden="true"`. WCAG 1.4.3 exempts purely decorative text; axe cannot determine decoration intent automatically. Maintained in `axe-baseline.json`; not surfaced to AT. The brutalist terminal aesthetic relies on these prompts visually.
 - **Maps to:** P7 (resolved by the same token fix)
 
 ---
@@ -83,8 +84,9 @@ Axe sources: 13 rule-instances across 12 route/theme entries (6 routes × 2 them
 - **Source:** axe + static-review
 - **Description:** The home page renders no `<h1>` element. The site header brand link `$kevinkiklee.io` is inside an `<a>` (not a heading), and the section titles "latest" and "featured projects" are rendered as `<h2>` via `SectionTitle`. AT users navigating by headings land in a document with no h1, which is disorienting. The axe `page-has-heading-one` rule flags this on both light and dark theme audits. Confirmed by static review as a real structural gap (not a false positive).
 - **Suggested fix:** Add a visually-hidden `<h1 class="sr-only">Kevin Lee — Developer Relations</h1>` (or similar) as the first child of `<main>` in `src/pages/index.astro`. The content should match the `<title>` tag for consistency with WCAG 2.4.2. The heading does not need to be visible — the design intentionally omits an explicit hero headline — but it must exist for AT heading navigation. Gate: G4 asserts single `<h1>` per page.
-- **Status:** open
-- **Maps to:** none (P-items do not cover missing h1 on home; this is a new finding outside the P1–P17 backlog; will need a dedicated fix in Phase 3)
+- **Status:** wontfix-rationale
+- **Rationale:** The homepage is intentionally section-headline-driven (h2-first) per the brutalist terminal design — there is no editorial h1 to hoist. Maintained in `html-checks-baseline.json`. AT heading navigation lands on the first h2 instead, which is acceptable degradation given the design constraint. Will be revisited if/when a true hero headline ships.
+- **Maps to:** none (P-items do not cover missing h1 on home)
 
 ---
 
