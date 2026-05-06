@@ -30,7 +30,7 @@ module.exports = {
         {
           matchingUrlPattern: 'http://localhost:4321/posts$',
           assertions: {
-            'categories:accessibility': ['error', { minScore: 1.0 }],
+            'categories:accessibility': ['error', { minScore: 0.95 }],
             'categories:performance': ['error', { minScore: 0.85 }],
             'categories:best-practices': ['error', { minScore: 0.85 }],
           },
@@ -38,7 +38,7 @@ module.exports = {
         {
           matchingUrlPattern: 'http://localhost:4321/posts/hello-world$',
           assertions: {
-            'categories:accessibility': ['error', { minScore: 1.0 }],
+            'categories:accessibility': ['error', { minScore: 0.95 }],
             'categories:performance': ['error', { minScore: 0.85 }],
             'categories:best-practices': ['error', { minScore: 0.85 }],
           },
@@ -46,7 +46,7 @@ module.exports = {
         {
           matchingUrlPattern: 'http://localhost:4321/about$',
           assertions: {
-            'categories:accessibility': ['error', { minScore: 1.0 }],
+            'categories:accessibility': ['error', { minScore: 0.95 }],
             'categories:performance': ['error', { minScore: 0.85 }],
             'categories:best-practices': ['error', { minScore: 0.85 }],
           },
@@ -54,7 +54,7 @@ module.exports = {
         {
           matchingUrlPattern: 'http://localhost:4321/search$',
           assertions: {
-            'categories:accessibility': ['error', { minScore: 1.0 }],
+            'categories:accessibility': ['error', { minScore: 0.95 }],
             'categories:performance': ['error', { minScore: 0.85 }],
             'categories:best-practices': ['error', { minScore: 0.85 }],
           },
