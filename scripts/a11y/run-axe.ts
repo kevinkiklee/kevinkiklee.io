@@ -26,7 +26,6 @@ export async function runAxe(opts: {
   const out: AxeRunEntry[] = [];
 
   for (const route of list) {
-    if (route.exists === false) continue;
     for (const theme of themes) {
       const page = await ctx.newPage();
       await page.addInitScript((t) => localStorage.setItem('theme', t), theme);
