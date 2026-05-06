@@ -66,7 +66,9 @@ const graph = buildPageGraph([
   <JsonLd slot="head" data={graph} />
   <Breadcrumbs items={crumbs} />
   <h1 class="page-title">Posts <span class="page-num">— page {page}/{totalPages}</span></h1>
-  <ul role="list" class="archive">
+  <section>
+    <h2 class="sr-only">Post archive</h2>
+    <ul role="list" class="archive">
     {items.map((p) => (
       <li>
         <a href={`/posts/${p.id}`}>
@@ -78,6 +80,7 @@ const graph = buildPageGraph([
       </li>
     ))}
   </ul>
+  </section>
   <nav aria-label="Pagination" class="pager">
     <a href={prevHref}>← newer</a>
     {' · '}

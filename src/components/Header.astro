@@ -21,7 +21,7 @@ function isCurrent(href: string) {
       <span class="dol" aria-hidden="true">$</span>kevinkiklee.io<span class="cursor" aria-hidden="true"></span>
     </a>
     <small class="role">chrome devrel · seoul</small>
-    <nav class="site-nav" aria-label="Primary" style="view-transition-name: site-nav; view-transition-class: persistent;">
+    <nav id="site-nav" class="site-nav" aria-label="Primary" style="view-transition-name: site-nav; view-transition-class: persistent;">
       <ul role="list">
         {links.map((l) => (
           <li><a href={l.href} aria-current={isCurrent(l.href) ? 'page' : undefined}>{l.label}</a></li>
