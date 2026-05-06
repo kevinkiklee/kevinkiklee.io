@@ -55,7 +55,10 @@ const graph = buildPageGraph([
   {posts.length === 0 ? (
     <p class="empty">No posts under this tag yet.</p>
   ) : (
-    posts.map((post, i) => <PostCard post={post} index={i} />)
+    <section>
+      <h2 class="sr-only">Posts tagged {tag}</h2>
+      {posts.map((post, i) => <PostCard post={post} index={i} />)}
+    </section>
   )}
 </BaseLayout>
 

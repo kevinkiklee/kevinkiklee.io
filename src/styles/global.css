@@ -158,17 +158,33 @@
     }
   }
 
-  .skip-link {
+  /* Skip-link menu: invisible until focused, then fixed top-left.
+     Inverted (fg/bg swap) to match the brutalist signage treatment. */
+  .skip-links {
     position: absolute;
-    left: -9999px;
-    top: 0;
-    background: var(--fg);
-    color: var(--bg);
-    padding: var(--space-2) var(--space-4);
-    z-index: 100;
-  }
-  .skip-link:focus {
+    top: -9999px;
     left: 0;
+  }
+  .skip-links:focus-within {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    display: flex;
+    gap: var(--space-2);
+    background: var(--bg);
+    padding: var(--space-1);
+    border: 2px solid var(--fg);
+  }
+  .skip-links a {
+    padding: var(--space-2) var(--space-4);
+    color: var(--bg);
+    background: var(--fg);
+    text-decoration: none;
+  }
+  .skip-links a:focus-visible {
+    outline: 2px solid var(--bg);
+    outline-offset: -4px;
   }
   .sr-only {
     position: absolute !important;
@@ -210,7 +226,7 @@
       color: LinkText;
     }
     button,
-    .skip-link {
+    .skip-links a {
       background: ButtonFace;
       color: ButtonText;
       border: 1px solid ButtonText;
