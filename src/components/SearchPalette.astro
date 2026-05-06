@@ -307,5 +307,13 @@
     dlg.addEventListener('mousedown', (e) => {
       if (e.target === dlg) close();
     });
+
+    // Test/audit hook: ?palette=open opens the palette on load.
+    // Used by `audit-routes.ts` `search-palette` entry. Removed from URL after open
+    // so subsequent navigation isn't sticky.
+    if (new URLSearchParams(window.location.search).get('palette') === 'open') {
+      open();
+      history.replaceState(null, '', window.location.pathname);
+    }
   }
 </script>
