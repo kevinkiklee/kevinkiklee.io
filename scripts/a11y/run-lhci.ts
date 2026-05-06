@@ -7,7 +7,6 @@ export function runLhci(opts: {
 }): void {
   const list = opts.primaryOnly ? routes.filter((r) => r.primary) : routes;
   for (const route of list) {
-    if (route.exists === false) continue;
     execFileSync(
       'pnpm',
       [

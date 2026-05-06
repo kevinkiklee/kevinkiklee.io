@@ -80,6 +80,9 @@ export function buildBlogPosting(args: BlogPostingArgs) {
     keywords: args.tags.join(','),
     inLanguage: 'en-US',
     speakable: buildSpeakable(),
+    accessibilityFeature: ['structuralNavigation', 'highContrastDisplay'],
+    accessibilityHazard: 'none',
+    accessibilityAPI: 'ARIA',
   };
   if (args.tags[0]) out.articleSection = args.tags[0];
   if (args.wordCount) out.wordCount = args.wordCount;
@@ -190,14 +193,27 @@ export function buildBlog() {
   } as const;
 }
 
-export function buildWebPage(args: { url: string; name: string; description: string }) {
-  return {
+export interface WebPageArgs {
+  url: string;
+  name: string;
+  description: string;
+  accessibilityFeature?: string[] | undefined;
+  accessibilityHazard?: string | undefined;
+  accessibilityAPI?: string | undefined;
+}
+
+export function buildWebPage(args: WebPageArgs): Record<string, unknown> {
+  const out: Record<string, unknown> = {
     '@type': 'WebPage',
     '@id': args.url,
     name: args.name,
     description: args.description,
     inLanguage: 'en-US',
-  } as const;
+  };
+  if (args.accessibilityFeature) out.accessibilityFeature = args.accessibilityFeature;
+  if (args.accessibilityHazard !== undefined) out.accessibilityHazard = args.accessibilityHazard;
+  if (args.accessibilityAPI !== undefined) out.accessibilityAPI = args.accessibilityAPI;
+  return out;
 }
 
 export function buildCollectionPage(args: {

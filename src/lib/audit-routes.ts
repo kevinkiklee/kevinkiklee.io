@@ -23,8 +23,6 @@ export interface AuditRoute {
   id: RouteId;
   path: string;
   primary: boolean;
-  /** True once `/accessibility` ships in PR 3.6. */
-  exists?: boolean;
 }
 
 export const routes: AuditRoute[] = [
@@ -45,7 +43,7 @@ export const routes: AuditRoute[] = [
   { id: 'search', path: '/search', primary: true },
   { id: 'search-palette', path: '/?palette=open', primary: true },
   { id: 'privacy', path: '/privacy', primary: false },
-  { id: 'accessibility', path: '/accessibility', primary: true, exists: false },
+  { id: 'accessibility', path: '/accessibility', primary: true },
   { id: '404', path: '/this-route-does-not-exist', primary: false },
 ];
 
