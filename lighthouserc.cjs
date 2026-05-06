@@ -11,28 +11,55 @@ module.exports = {
       numberOfRuns: 1,
     },
     assert: {
-      // Per-URL accessibility floors (Phase 4 lifts all to 1.0 once Phase 3 fixes land)
-      // Non-a11y performance/quality assertions are out of scope for this PR.
+      // Per-URL category floors. Accessibility is the strict gate (1.0 most
+      // routes; 0.92 on home where the wontfix homepage h2-first structure
+      // costs points). Performance / best-practices / SEO floors are
+      // conservative starting values; tighten as the site stabilises.
       assertMatrix: [
         {
           matchingUrlPattern: 'http://localhost:4321/$',
-          assertions: { 'categories:accessibility': ['error', { minScore: 0.92 }] },
+          assertions: {
+            'categories:accessibility': ['error', { minScore: 0.92 }],
+            'categories:performance': ['error', { minScore: 0.9 }],
+            'categories:best-practices': ['error', { minScore: 0.9 }],
+            'categories:seo': ['error', { minScore: 0.9 }],
+          },
         },
         {
           matchingUrlPattern: 'http://localhost:4321/posts$',
-          assertions: { 'categories:accessibility': ['error', { minScore: 1.0 }] },
+          assertions: {
+            'categories:accessibility': ['error', { minScore: 1.0 }],
+            'categories:performance': ['error', { minScore: 0.9 }],
+            'categories:best-practices': ['error', { minScore: 0.9 }],
+            'categories:seo': ['error', { minScore: 0.9 }],
+          },
         },
         {
           matchingUrlPattern: 'http://localhost:4321/posts/hello-world$',
-          assertions: { 'categories:accessibility': ['error', { minScore: 1.0 }] },
+          assertions: {
+            'categories:accessibility': ['error', { minScore: 1.0 }],
+            'categories:performance': ['error', { minScore: 0.9 }],
+            'categories:best-practices': ['error', { minScore: 0.9 }],
+            'categories:seo': ['error', { minScore: 0.9 }],
+          },
         },
         {
           matchingUrlPattern: 'http://localhost:4321/about$',
-          assertions: { 'categories:accessibility': ['error', { minScore: 1.0 }] },
+          assertions: {
+            'categories:accessibility': ['error', { minScore: 1.0 }],
+            'categories:performance': ['error', { minScore: 0.9 }],
+            'categories:best-practices': ['error', { minScore: 0.9 }],
+            'categories:seo': ['error', { minScore: 0.9 }],
+          },
         },
         {
           matchingUrlPattern: 'http://localhost:4321/search$',
-          assertions: { 'categories:accessibility': ['error', { minScore: 1.0 }] },
+          assertions: {
+            'categories:accessibility': ['error', { minScore: 1.0 }],
+            'categories:performance': ['error', { minScore: 0.9 }],
+            'categories:best-practices': ['error', { minScore: 0.9 }],
+            'categories:seo': ['error', { minScore: 0.9 }],
+          },
         },
       ],
     },
