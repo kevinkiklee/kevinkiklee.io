@@ -11,7 +11,7 @@ const baseline: { skip: string[] } = (() => {
 })();
 const skip = new Set(baseline.skip);
 
-for (const route of routes.filter((r) => r.primary && r.exists !== false)) {
+for (const route of routes.filter((r) => r.primary)) {
   test(`keyboard traversal — ${route.id}`, async ({ page }) => {
     await page.goto(route.path);
     await page.waitForLoadState('networkidle');
