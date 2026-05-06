@@ -11,6 +11,8 @@ import { parse as parseYaml } from 'yaml';
 import imageSitemap from './src/integrations/image-sitemap';
 import { rehypeAssertImgDims } from './src/lib/assert-img-dims';
 import { remarkReadingTime } from './src/lib/reading-time';
+import { remarkHeadingIncrement } from './src/lib/remark-a11y/heading-increment';
+import { remarkImgAlt } from './src/lib/remark-a11y/img-alt';
 import { remarkAeo } from './src/lib/remark-aeo';
 
 // Read post frontmatter at config-evaluation time so the sitemap can:
@@ -89,7 +91,7 @@ export default defineConfig({
     assets: '_astro',
   },
   markdown: {
-    remarkPlugins: [remarkReadingTime, remarkAeo],
+    remarkPlugins: [remarkReadingTime, remarkAeo, remarkHeadingIncrement, remarkImgAlt],
     rehypePlugins: [rehypeAssertImgDims],
     shikiConfig: {
       themes: { light: 'min-light', dark: 'min-dark' },
