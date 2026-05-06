@@ -20,7 +20,7 @@
     "new:project": "tsx scripts/new-project.ts",
     "analyze": "open stats.html",
     "links:check": "lychee --no-progress dist/",
-    "preview:static": "serve dist/client -p 4321 --no-clipboard --single",
+    "preview:static": "serve dist/client -l 4321 --no-clipboard",
     "a11y:audit": "tsx scripts/a11y/audit.ts",
     "a11y:audit:primary": "tsx scripts/a11y/audit.ts --primary-only",
     "lighthouse": "lhci collect --url=http://localhost:4321"
