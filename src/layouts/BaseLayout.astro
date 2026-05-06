@@ -66,7 +66,10 @@ const { title, description = '', ...rest } = Astro.props;
     <slot name="head" />
   </head>
   <body>
-    <a href="#main" class="skip-link">Skip to content</a>
+    <nav class="skip-links" aria-label="Skip links">
+      <a href="#main">Skip to content</a>
+      <a href="#site-nav">Skip to navigation</a>
+    </nav>
     <Header />
     <main id="main" tabindex="-1">
       <slot />
