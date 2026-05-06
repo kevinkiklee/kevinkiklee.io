@@ -21,6 +21,8 @@ const firstSlug = items[0]?.slug;
     <ol>
       {items.map((h) => (
         <li class:list={[`depth-${h.depth}`]}>
+          {/* 'location' is spec-valid for in-page section markers; AT support
+              verified acceptable in Phase 1 audit. */}
           <a
             href={`#${h.slug}`}
             aria-current={h.slug === firstSlug ? 'location' : undefined}
@@ -38,6 +40,8 @@ const firstSlug = items[0]?.slug;
     <ol>
       {items.map((h) => (
         <li class:list={[`depth-${h.depth}`]}>
+          {/* 'location' is spec-valid for in-page section markers; AT support
+              verified acceptable in Phase 1 audit. */}
           <a
             href={`#${h.slug}`}
             aria-current={h.slug === firstSlug ? 'location' : undefined}
@@ -177,6 +181,11 @@ const firstSlug = items[0]?.slug;
 
       const baseHeight = indicator.offsetHeight || 24;
       let activeId: string | null = null;
+      // Debounce timer for aria-current updates. The visual indicator moves
+      // immediately (no layout reflow impact), but we delay the aria-current
+      // setAttribute by 150ms so AT doesn't fire a burst of announcements
+      // during fast continuous scrolls. (P12 — Phase 1 audit finding.)
+      let ariaCurrentTimer: number | undefined;
 
       function setActive(id: string): void {
         if (id === activeId) return;
@@ -184,15 +193,21 @@ const firstSlug = items[0]?.slug;
         const link = linksByHref.get(`#${id}`);
         if (!link || !indicator) return;
         const ratio = link.offsetHeight / baseHeight;
+        // Move the indicator bar immediately — compositor-only, no AT signal.
         indicator.style.transform = `translateY(${link.offsetTop}px) scaleY(${ratio})`;
-        toc.querySelectorAll('a[aria-current]').forEach((a) => a.removeAttribute('aria-current'));
-        link.setAttribute('aria-current', 'location');
-        // Inline variant: surface the current heading in the collapsed
-        // summary so the reader knows where they are without expanding.
+        // Inline variant: surface the current heading in the collapsed summary.
         if (cur) {
           const heading = headingMap.get(id);
           if (heading) cur.textContent = heading.textContent ?? '';
         }
+        // Debounce the aria-current update to avoid chatty AT announcements
+        // while the user is actively scrolling through sections quickly.
+        if (ariaCurrentTimer !== undefined) clearTimeout(ariaCurrentTimer);
+        ariaCurrentTimer = window.setTimeout(() => {
+          toc.querySelectorAll('a[aria-current]').forEach((a) => a.removeAttribute('aria-current'));
+          link.setAttribute('aria-current', 'location');
+          ariaCurrentTimer = undefined;
+        }, 150);
       }
 
       function reposition(): void {
@@ -238,6 +253,7 @@ const firstSlug = items[0]?.slug;
         () => {
           obs.disconnect();
           ro.disconnect();
+          if (ariaCurrentTimer !== undefined) clearTimeout(ariaCurrentTimer);
         },
         { once: true },
       );
