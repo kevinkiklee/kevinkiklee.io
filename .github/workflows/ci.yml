@@ -57,7 +57,10 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 24 }
       - run: npm install -g @lhci/cli@0.15.1
-      - run: lhci autorun --collect.url=${{ steps.vercel.outputs.url }} --collect.url=${{ steps.vercel.outputs.url }}/posts
+      - name: Substitute preview URL into lighthouserc
+        run: sed -i "s|http://localhost:4321|${{ steps.vercel.outputs.url }}|g" lighthouserc.cjs
+      - name: Run LHCI
+        run: lhci autorun
 
   indexnow:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
