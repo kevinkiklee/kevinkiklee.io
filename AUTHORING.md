@@ -15,7 +15,7 @@ stripped from the URL — the slug above renders at
 
 ```yaml
 ---
-title: How I think about Speculation Rules     # required, max 80 chars
+title: How I think about Speculation Rules     # required, max 60 chars
 description: One-sentence pitch under 160 chars # required, max 160
 pubDate: 2026-04-29                              # required
 updatedDate: 2026-05-12                          # optional; updates lastmod
@@ -59,9 +59,10 @@ time — this prevents accidental tag sprawl and typos.
 4. Push the update. The DiscussFooter now links to the toot, and any
    replies federate back via webmention.io.
 
-If you want to seed a webmention manually, the
-`@vercel/webhooks`-style webmention sender is wired through the
-`WEBMENTION_TOKEN` env var.
+`WEBMENTION_TOKEN` is used by `src/lib/webmentions.ts` at build time to
+fetch replies from webmention.io and render them on each post. There is
+no built-in sender — to seed a mention manually, use a third-party tool
+such as Telegraph (`telegraph.p3k.io`).
 
 ## AEO conventions
 
@@ -125,7 +126,7 @@ convention.
 pnpm dev          # iterate
 pnpm check        # typecheck + biome + cspell + markdownlint
 pnpm build        # surface schema errors (e.g. unknown tag)
-pnpm preview      # serve dist/ with Pagefind index + OG endpoint live
+pnpm preview:static  # serve dist/client on :4321 (Pagefind + static assets)
 ```
 
 ## Writing for AI answer engines

@@ -18,22 +18,26 @@ pnpm dev          # http://localhost:4321
 
 ## Scripts
 
-| Script              | What it does                                                  |
-| ------------------- | ------------------------------------------------------------- |
-| `pnpm dev`          | Astro dev server (drafts visible)                             |
-| `pnpm build`        | `astro check` + `astro build`                                 |
-| `pnpm preview`      | Serve `dist/` locally (Pagefind index + OG endpoint work)     |
-| `pnpm test`         | Vitest run                                                    |
-| `pnpm test:watch`   | Vitest watch                                                  |
-| `pnpm check`        | astro check + biome ci + cspell + markdownlint                |
-| `pnpm format`       | biome format --write .                                        |
-| `pnpm new:post`     | Scaffold a new post (`pnpm new:post "Title"`)                 |
-| `pnpm new:project`  | Scaffold a new project entry                                  |
-| `pnpm fonts:subset` | Re-subset JetBrains Mono                                      |
-| `pnpm analyze`      | Open `stats.html` (rollup-plugin-visualizer)                  |
-| `pnpm links:check`  | Run lychee against `dist/`                                    |
-| `pnpm a11y:check`   | axe-core against `http://localhost:4321`                      |
-| `pnpm lighthouse`   | Lighthouse CI collect against `http://localhost:4321`         |
+| Script                   | What it does                                                  |
+| ------------------------ | ------------------------------------------------------------- |
+| `pnpm dev`               | Astro dev server (drafts visible)                             |
+| `pnpm build`             | `astro check` + `astro build`                                 |
+| `pnpm preview`           | `astro preview` against the built output                      |
+| `pnpm preview:static`    | `serve dist/client` on :4321 (Pagefind + static assets)       |
+| `pnpm test`              | Vitest run                                                    |
+| `pnpm test:watch`        | Vitest watch                                                  |
+| `pnpm check`             | astro check + biome ci + cspell + markdownlint                |
+| `pnpm format`            | biome format --write .                                        |
+| `pnpm new:post`          | Scaffold a new post (`pnpm new:post "Title"`)                 |
+| `pnpm new:project`       | Scaffold a new project entry                                  |
+| `pnpm fonts:subset`      | Re-subset JetBrains Mono                                      |
+| `pnpm analyze`           | Open `stats.html` (rollup-plugin-visualizer)                  |
+| `pnpm links:check`       | Run lychee against `dist/`                                    |
+| `pnpm a11y:audit`        | Lighthouse a11y across the full route matrix                  |
+| `pnpm a11y:audit:primary`| Lighthouse a11y, primary routes only (faster)                 |
+| `pnpm a11y:html`         | Static HTML structural check against `dist/`                  |
+| `pnpm a11y:keyboard`     | Playwright keyboard-traversal smoke test                      |
+| `pnpm lighthouse`        | Lighthouse CI collect against `http://localhost:4321`         |
 
 ## Environment variables
 
@@ -77,7 +81,7 @@ Other top-level directories:
 
 - `docs/superpowers/` — design spec + implementation plan
 - `scripts/` — `new-post.ts`, `new-project.ts`, `subset-fonts.ts`,
-  `sitemap-index.ts`
+  `indexnow.ts`, `a11y/` (audit + html-check)
 - `.github/workflows/` — `ci.yml` (typecheck, lint, build, link-check,
   Lighthouse), `size.yml` (6 KB / chunk gzip budget)
 - `fonts/` — JetBrains Mono source TTFs (subset to WOFF2 in `public/fonts`)
