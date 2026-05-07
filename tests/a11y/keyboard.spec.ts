@@ -45,13 +45,14 @@ for (const route of routes.filter((r) => r.primary)) {
     test.skip(skip.has(key), 'baselined');
     await page.goto(route.path);
     await page.waitForLoadState('networkidle');
-    // Capture state with focus on first focusable
+    // Capture unfocused baseline (focus on body).
+    const unfocused = await page.screenshot();
+    // Tab to the first focusable; wait for the focus-ring draw-in animation
+    // (introduced in commit 6ad92b6) to settle so the comparison is stable.
     await page.keyboard.press('Tab');
-    const before = await page.screenshot();
-    // Move focus elsewhere then back
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Shift+Tab');
-    const after = await page.screenshot();
-    expect(Buffer.compare(before, after)).not.toBe(0); // some visual diff present
+    await page.waitForTimeout(350);
+    const focused = await page.screenshot();
+    // Focus must produce a visible style change vs. the unfocused baseline.
+    expect(Buffer.compare(unfocused, focused)).not.toBe(0);
   });
 }
