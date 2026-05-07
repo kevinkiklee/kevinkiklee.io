@@ -5,14 +5,14 @@ import { unified } from 'unified';
 import { describe, expect, it } from 'vitest';
 import { remarkImgAlt } from './img-alt.ts';
 
-function process(md: string): Promise<string> {
-  return unified()
+async function process(md: string): Promise<string> {
+  const result = await unified()
     .use(remarkParse)
     .use(remarkMdx)
     .use(remarkImgAlt)
     .use(remarkStringify)
-    .process(md)
-    .then((r) => String(r));
+    .process(md);
+  return String(result);
 }
 
 describe('remarkImgAlt', () => {
