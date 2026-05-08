@@ -80,4 +80,18 @@ describe('relatedPosts', () => {
     expect(out.map((p) => p.id)).toEqual(['b']);
     expect(out.map((p) => p.id)).not.toContain('self');
   });
+
+  it('breaks ties by id when overlap and pubDate are identical', () => {
+    // Two same-day posts must produce stable ordering across runs (otherwise
+    // /posts/{slug} pages with identical published dates would shuffle on
+    // every build, churning hashes / sitemap lastmods).
+    const target = mkPost('a', ['x'], '2026-01-01');
+    const candidates = [
+      mkPost('zeta', ['x'], '2026-02-01'),
+      mkPost('alpha', ['x'], '2026-02-01'),
+      mkPost('mu', ['x'], '2026-02-01'),
+    ];
+    const out = relatedPosts(target, candidates, 3);
+    expect(out.map((p) => p.id)).toEqual(['alpha', 'mu', 'zeta']);
+  });
 });

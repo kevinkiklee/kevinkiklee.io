@@ -27,7 +27,11 @@ export function relatedPosts(target: Post, candidates: Post[], limit = 3): Post[
 
   scored.sort((a, b) => {
     if (b.overlap !== a.overlap) return b.overlap - a.overlap;
-    return b.post.data.pubDate.getTime() - a.post.data.pubDate.getTime();
+    const dateDelta = b.post.data.pubDate.getTime() - a.post.data.pubDate.getTime();
+    if (dateDelta !== 0) return dateDelta;
+    // Stable tie-break by id so identical-date / identical-overlap posts
+    // produce reproducible ordering across builds + tests.
+    return a.post.id.localeCompare(b.post.id);
   });
 
   const withOverlap = scored.filter((s) => s.overlap > 0).map((s) => s.post);

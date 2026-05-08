@@ -40,6 +40,9 @@ const { title, description = '', ...rest } = Astro.props;
     <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#f5f4ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+    {/* Unmediaed theme-color updated by ~/lib/theme on manual toggle so the
+        mobile browser chrome tracks the user's choice (not the OS default). */}
+    <meta name="theme-color" content="#f5f4ee" />
     <script is:inline>
       // First-paint marker: read + cleared by astro:after-swap to skip the
       // post-body reveal on initial load (LCP candidate paints immediately).
@@ -51,8 +54,14 @@ const { title, description = '', ...rest } = Astro.props;
           var stored = localStorage.getItem('theme');
           var prefers = matchMedia('(prefers-color-scheme: dark)').matches;
           var t = stored || (prefers ? 'dark' : 'light');
+          var bg = t === 'dark' ? '#0a0a0a' : '#f5f4ee';
           document.documentElement.dataset.theme = t;
-          document.documentElement.style.background = t === 'dark' ? '#0a0a0a' : '#f5f4ee';
+          document.documentElement.style.background = bg;
+          // Sync the JS-controlled theme-color meta so mobile browser chrome
+          // tracks the user's manual override (the media-conditioned metas
+          // alone follow OS preference only).
+          var meta = document.querySelector('meta[name="theme-color"]:not([media])');
+          if (meta) meta.setAttribute('content', bg);
         }
         apply();
         // ClientRouter swaps <html> attributes against the server-rendered

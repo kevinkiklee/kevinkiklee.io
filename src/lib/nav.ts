@@ -4,7 +4,11 @@ export { decideDirection };
 export type { Dir, NavType } from './nav-direction';
 
 function getDepth(): number {
-  return (history.state?.depth as number) ?? 0;
+  // history.state may be null, an unrelated object, or carry a depth set by a
+  // previous load. Coerce defensively so a corrupt state never breaks the
+  // direction decision.
+  const d = (history.state as { depth?: unknown } | null)?.depth;
+  return typeof d === 'number' && Number.isFinite(d) ? d : 0;
 }
 
 function setDirOnHtml(dir: Dir) {

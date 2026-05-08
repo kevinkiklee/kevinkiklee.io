@@ -38,6 +38,13 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
     overflow-x: auto;
     letter-spacing: 0.04em;
   }
+  /* Very long paths (deeply nested or query-string heavy) would otherwise
+     blow out the signage on mobile. The path is purely decorative inside
+     the aria-hidden block, so wrap and let the signage box scroll. */
+  #not-found-path {
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
   h1 {
     font-size: var(--text-2xl);
     letter-spacing: -0.01em;

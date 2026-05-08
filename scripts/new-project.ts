@@ -22,7 +22,19 @@ if (!name) {
   process.exit(1);
 }
 
+// Project name length: matches the Zod blurb cap range so cards render OK.
+// 60 chars is comfortably more than any real project name.
+const NAME_MAX = 60;
+if (name.length > NAME_MAX) {
+  console.error(`error: name is ${name.length} chars; max is ${NAME_MAX}.`);
+  process.exit(1);
+}
+
 const explicitUrl = urlFlag ? urlFlag.slice('--url='.length) : undefined;
+if (explicitUrl && !/^https?:\/\//.test(explicitUrl)) {
+  console.error(`error: --url must start with http:// or https://. Got: ${explicitUrl}`);
+  process.exit(1);
+}
 
 const path = 'src/content/projects/projects.yaml';
 const raw = readFileSync(path, 'utf8');

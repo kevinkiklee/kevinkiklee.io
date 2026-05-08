@@ -60,6 +60,13 @@ const uiOptions = { showImages: false, resetStyles: false };
   .pagefind-ui a:focus {
     color: var(--fg);
   }
+  /* F-004 — Pagefind UI's bundled CSS hard-codes `color: #000` on its search
+     input, so the dark-theme view ends up with black text on a near-black
+     background (1.06:1). Force `var(--fg)` so the input tracks our theme. */
+  .pagefind-ui input.pagefind-ui__search-input {
+    color: var(--fg);
+    background: var(--bg);
+  }
   /* Bootstrap input shown until the real Pagefind UI mounts. */
   #search-bootstrap-input {
     display: block;
@@ -153,6 +160,14 @@ const uiOptions = { showImages: false, resetStyles: false };
       new PagefindUI({ ...opts, element: '#search', bundlePath });
       el.classList.remove('pagefind-uninit');
       mounted = true;
+      // F-007 — Pagefind UI labels the search input with `title` only, which
+      // axe (label-title-only) rates as a Major name/role/value violation.
+      // Patch the rendered input with an explicit aria-label so AT users
+      // hear "Search query" instead of "edit text — title: Search".
+      const realInput = el.querySelector<HTMLInputElement>('input[type="text"]');
+      if (realInput && !realInput.hasAttribute('aria-label')) {
+        realInput.setAttribute('aria-label', 'Search query');
+      }
       if (bootstrapValue) {
         requestAnimationFrame(() => {
           const realInput = el.querySelector<HTMLInputElement>('input[type="text"]');

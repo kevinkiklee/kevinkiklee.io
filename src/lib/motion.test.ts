@@ -88,6 +88,29 @@ describe('scaledDuration', () => {
     const { scaledDuration } = await import('./motion');
     expect(scaledDuration(200)).toBe(1);
   });
+
+  it('survives navigator.connection access throwing (legacy/quirky UAs)', async () => {
+    // Some older WebKit builds throw on bare `navigator.connection` access
+    // rather than returning undefined. Defensive code path: must not crash,
+    // must return an unscaled duration so animations still run.
+    Object.defineProperty(globalThis, 'navigator', {
+      value: new Proxy(
+        {},
+        {
+          get(_t, prop) {
+            if (prop === 'connection') throw new Error('connection blocked');
+            return undefined;
+          },
+        },
+      ),
+      configurable: true,
+      writable: true,
+    });
+    const { scaledDuration } = await import('./motion');
+    expect(() => scaledDuration(200)).not.toThrow();
+    // No reduce signal + nav.connection throws → desktop fallback (200).
+    expect(scaledDuration(200)).toBe(200);
+  });
 });
 
 describe('withWillChange', () => {

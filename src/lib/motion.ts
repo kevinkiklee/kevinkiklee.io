@@ -25,7 +25,14 @@ interface NavConn {
 
 function navConn(): NavConn | undefined {
   if (typeof navigator === 'undefined') return undefined;
-  return (navigator as unknown as { connection?: NavConn }).connection;
+  try {
+    return (navigator as unknown as { connection?: NavConn }).connection;
+  } catch {
+    // Some legacy WebKit builds throw on `navigator.connection` access
+    // (rather than returning undefined). Treat as "no signal" so the caller
+    // falls through to the unscaled-duration path.
+    return undefined;
+  }
 }
 
 /**

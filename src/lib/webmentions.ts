@@ -32,7 +32,10 @@ export async function fetchWebmentions(target: string): Promise<Webmention[]> {
 
   try {
     const res = await fetch(url.toString());
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.warn(`[webmentions] ${target}: ${res.status} ${res.statusText}`);
+      return [];
+    }
     const json = (await res.json()) as { children?: Jf2Child[] };
     const children = json.children ?? [];
     return children.map((c) => ({
@@ -54,7 +57,11 @@ export async function fetchWebmentions(target: string): Promise<Webmention[]> {
               : 'mention',
       url: c.url ?? '',
     }));
-  } catch {
+  } catch (err) {
+    // Build-time fetch failures shouldn't crash the build, but they should
+    // surface in CI logs so we know whether the page rendered with no
+    // mentions because there really are none, or because the API was down.
+    console.warn(`[webmentions] ${target}: ${(err as Error).message}`);
     return [];
   }
 }

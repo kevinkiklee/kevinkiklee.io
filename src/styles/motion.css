@@ -1,11 +1,15 @@
 /* src/styles/motion.css
  * Single source of truth for animation timing across the site.
  * Imported under @layer tokens in global.css. Components reference
- * --t-fast / --t-base / --t-slow / --ease-* / --stagger / --header-height
- * instead of hardcoding milliseconds and easing curves.
+ * --t-fast / --t-base / --t-slow / --ease-* / --stagger instead of
+ * hardcoding milliseconds and easing curves.
  *
  * Mobile + a11y kill-switches collapse all durations to 1ms via media
  * queries, so consumers don't need to feature-detect anywhere.
+ *
+ * Note: header height tokens live in tokens.css (--header-h-mobile /
+ * --header-h-desktop). They drive scroll-padding, not motion, and so
+ * stay outside this file.
  */
 :root {
   --t-fast: 120ms;
@@ -18,14 +22,6 @@
 
   --stagger: 30ms;
   --stagger-cap: 240ms;
-
-  --header-height: 56px;
-}
-
-@media (min-width: 640px) {
-  :root {
-    --header-height: 80px;
-  }
 }
 
 @media (max-width: 640px) {

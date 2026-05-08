@@ -101,6 +101,10 @@ export default defineConfig({
   vite: {
     build: {
       cssCodeSplit: true,
+      // Hidden source maps: emitted next to chunks but not referenced from
+      // the JS (no //# sourceMappingURL line). Lets us decode prod errors
+      // via Sentry / Vercel without exposing original sources to visitors.
+      sourcemap: 'hidden',
       rollupOptions: {
         // Pagefind ships its own runtime under /pagefind/ in the dist root.
         // We deliberately load it dynamically from the public path so the

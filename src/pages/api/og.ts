@@ -30,6 +30,13 @@ async function ensureSentry(): Promise<typeof import('@sentry/node') | null> {
 const fontPath = resolve('./public/fonts/og/JetBrainsMono-Bold.ttf');
 const fontData = readFileSync(fontPath);
 
+// Pre-read the default PNG so we can serve it as a binary fallback when
+// satori rendering fails. Social-network unfurlers fetch og:image directly,
+// so a 500 here breaks every preview for the affected post — returning a
+// valid (if generic) image keeps social cards working while we investigate.
+const fallbackPath = resolve('./public/og-default.png');
+const fallbackPng = readFileSync(fallbackPath);
+
 export async function GET(ctx: APIContext) {
   try {
     const slug = ctx.url.searchParams.get('slug');
@@ -55,6 +62,15 @@ export async function GET(ctx: APIContext) {
     const Sentry = await ensureSentry();
     Sentry?.captureException(err);
     console.error('og render failed', err);
-    return new Response('OG render failed', { status: 500 });
+    // Serve the default PNG as a binary fallback. Cache for 5 min so retries
+    // hit a fresh dynamic render once whatever broke is fixed.
+    return new Response(fallbackPng, {
+      status: 200,
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',
+        'X-OG-Fallback': '1',
+      },
+    });
   }
 }

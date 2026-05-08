@@ -36,8 +36,11 @@ export const routes: AuditRoute[] = [
   { id: 'post-code', path: '/posts/hello-world', primary: false },
   { id: 'post-footnotes', path: '/posts/hello-world', primary: false },
   { id: 'tags-index', path: '/tags', primary: false },
-  { id: 'tag-populated', path: '/tags/intro', primary: false },
-  { id: 'tag-thin', path: '/tags/intro', primary: false },
+  // 'devrel' is the most-populated tag in the live content set; 'accessibility'
+  // currently has the fewest published posts. Both must exist in tags.json
+  // and be referenced by ≥1 published post for the audit to render the page.
+  { id: 'tag-populated', path: '/tags/devrel', primary: false },
+  { id: 'tag-thin', path: '/tags/accessibility', primary: false },
   { id: 'projects', path: '/projects', primary: false },
   { id: 'about', path: '/about', primary: true },
   { id: 'search', path: '/search', primary: true },
