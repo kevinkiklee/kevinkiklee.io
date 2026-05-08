@@ -51,4 +51,3 @@ export const routes: AuditRoute[] = [
 ];
 
 export const themes = ['light', 'dark'] as const;
-export const motionPrefs = ['default', 'reduce'] as const;

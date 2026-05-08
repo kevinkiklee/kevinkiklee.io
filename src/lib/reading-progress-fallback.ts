@@ -40,14 +40,3 @@ export function attach(): void {
   window.addEventListener('resize', onScroll, { passive: true });
   tick();
 }
-
-export function detach(): void {
-  if (!attached) return;
-  attached = false;
-  window.removeEventListener('scroll', onScroll);
-  window.removeEventListener('resize', onScroll);
-  if (raf !== 0) {
-    cancelAnimationFrame(raf);
-    raf = 0;
-  }
-}

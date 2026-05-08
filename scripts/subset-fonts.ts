@@ -15,7 +15,7 @@
  * OG renderer (Satori). Uses `subset-font` (Node-based) so we don't need
  * pyftsubset.
  */
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import subsetFont from 'subset-font';
@@ -94,14 +94,11 @@ async function main(): Promise<void> {
     console.log(`  wrote ${subset.byteLength.toLocaleString()} bytes`);
   }
 
-  // Copy raw TTF for Satori (server-side OG renderer).
-  const ogDst = 'public/fonts/og/JetBrainsMono-Variable.ttf';
-  copyFileSync(resolve(SOURCE), resolve(ogDst));
-  console.log(`copied ${SOURCE} -> ${ogDst}`);
-
-  // Also instance the variable font at weight 700 as a static TTF.
+  // Instance the variable font at weight 700 as a static TTF.
   // @vercel/og/Satori's bundled opentype.js cannot parse our fvar table,
-  // so the OG endpoint loads this static cut instead.
+  // so the OG endpoint loads this static cut. The full variable TTF used
+  // to be copied alongside as a Satori fallback, but it never paid off
+  // (Satori couldn't parse it) and added 300+ KB to the repo.
   const ogBoldDst = 'public/fonts/og/JetBrainsMono-Bold.ttf';
   const latinAscii = String.fromCodePoint(...Array.from({ length: 0x100 }, (_, i) => i));
   const ogBold = await subsetFont(buf, latinAscii, {
