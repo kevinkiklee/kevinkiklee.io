@@ -10,7 +10,7 @@ const { post, index = 0 } = Astro.props;
 const { title, description, pubDate, tags } = post.data;
 ---
 <article class="post-card reveal" style={`--i:${index}`}>
-  <a href={`/posts/${post.id}`}>
+  <a href={`/posts/${post.id}`} aria-label={title}>
     <h3 data-slug={post.id}>
       <span class="marker" aria-hidden="true"></span><span class="title">{title}</span>
     </h3>

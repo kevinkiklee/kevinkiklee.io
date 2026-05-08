@@ -10,6 +10,7 @@ export const tokens = {
     pillBg: '#0a0a0a',
     pillFg: '#f5f4ee',
     codeBg: '#ebe9df',
+    accent: '#b83c10',
   },
   dark: {
     bg: '#0a0a0a',
@@ -21,6 +22,7 @@ export const tokens = {
     pillBg: '#f4f4f4',
     pillFg: '#0a0a0a',
     codeBg: '#161616',
+    accent: '#ff7849',
   },
 } as const;
 
@@ -35,4 +37,6 @@ export const aaaPairs: Array<[keyof typeof tokens.light, keyof typeof tokens.lig
 export const aaPairs: Array<[keyof typeof tokens.light, keyof typeof tokens.light]> = [
   ['pillFg', 'pillBg'],
   ['fg', 'codeBg'],
+  ['accent', 'bg'],
+  ['accent', 'codeBg'],
 ];

@@ -126,13 +126,14 @@ const graph = buildPageGraph([
           formats={['avif', 'webp']}
           loading="eager"
           fetchpriority="high"
+          decoding="async"
         />
       </figure>
     )}
     {series && (
-      <nav class="series-banner" aria-label="Series navigation">
+      <aside class="series-banner" aria-label="Series">
         <span>Series · {series.name} · part {series.order}</span>
-      </nav>
+      </aside>
     )}
     <div class="post-body">
       {headings.length > 0 && (

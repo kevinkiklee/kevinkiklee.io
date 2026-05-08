@@ -42,10 +42,11 @@
   --selection-bg: #0a0a0a;
   --selection-fg: #f5f4ee;
   --weight-body: 400;
-  /* Signal orange — verified 4.6:1 contrast on --bg.
-     Used for chrome only (CTAs, markers, active state, signage). */
-  --accent: #d44715;
-  --accent-rule: #d44715;
+  /* Signal orange — 5.16:1 on --bg (AA). Was #d44715 (4.04:1, axe-flagged
+     in the F-001 finding); darkened to clear AA on every visible chrome
+     surface (page bg, code bg ≈ 4.62:1) without losing the orange-red hue. */
+  --accent: #b83c10;
+  --accent-rule: #b83c10;
 }
 
 :root[data-theme="dark"] {

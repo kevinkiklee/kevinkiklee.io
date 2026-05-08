@@ -19,7 +19,7 @@ const { name, blurb, url, repoUrl, tech } = project.data;
   <ul role="list" class="tech">
     {tech.map((t) => <li>{t}</li>)}
   </ul>
-  {repoUrl && <a href={repoUrl} class="repo">view repo →</a>}
+  {repoUrl && <a href={repoUrl} class="repo" aria-label={`View ${name} repository`}>view repo →</a>}
 </article>
 
 <style>
@@ -35,6 +35,13 @@ const { name, blurb, url, repoUrl, tech } = project.data;
     .project-card:hover .repo { color: var(--accent); }
     .project-card:hover .ext { transform: translate(2px, -2px); }
   }
+  /* Mirror hover affordance for keyboard users. :focus-within lights up the
+     same ext/repo accent when any descendant link is focused — the global
+     focus ring stays the primary indicator; this is a polish cue. */
+  .project-card:focus-within { border-color: var(--rule); }
+  .project-card:focus-within .ext,
+  .project-card:focus-within .repo { color: var(--accent); }
+  .project-card:focus-within .ext { transform: translate(2px, -2px); }
   h3 {
     font-size: var(--text-base);
     letter-spacing: -0.005em;

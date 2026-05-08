@@ -32,11 +32,15 @@ const { tag, asLink = true } = Astro.props;
     background: transparent;
     color: var(--bg);
     border: 1px solid var(--fg);
-    /* Sit close to the surrounding meta text so the pill reads as a label,
-       not a button. Hit area is narrower than 44px — acceptable here because
-       the pill is one of several links in a single meta line. */
+    /* Reads as a label, not a button. WCAG 2.5.8 wants ≥24px target size or
+       24px clear space; min-height + the inline-flex centring satisfies the
+       size criterion (the row gap satisfies neighbour spacing). Below 44px
+       is acceptable because the pill is one of several links in a meta line
+       — the surrounding flex gap supplies the spacing budget. */
     padding: 1px var(--space-2);
-    display: inline-block;
+    min-height: 24px;
+    display: inline-flex;
+    align-items: center;
     line-height: 1.4;
     text-decoration: none;
     transition: color var(--t-fast) var(--ease-out);

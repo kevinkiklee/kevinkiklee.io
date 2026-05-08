@@ -54,4 +54,7 @@ const Tag = level;
   @media (hover: hover) and (pointer: fine) {
     .section-title .all:hover { transform: translateX(2px); }
   }
+  /* Mirror the nudge for keyboard users so the "→ all posts" link reads
+     as interactive when focused. */
+  .section-title .all:focus-visible { transform: translateX(2px); }
 </style>

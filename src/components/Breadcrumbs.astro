@@ -8,7 +8,7 @@ const { items } = Astro.props;
 ---
 {items.length > 0 && (
   <nav aria-label="Breadcrumb" class="crumbs">
-    <ol role="list">
+    <ol>
       {items.map((c, i) => {
         const isLast = i === items.length - 1;
         const isHome = i === 0;

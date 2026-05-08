@@ -23,7 +23,7 @@ export function ogTemplate(args: { title: string; date: string; tags: string[] }
   const tagLine = args.tags.map((t) => `#${escapeHtml(t)}`).join(' ');
   return html(`
     <div style="display:flex;width:1200px;height:630px;background:#f5f4ee;color:#0a0a0a;font-family:'JetBrains Mono';">
-      <div style="display:flex;width:14px;height:630px;background:#d44715;"></div>
+      <div style="display:flex;width:14px;height:630px;background:#b83c10;"></div>
       <div style="display:flex;flex-direction:column;flex:1;padding:64px;">
         <div style="display:flex;font-size:18px;border-bottom:3px solid #0a0a0a;padding-bottom:16px;letter-spacing:0.08em;">KEVINKIKLEE.IO</div>
         <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
