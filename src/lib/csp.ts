@@ -53,6 +53,9 @@ export const CSP = [
   ].join(' '),
   // Self-hosted JetBrains Mono + IBM Plex Mono — no third-party fonts.
   "font-src 'self'",
+  // No legacy <object>/<embed>/<applet> plugins. Defense in depth — the
+  // tag types are obsolete but blocking them costs nothing.
+  "object-src 'none'",
   // Lock <base href> to ourselves; any hijack attempts get blocked.
   "base-uri 'self'",
   // Forms post only to ourselves.

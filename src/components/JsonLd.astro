@@ -1,8 +1,10 @@
 ---
+import { safeJsonLd } from '~/lib/json-ld-escape';
+
 interface Props {
   data: Record<string, unknown> | Record<string, unknown>[];
 }
 const { data } = Astro.props;
-const json = JSON.stringify(data);
+const json = safeJsonLd(data);
 ---
 <script is:inline type="application/ld+json" set:html={json}></script>

@@ -8,6 +8,7 @@ describe('CSP header', () => {
     expect(CSP).toContain('upgrade-insecure-requests');
     expect(CSP).toContain("base-uri 'self'");
     expect(CSP).toContain("form-action 'self'");
+    expect(CSP).toContain("object-src 'none'");
   });
 
   it('whitelists known third parties', () => {
@@ -38,6 +39,7 @@ describe('CSP header', () => {
       'manifest-src',
       'connect-src',
       'font-src',
+      'object-src',
       'base-uri',
       'form-action',
       'frame-ancestors',
@@ -51,7 +53,7 @@ describe('CSP header', () => {
 
   it('matches a stable shape (snapshot)', () => {
     expect(CSP).toMatchInlineSnapshot(
-      `"default-src 'self'; script-src 'self' 'unsafe-inline' https://*.vercel-insights.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.gravatar.com https://avatars.githubusercontent.com; manifest-src 'self'; connect-src 'self' https://*.vercel-insights.com https://*.google-analytics.com https://webmention.io; font-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"`,
+      `"default-src 'self'; script-src 'self' 'unsafe-inline' https://*.vercel-insights.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.gravatar.com https://avatars.githubusercontent.com; manifest-src 'self'; connect-src 'self' https://*.vercel-insights.com https://*.google-analytics.com https://webmention.io; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"`,
     );
   });
 });
