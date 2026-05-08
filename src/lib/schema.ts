@@ -1,11 +1,12 @@
 import type { Crumb } from './crumbs';
+import { SITE as SITE_CONFIG } from './site-config';
 
-const SITE = 'https://kevinkiklee.io';
+const SITE = SITE_CONFIG.url;
 
 export const ENTITY_IDS = {
-  website: 'https://kevinkiklee.io#website',
-  person: 'https://kevinkiklee.io/about#person',
-  blog: 'https://kevinkiklee.io/posts#blog',
+  website: `${SITE}#website`,
+  person: `${SITE}/about#person`,
+  blog: `${SITE}/posts#blog`,
 } as const;
 
 type GraphPart = Record<string, unknown>;

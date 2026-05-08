@@ -1,11 +1,11 @@
 import type { CollectionEntry } from 'astro:content';
 import type { APIRoute } from 'astro';
+import { formatDate } from '~/lib/format';
 import { mdxToMarkdown } from '~/lib/mdx-to-md';
 import { getPublishedPosts } from '~/lib/posts';
+import { SITE } from '~/lib/site-config';
 
 type Post = CollectionEntry<'posts'>;
-
-const SITE = 'https://kevinkiklee.io';
 
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
@@ -17,13 +17,11 @@ export async function renderPostMarkdown(post: Post): Promise<string> {
   const fm = [
     '---',
     `title: ${post.data.title}`,
-    `date: ${post.data.pubDate.toISOString().slice(0, 10)}`,
-    ...(post.data.updatedDate
-      ? [`updatedDate: ${post.data.updatedDate.toISOString().slice(0, 10)}`]
-      : []),
+    `date: ${formatDate(post.data.pubDate)}`,
+    ...(post.data.updatedDate ? [`updatedDate: ${formatDate(post.data.updatedDate)}`] : []),
     `tags: [${post.data.tags.join(', ')}]`,
     `description: ${post.data.description}`,
-    `url: ${SITE}/posts/${post.id}`,
+    `url: ${SITE.url}/posts/${post.id}`,
     '---',
     '',
   ].join('\n');

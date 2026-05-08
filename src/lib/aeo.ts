@@ -1,9 +1,8 @@
 import type { CollectionEntry } from 'astro:content';
+import { formatDate } from './format';
+import { SITE } from './site-config';
 
 type Post = CollectionEntry<'posts'>;
-
-const SITE = 'https://kevinkiklee.io';
-const TAGLINE = 'Field notes from a Chrome DevRel — AI, web platform, and tangents.';
 
 export function buildLlmsIndex(posts: Post[]): string {
   const published = posts
@@ -11,23 +10,23 @@ export function buildLlmsIndex(posts: Post[]): string {
     .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 
   const postsBlock = published
-    .map((p) => `- [${p.data.title}](${SITE}/posts/${p.id}.md): ${p.data.description}`)
+    .map((p) => `- [${p.data.title}](${SITE.url}/posts/${p.id}.md): ${p.data.description}`)
     .join('\n');
 
   return [
-    '# kevinkiklee.io',
-    `> ${TAGLINE}`,
+    `# ${SITE.title}`,
+    `> ${SITE.description}`,
     '',
     '## About',
-    `- [About Kevin Lee](${SITE}/about): DevRel at Google Chrome.`,
+    `- [About Kevin Lee](${SITE.url}/about): DevRel at Google Chrome.`,
     '',
     '## Posts',
     postsBlock,
     '',
     '## Feeds',
-    `- RSS: ${SITE}/rss.xml`,
-    `- JSON Feed: ${SITE}/feed.json`,
-    `- Sitemap: ${SITE}/sitemap-index.xml`,
+    `- RSS: ${SITE.url}/rss.xml`,
+    `- JSON Feed: ${SITE.url}/feed.json`,
+    `- Sitemap: ${SITE.url}/sitemap-index.xml`,
     '',
   ].join('\n');
 }
@@ -39,10 +38,10 @@ export function buildLlmsFull(posts: Post[], cap = 50): string {
     .slice(0, cap);
 
   const header = [
-    '# kevinkiklee.io — full content snapshot',
+    `# ${SITE.title} — full content snapshot`,
     '',
     `Snapshot of the ${cap} most-recent published posts. The canonical index is`,
-    `at ${SITE}/llms.txt; per-post markdown lives at ${SITE}/posts/<slug>.md.`,
+    `at ${SITE.url}/llms.txt; per-post markdown lives at ${SITE.url}/posts/<slug>.md.`,
     '',
     '---',
     '',
@@ -51,8 +50,8 @@ export function buildLlmsFull(posts: Post[], cap = 50): string {
   const bodies = published.map((p) =>
     [
       `# ${p.data.title}`,
-      `Date: ${p.data.pubDate.toISOString().slice(0, 10)}`,
-      `URL: ${SITE}/posts/${p.id}`,
+      `Date: ${formatDate(p.data.pubDate)}`,
+      `URL: ${SITE.url}/posts/${p.id}`,
       '',
       p.body ?? '',
     ].join('\n'),

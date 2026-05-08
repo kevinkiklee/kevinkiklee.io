@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ImageResponse } from '@vercel/og';
 import type { APIContext } from 'astro';
+import { formatDate } from '~/lib/format';
 import { ogTemplate } from '~/lib/og';
 import { getPublishedPosts } from '~/lib/posts';
 
@@ -46,7 +47,7 @@ export async function GET(ctx: APIContext) {
     if (!post) return new Response('not found', { status: 404 });
     const tree = ogTemplate({
       title: post.data.title,
-      date: post.data.pubDate.toISOString().slice(0, 10),
+      date: formatDate(post.data.pubDate),
       tags: post.data.tags,
     });
     // biome-ignore lint/suspicious/noExplicitAny: satori-html returns a structure compatible with @vercel/og

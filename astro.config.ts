@@ -10,6 +10,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import { parse as parseYaml } from 'yaml';
 import imageSitemap from './src/integrations/image-sitemap';
 import { rehypeAssertImgDims } from './src/lib/assert-img-dims';
+import { DATE_PREFIX } from './src/lib/post-id';
 import { remarkReadingTime } from './src/lib/reading-time';
 import { remarkHeadingIncrement } from './src/lib/remark-a11y/heading-increment';
 import { remarkImgAlt } from './src/lib/remark-a11y/img-alt';
@@ -29,7 +30,6 @@ type PostMeta = {
   draft: boolean;
 };
 const POSTS_DIR = './src/content/posts';
-const DATE_PREFIX = /^\d{4}-\d{2}-\d{2}-/;
 function readPostsMeta(): PostMeta[] {
   let entries: string[] = [];
   try {
