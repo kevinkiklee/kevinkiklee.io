@@ -182,11 +182,19 @@
       margin: 0;
       width: 100%;
       max-width: 100%;
+      /* When the soft keyboard opens, dvh tracks the visible viewport so the
+         dialog never spills under the keyboard. svh fallback for browsers
+         without dynamic viewport units. */
+      max-height: 80svh;
+      max-height: 80dvh;
+      overflow-y: auto;
       border-radius: 0;
       border-top: 2px solid var(--rule);
       border-bottom: none;
       transform: translateY(8px);
     }
+    /* Recompute results scroll-area within the available dialog height. */
+    #search-palette .results { max-height: 50svh; max-height: 50dvh; }
     @starting-style {
       #search-palette[open] {
         transform: translateY(8px);
