@@ -73,6 +73,10 @@ function priorityFor(url: string): number {
   return 0.5;
 }
 
+// Match a post-detail URL and capture its slug. Excludes the /posts/page/N
+// pagination URLs (the slug "page" is treated as a sentinel by callers).
+const POST_DETAIL_RE = /\/posts\/([^/]+)\/?$/;
+
 export default defineConfig({
   site: 'https://kevinkiklee.io',
   trailingSlash: 'never',
@@ -132,7 +136,7 @@ export default defineConfig({
         if (page.endsWith('/404')) return false;
         // Exclude draft posts in production. Astro emits them in dev/preview
         // builds when explicitly enabled via VERCEL_ENV !== 'preview'.
-        const m = page.match(/\/posts\/([^/]+)\/?$/);
+        const m = page.match(POST_DETAIL_RE);
         if (m) {
           const slug = m[1];
           if (slug && slug !== 'page' && !PUBLISHED_SLUGS.has(slug)) return false;
@@ -141,7 +145,7 @@ export default defineConfig({
       },
       serialize(item) {
         item.priority = priorityFor(item.url);
-        const m = new URL(item.url).pathname.match(/\/posts\/([^/]+)\/?$/);
+        const m = new URL(item.url).pathname.match(POST_DETAIL_RE);
         if (m?.[1] && m[1] !== 'page') {
           const meta = POSTS_BY_SLUG.get(m[1]);
           if (meta) {

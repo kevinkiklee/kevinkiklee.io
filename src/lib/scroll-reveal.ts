@@ -8,9 +8,18 @@
 
 let io: IntersectionObserver | null = null;
 
+// Stagger constants. The cap ensures a long list (e.g. 50 posts on /posts)
+// doesn't end with a 1.5s wait for the last card to fade in. After the 8th
+// item, every subsequent item shares the same 240ms delay.
+const MAX_STAGGER_INDEX = 8;
+const STAGGER_STEP_MS = 30;
+// Trigger reveal slightly before the element is fully on-screen, so the
+// fade-in completes around the time the user's eye reaches it.
+const REVEAL_ROOT_MARGIN = '0px 0px -10% 0px';
+
 function setupReveal(target: HTMLElement) {
   const i = Number(target.style.getPropertyValue('--i') || '0');
-  const delay = Math.min(i, 8) * 30;
+  const delay = Math.min(i, MAX_STAGGER_INDEX) * STAGGER_STEP_MS;
   target.style.transitionDelay = `${delay}ms`;
   target.classList.add('in-view');
 }
@@ -25,6 +34,7 @@ function init(): void {
   if (!('IntersectionObserver' in window)) return;
 
   io?.disconnect();
+  io = null;
   io = new IntersectionObserver(
     (entries) => {
       if (document.visibilityState !== 'visible') return;
@@ -36,7 +46,7 @@ function init(): void {
         io?.unobserve(el);
       }
     },
-    { rootMargin: '0px 0px -10% 0px' },
+    { rootMargin: REVEAL_ROOT_MARGIN },
   );
 
   for (const el of document.querySelectorAll('.reveal, .prose h2, .prose h3')) {
@@ -46,4 +56,7 @@ function init(): void {
 
 init();
 document.addEventListener('astro:page-load', init);
-document.addEventListener('astro:before-swap', () => io?.disconnect());
+document.addEventListener('astro:before-swap', () => {
+  io?.disconnect();
+  io = null;
+});

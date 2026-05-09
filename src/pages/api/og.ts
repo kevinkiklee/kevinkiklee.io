@@ -50,8 +50,11 @@ export async function GET(ctx: APIContext) {
       date: formatDate(post.data.pubDate),
       tags: post.data.tags,
     });
-    // biome-ignore lint/suspicious/noExplicitAny: satori-html returns a structure compatible with @vercel/og
-    return new ImageResponse(tree as any, {
+    // satori-html returns a vdom node whose declared `props` typing is wider
+    // than ImageResponse's (`React.ReactNode`). Their runtime shapes line up,
+    // so we widen explicitly via a structural cast rather than `any`.
+    type ReactLike = ConstructorParameters<typeof ImageResponse>[0];
+    return new ImageResponse(tree as unknown as ReactLike, {
       width: 1200,
       height: 630,
       fonts: [{ name: 'JetBrains Mono', data: fontData, weight: 700, style: 'normal' }],

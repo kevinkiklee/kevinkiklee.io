@@ -164,11 +164,26 @@ export default function imageSitemap(): AstroIntegration {
         let total = 0;
         for (const f of chunkFiles) {
           const path = join(distClient, f);
-          const raw = readFileSync(path, 'utf-8');
+          let raw: string;
+          try {
+            raw = readFileSync(path, 'utf-8');
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : 'unknown';
+            logger.warn(`image-sitemap: failed to read ${f}: ${msg}`);
+            continue;
+          }
           const { xml, injected } = injectImageEntries(raw, covers);
           if (injected > 0) {
-            writeFileSync(path, xml, 'utf-8');
-            total += injected;
+            try {
+              writeFileSync(path, xml, 'utf-8');
+              total += injected;
+            } catch (err) {
+              // Don't fail the build on a single chunk write failure — the
+              // original sitemap is still on disk (we never deleted it),
+              // so the deploy ships a valid sitemap minus the image hints.
+              const msg = err instanceof Error ? err.message : 'unknown';
+              logger.warn(`image-sitemap: failed to rewrite ${f}: ${msg}`);
+            }
           }
         }
         logger.info(`image-sitemap: injected image entries into ${total} url(s).`);

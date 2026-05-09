@@ -11,6 +11,7 @@
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { parse, stringify } from 'yaml';
+import { PROJECT_NAME_MAX } from '../src/lib/meta';
 
 const argv = process.argv.slice(2);
 const urlFlag = argv.find((a) => a.startsWith('--url='));
@@ -22,12 +23,10 @@ if (!name) {
   process.exit(1);
 }
 
-// Project name length: a soft cap so the project card heading wraps at
-// most twice on the narrowest mobile breakpoint. 60 is comfortably wider
-// than any real project name and the YAML schema imposes no `name` cap.
-const NAME_MAX = 60;
-if (name.length > NAME_MAX) {
-  console.error(`error: name is ${name.length} chars; max is ${NAME_MAX}.`);
+// `PROJECT_NAME_MAX` is single-sourced in src/lib/meta.ts so this script and
+// any future schema/UI consumer stay in sync if the cap ever changes.
+if (name.length > PROJECT_NAME_MAX) {
+  console.error(`error: name is ${name.length} chars; max is ${PROJECT_NAME_MAX}.`);
   process.exit(1);
 }
 

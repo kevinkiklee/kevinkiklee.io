@@ -37,9 +37,12 @@ export function relatedPosts(target: Post, candidates: Post[], limit = 3): Post[
   const withOverlap = scored.filter((s) => s.overlap > 0).map((s) => s.post);
   if (withOverlap.length >= limit) return withOverlap.slice(0, limit);
 
-  // Fill remaining slots with most-recent non-target posts.
+  // Fill remaining slots with most-recent non-target posts. Use a Set keyed
+  // on post id to keep filler-eligibility check O(1) per candidate; the
+  // previous Array.includes() walk was O(n²) on large archives.
+  const overlapIds = new Set(withOverlap.map((p) => p.id));
   const filler = others
-    .filter((p) => !withOverlap.includes(p))
+    .filter((p) => !overlapIds.has(p.id))
     .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
   return [...withOverlap, ...filler].slice(0, limit);
 }
