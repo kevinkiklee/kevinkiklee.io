@@ -5,7 +5,28 @@ const ga = GA_MEASUREMENT_ID;
 <script>
   import { whenActivated } from '~/lib/prerender-analytics';
 
+  /**
+   * Respect the user's tracking-opt-out signals before injecting any
+   * analytics. Vercel Web Analytics is cookieless / aggregated, but the
+   * privacy-conscious thing is still to honour an explicit opt-out:
+   *   - Sec-GPC (Global Privacy Control) — the standardised successor to DNT
+   *   - navigator.doNotTrack — legacy DNT signal
+   * Either signal short-circuits the analytics load entirely.
+   */
+  function userOptedOut(): boolean {
+    type Nav = Navigator & {
+      globalPrivacyControl?: boolean;
+      doNotTrack?: string | null;
+      msDoNotTrack?: string | null;
+    };
+    const nav = navigator as Nav;
+    if (nav.globalPrivacyControl === true) return true;
+    const dnt = nav.doNotTrack ?? nav.msDoNotTrack ?? null;
+    return dnt === '1' || dnt === 'yes';
+  }
+
   async function load() {
+    if (userOptedOut()) return;
     // Two separate `import()` calls (rather than one Promise.all-with-array
     // destructure) so Vite emits two distinct chunks for @vercel/analytics
     // and @vercel/speed-insights. They share no code, and a single tuple
