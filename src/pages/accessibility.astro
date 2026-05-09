@@ -1,4 +1,5 @@
 ---
+import { MASTODON_INSTANCE_URL } from 'astro:env/client';
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import JsonLd from '~/components/JsonLd.astro';
 import KnownLimits from '~/components/a11y/KnownLimits.astro';
@@ -7,6 +8,7 @@ import { crumbsFor } from '~/lib/crumbs';
 import { buildBreadcrumbs, buildPageGraph, buildWebPage, buildWebSite } from '~/lib/schema';
 import { SITE } from '~/lib/site-config';
 
+const mastodon = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
 const crumbs = crumbsFor('/accessibility');
 const graph = buildPageGraph([
   buildWebPage({
@@ -52,7 +54,7 @@ const graph = buildPageGraph([
 
     <h2>Reporting an issue</h2>
     <p>Either DM me on
-      <a rel="me" href="https://hachyderm.io/@kevin">Mastodon</a>
+      <a rel="me" href={mastodon}>Mastodon</a>
       or
       <a href="https://github.com/kevinkiklee/kevinkiklee.io/issues/new">open a GitHub issue</a>.
     </p>

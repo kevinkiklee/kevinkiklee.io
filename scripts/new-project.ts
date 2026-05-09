@@ -22,8 +22,9 @@ if (!name) {
   process.exit(1);
 }
 
-// Project name length: matches the Zod blurb cap range so cards render OK.
-// 60 chars is comfortably more than any real project name.
+// Project name length: a soft cap so the project card heading wraps at
+// most twice on the narrowest mobile breakpoint. 60 is comfortably wider
+// than any real project name and the YAML schema imposes no `name` cap.
 const NAME_MAX = 60;
 if (name.length > NAME_MAX) {
   console.error(`error: name is ${name.length} chars; max is ${NAME_MAX}.`);

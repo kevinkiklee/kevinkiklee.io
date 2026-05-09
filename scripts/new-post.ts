@@ -1,6 +1,7 @@
 #!/usr/bin/env tsx
 import { existsSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { TITLE_MAX } from '../src/lib/meta';
 
 const title = process.argv.slice(2).join(' ').trim();
 if (!title) {
@@ -8,10 +9,9 @@ if (!title) {
   process.exit(1);
 }
 
-// Title length cap: matches the Zod schema in src/content.config.ts (titles
-// > ~80 chars wrap awkwardly in the H1 + OG image). Fail loud rather than
-// generate a post the schema will reject at build time.
-const TITLE_MAX = 80;
+// `TITLE_MAX` is sourced from `src/lib/meta.ts` so the script and the
+// Zod schema in `src/content.config.ts` cannot drift. Fail loud rather
+// than generate a post the schema will reject at build time.
 if (title.length > TITLE_MAX) {
   console.error(`error: title is ${title.length} chars; max is ${TITLE_MAX}.`);
   console.error(`got: ${title}`);

@@ -18,6 +18,14 @@ type Jf2Child = {
 };
 
 /**
+ * Hard timeout for the webmention.io fetch. The request runs once per
+ * post during the build, so a slow API would otherwise stall the build
+ * pipeline indefinitely. 8s is generous compared to the API's typical
+ * 200-800ms response, while still bounding worst-case build time.
+ */
+const FETCH_TIMEOUT_MS = 8_000;
+
+/**
  * Fetch webmentions for a target URL from webmention.io. Runs at build time
  * for static pages. Returns an empty array if the token is missing or the
  * request fails — never throws — so a transient network failure does not
@@ -30,8 +38,10 @@ export async function fetchWebmentions(target: string): Promise<Webmention[]> {
   url.searchParams.set('per-page', '100');
   url.searchParams.set('token', WEBMENTION_TOKEN);
 
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
   try {
-    const res = await fetch(url.toString());
+    const res = await fetch(url.toString(), { signal: ctrl.signal });
     if (!res.ok) {
       console.warn(`[webmentions] ${target}: ${res.status} ${res.statusText}`);
       return [];
@@ -61,7 +71,13 @@ export async function fetchWebmentions(target: string): Promise<Webmention[]> {
     // Build-time fetch failures shouldn't crash the build, but they should
     // surface in CI logs so we know whether the page rendered with no
     // mentions because there really are none, or because the API was down.
-    console.warn(`[webmentions] ${target}: ${(err as Error).message}`);
+    const msg =
+      (err as Error).name === 'AbortError'
+        ? `timed out after ${FETCH_TIMEOUT_MS}ms`
+        : (err as Error).message;
+    console.warn(`[webmentions] ${target}: ${msg}`);
     return [];
+  } finally {
+    clearTimeout(timer);
   }
 }

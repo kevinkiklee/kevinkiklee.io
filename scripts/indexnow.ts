@@ -46,4 +46,14 @@ const res = await fetch('https://api.indexnow.org/indexnow', {
     urlList: urls,
   }),
 });
+// IndexNow accepts 200 (processed) and 202 (received). Anything else is
+// either a bad key, a malformed payload, or a verification failure — all
+// of which we want to surface in CI logs as a red build, not a silent
+// "200/422 — looks fine!".
+const ok = res.status === 200 || res.status === 202;
 console.log(`indexnow: ${res.status} (${urls.length} urls)`);
+if (!ok) {
+  const body = await res.text().catch(() => '');
+  console.error(`indexnow: non-success status — ${body || '(empty body)'}`);
+  process.exit(1);
+}

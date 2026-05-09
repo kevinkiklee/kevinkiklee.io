@@ -51,9 +51,15 @@ const { title, description = '', ...rest } = Astro.props;
     <script is:inline>
       (function () {
         function apply() {
-          var stored = localStorage.getItem('theme');
+          // localStorage access throws under sandboxed iframes and certain
+          // private-mode contexts. Defensive try/catch avoids blocking the
+          // first-paint theme application when storage is unavailable.
+          var stored = null;
+          try { stored = localStorage.getItem('theme'); } catch (e) {}
           var prefers = matchMedia('(prefers-color-scheme: dark)').matches;
-          var t = stored || (prefers ? 'dark' : 'light');
+          var t = stored === 'dark' || stored === 'light'
+            ? stored
+            : (prefers ? 'dark' : 'light');
           var bg = t === 'dark' ? '#0a0a0a' : '#f5f4ee';
           document.documentElement.dataset.theme = t;
           document.documentElement.style.background = bg;

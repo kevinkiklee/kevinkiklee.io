@@ -73,9 +73,15 @@ export function initThemeListeners(): void {
       document.documentElement.dataset.theme = e.newValue;
     }
   });
-  // OS theme change (only if user hasn't manually picked)
+  // OS theme change (only if user hasn't manually picked).
+  // localStorage may throw in private-mode / sandboxed contexts; treat the
+  // throw as "no manual choice yet" and follow the OS preference.
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    if (!localStorage.getItem('theme')) {
+    let stored: string | null = null;
+    try {
+      stored = localStorage.getItem('theme');
+    } catch {}
+    if (!stored) {
       setTheme(e.matches ? 'dark' : 'light');
     }
   });

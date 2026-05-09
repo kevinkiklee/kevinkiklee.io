@@ -13,12 +13,14 @@
     "preview": "astro preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "typecheck": "astro check",
     "check": "astro check && biome ci . && cspell '**/*.{md,mdx}' --no-progress && markdownlint-cli2 '**/*.{md,mdx}'",
     "format": "biome format --write .",
     "fonts:subset": "tsx scripts/subset-fonts.ts",
     "new:post": "tsx scripts/new-post.ts",
     "new:project": "tsx scripts/new-project.ts",
     "analyze": "open stats.html",
+    "clean": "rm -rf dist .astro node_modules/.vite playwright-report test-results stats.html .lighthouseci",
     "links:check": "lychee --no-progress dist/",
     "preview:static": "serve dist/client -l 4321 --no-clipboard",
     "a11y:audit": "tsx scripts/a11y/audit.ts",
@@ -43,7 +45,6 @@
     "pagefind": "^1.1.0",
     "satori": "^0.12.0",
     "satori-html": "^0.3.2",
-    "web-vitals": "^4.2.0",
     "yaml": "^2.6.0"
   },
   "devDependencies": {

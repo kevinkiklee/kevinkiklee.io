@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import tagsJson from './content/tags.json' with { type: 'json' };
+import { DESCRIPTION_MAX, TITLE_MAX } from './lib/meta';
 import { DATE_PREFIX } from './lib/post-id';
 
 const TAG_SET = new Set(tagsJson.tags);
@@ -13,8 +14,8 @@ const posts = defineCollection({
   }),
   schema: ({ image }) =>
     z.object({
-      title: z.string().min(1).max(60),
-      description: z.string().min(1).max(160),
+      title: z.string().min(1).max(TITLE_MAX),
+      description: z.string().min(1).max(DESCRIPTION_MAX),
       pubDate: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
       tags: z
