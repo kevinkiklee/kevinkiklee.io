@@ -57,6 +57,48 @@ describe('fetchWebmentions wm-property mapping', () => {
   });
 });
 
+describe('fetchWebmentions strips unsafe URLs', () => {
+  it('drops javascript: and data: photo URLs', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jf2([
+        {
+          'wm-property': 'in-reply-to',
+          url: 'https://example.com/a',
+          author: {
+            name: 'A',
+            url: 'javascript:alert(1)',
+            photo: 'data:image/svg+xml;base64,...',
+          },
+          content: { text: 'hi' },
+        },
+      ]),
+    );
+    const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
+    expect(out[0]?.author.url).toBe('');
+    expect(out[0]?.author.photo).toBeUndefined();
+  });
+
+  it('keeps http(s) URLs intact', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jf2([
+        {
+          'wm-property': 'in-reply-to',
+          url: 'https://example.com/a',
+          author: {
+            name: 'A',
+            url: 'https://a.example/',
+            photo: 'https://gravatar.com/avatar/abc',
+          },
+          content: { text: 'hi' },
+        },
+      ]),
+    );
+    const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
+    expect(out[0]?.author.url).toBe('https://a.example/');
+    expect(out[0]?.author.photo).toBe('https://gravatar.com/avatar/abc');
+  });
+});
+
 describe('fetchWebmentions short-circuits', () => {
   it('returns [] when fetch responds with !ok', async () => {
     mockFetch.mockResolvedValueOnce({ ok: false, json: async () => ({}) });

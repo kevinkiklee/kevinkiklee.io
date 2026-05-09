@@ -46,8 +46,25 @@ const ga = GA_MEASUREMENT_ID;
 </script>
 
 {ga && (
-  <>
-    <script is:inline type="text/partytown" src={`https://www.googletagmanager.com/gtag/js?id=${ga}`} async></script>
-    <script is:inline type="text/partytown" set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga}',{anonymize_ip:true,allow_google_signals:false});`}></script>
-  </>
+  <script is:inline define:vars={{ ga }}>
+    {`
+      // Same DNT/Sec-GPC opt-out applied to GA: privacy-conscious users
+      // should never trigger the GTM/GA bundle download, not just have
+      // its beacons silenced after the fact.
+      (function () {
+        var nav = navigator;
+        var dnt = nav.doNotTrack || nav.msDoNotTrack || null;
+        if (nav.globalPrivacyControl === true || dnt === '1' || dnt === 'yes') return;
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', ga, { anonymize_ip: true, allow_google_signals: false });
+        var s = document.createElement('script');
+        s.type = 'text/partytown';
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ga);
+        document.head.appendChild(s);
+      })();
+    `}
+  </script>
 )}

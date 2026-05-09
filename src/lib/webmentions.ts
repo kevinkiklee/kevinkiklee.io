@@ -26,6 +26,23 @@ type Jf2Child = {
 const FETCH_TIMEOUT_MS = 8_000;
 
 /**
+ * Pre-flight an http(s) URL string. Webmention.io aggregates third-party
+ * sources, and we surface author-supplied photo + profile URLs straight
+ * into the page. Reject anything that isn't a parseable http(s) URL so a
+ * malformed source can't slip a `javascript:` or `data:` URL into the DOM
+ * or trigger CSP report noise.
+ */
+function safeHttpUrl(raw: string | undefined): string | undefined {
+  if (!raw) return undefined;
+  try {
+    const u = new URL(raw);
+    return u.protocol === 'http:' || u.protocol === 'https:' ? u.toString() : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * Fetch webmentions for a target URL from webmention.io. Runs at build time
  * for static pages. Returns an empty array if the token is missing or the
  * request fails — never throws — so a transient network failure does not
@@ -49,11 +66,11 @@ export async function fetchWebmentions(target: string): Promise<Webmention[]> {
     const json = (await res.json()) as { children?: Jf2Child[] };
     const children = json.children ?? [];
     return children.map((c) => ({
-      source: c.url ?? '',
+      source: safeHttpUrl(c.url) ?? '',
       author: {
         name: c.author?.name ?? 'Anonymous',
-        photo: c.author?.photo,
-        url: c.author?.url ?? '',
+        photo: safeHttpUrl(c.author?.photo),
+        url: safeHttpUrl(c.author?.url) ?? '',
       },
       content: { text: c.content?.text ?? '' },
       published: c.published ?? '',
@@ -65,16 +82,19 @@ export async function fetchWebmentions(target: string): Promise<Webmention[]> {
             : c['wm-property'] === 'repost-of'
               ? 'repost'
               : 'mention',
-      url: c.url ?? '',
+      url: safeHttpUrl(c.url) ?? '',
     }));
   } catch (err) {
     // Build-time fetch failures shouldn't crash the build, but they should
     // surface in CI logs so we know whether the page rendered with no
     // mentions because there really are none, or because the API was down.
+    const isErr = err instanceof Error;
     const msg =
-      (err as Error).name === 'AbortError'
+      isErr && err.name === 'AbortError'
         ? `timed out after ${FETCH_TIMEOUT_MS}ms`
-        : (err as Error).message;
+        : isErr
+          ? err.message
+          : String(err);
     console.warn(`[webmentions] ${target}: ${msg}`);
     return [];
   } finally {
