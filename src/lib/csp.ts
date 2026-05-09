@@ -17,9 +17,6 @@ export const CSP = [
     // Google Tag Manager + GA4 (proxied via Partytown).
     'https://www.googletagmanager.com',
     'https://www.google-analytics.com',
-    // Pagefind-UI runtime + WASM are self-hosted under /pagefind/, but we
-    // also allow the jsdelivr CDN as a safety net for any sub-loaded dep.
-    'https://cdn.jsdelivr.net',
   ].join(' '),
   [
     'style-src',

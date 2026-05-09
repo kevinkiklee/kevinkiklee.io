@@ -16,3 +16,40 @@ describe('vercel.ts cache headers', () => {
     expect(match).toBeDefined();
   });
 });
+
+describe('vercel.ts security headers', () => {
+  type HeaderRule = { source: string; headers: { key: string; value: string }[] };
+  function findGlobalRule(): HeaderRule | undefined {
+    const flat = (config.headers ?? []).flat() as unknown as HeaderRule[];
+    return flat.find((r) => r.source === '/(.*)' && Array.isArray(r.headers));
+  }
+
+  it('emits Cross-Origin-Resource-Policy: same-origin (defense-in-depth)', () => {
+    const rule = findGlobalRule();
+    expect(rule).toBeDefined();
+    const corp = rule?.headers.find((h) => h.key === 'Cross-Origin-Resource-Policy');
+    expect(corp?.value).toBe('same-origin');
+  });
+
+  it('locks down sensitive Permissions-Policy directives', () => {
+    const rule = findGlobalRule();
+    const pp = rule?.headers.find((h) => h.key === 'Permissions-Policy');
+    expect(pp).toBeDefined();
+    // Spot-check the high-risk directives that recently exposed APIs to
+    // any embedded third-party. A blog needs none of these.
+    for (const directive of [
+      'camera=()',
+      'microphone=()',
+      'geolocation=()',
+      'usb=()',
+      'serial=()',
+      'hid=()',
+      'idle-detection=()',
+      'browsing-topics=()',
+      'interest-cohort=()',
+      'payment=()',
+    ]) {
+      expect(pp?.value).toContain(directive);
+    }
+  });
+});

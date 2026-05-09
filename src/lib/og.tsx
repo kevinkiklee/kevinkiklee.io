@@ -1,19 +1,7 @@
 import { html } from 'satori-html';
+import { escapeHtml } from './escape-html';
 
-/**
- * HTML-escape a string for safe interpolation into the OG template literal.
- * Without this, a post titled `<script>` (or one with stray `&` characters)
- * could produce malformed satori-html input or, worst case, exfiltrate
- * data via crafted markup. Cheap belt-and-braces.
- */
-export function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+export { escapeHtml };
 
 export function ogTemplate(args: { title: string; date: string; tags: string[] }) {
   // Title renders mixed-case as authored — matches the in-page <h1> and

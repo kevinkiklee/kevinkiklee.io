@@ -51,9 +51,17 @@ describe('CSP header', () => {
     }
   });
 
+  it('does not whitelist origins that are not actually used', () => {
+    // Defense in depth: every origin in the CSP should map to a real
+    // third-party we load from. cdn.jsdelivr.net was a Pagefind safety
+    // net we never relied on — Pagefind ships under /pagefind/ from our
+    // own origin.
+    expect(CSP).not.toContain('cdn.jsdelivr.net');
+  });
+
   it('matches a stable shape (snapshot)', () => {
     expect(CSP).toMatchInlineSnapshot(
-      `"default-src 'self'; script-src 'self' 'unsafe-inline' https://*.vercel-insights.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.gravatar.com https://avatars.githubusercontent.com; manifest-src 'self'; connect-src 'self' https://*.vercel-insights.com https://*.google-analytics.com https://webmention.io; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"`,
+      `"default-src 'self'; script-src 'self' 'unsafe-inline' https://*.vercel-insights.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.gravatar.com https://avatars.githubusercontent.com; manifest-src 'self'; connect-src 'self' https://*.vercel-insights.com https://*.google-analytics.com https://webmention.io; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"`,
     );
   });
 });
