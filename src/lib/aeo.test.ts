@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildLlmsIndex } from './aeo';
+import { buildLlmsFull, buildLlmsIndex, lastUpdatedDate } from './aeo';
 
 const fixturePosts = [
   {
@@ -62,9 +62,46 @@ describe('buildLlmsIndex', () => {
     expect(out).toContain('## About');
     expect(out).toContain('](https://kevinkiklee.io/about)');
   });
+
+  it('includes an Updated: stamp tied to the most-recent published post', () => {
+    const out = buildLlmsIndex(fixturePosts as never);
+    // Most recent non-draft is "B" at 2026-02-01
+    expect(out).toContain('Updated: 2026-02-01');
+  });
+
+  it('omits Updated when the archive is empty', () => {
+    const out = buildLlmsIndex([] as never);
+    expect(out).not.toContain('Updated:');
+  });
 });
 
-import { buildLlmsFull } from './aeo';
+describe('lastUpdatedDate', () => {
+  it('returns null on an empty array', () => {
+    expect(lastUpdatedDate([] as never)).toBeNull();
+  });
+
+  it('prefers updatedDate over pubDate when present', () => {
+    const posts = [
+      {
+        id: 'a',
+        data: {
+          pubDate: new Date('2026-01-01'),
+          updatedDate: new Date('2026-04-15'),
+          draft: false,
+        },
+      },
+    ];
+    expect(lastUpdatedDate(posts as never)).toBe('2026-04-15');
+  });
+
+  it('ignores drafts', () => {
+    const posts = [
+      { id: 'a', data: { pubDate: new Date('2026-03-01'), draft: true } },
+      { id: 'b', data: { pubDate: new Date('2026-01-01'), draft: false } },
+    ];
+    expect(lastUpdatedDate(posts as never)).toBe('2026-01-01');
+  });
+});
 
 describe('buildLlmsFull', () => {
   const many = Array.from({ length: 60 }, (_, i) => ({
@@ -94,5 +131,17 @@ describe('buildLlmsFull', () => {
   it('header references the canonical /llms.txt index', () => {
     const out = buildLlmsFull(many as never, 3);
     expect(out).toContain('https://kevinkiklee.io/llms.txt');
+  });
+
+  it('coerces a 0/negative cap to the default rather than emitting an empty body', () => {
+    const out = buildLlmsFull(many as never, 0);
+    const postEntries = (out.match(/^# Post /gm) ?? []).length;
+    expect(postEntries).toBeGreaterThan(0);
+  });
+
+  it('floors a fractional cap', () => {
+    const out = buildLlmsFull(many as never, 2.7);
+    const postEntries = (out.match(/^# Post /gm) ?? []).length;
+    expect(postEntries).toBe(2);
   });
 });
