@@ -16,9 +16,11 @@ const { name, blurb, url, repoUrl, tech } = project.data;
     </a>
   </h3>
   <p>{blurb}</p>
-  <ul role="list" class="tech">
-    {tech.map((t) => <li>{t}</li>)}
-  </ul>
+  {tech.length > 0 && (
+    <ul role="list" class="tech" aria-label={`${name} tech stack`}>
+      {tech.map((t) => <li>{t}</li>)}
+    </ul>
+  )}
   {repoUrl && <a href={repoUrl} class="repo" aria-label={`View ${name} repository`}>view repo →</a>}
 </article>
 

@@ -94,3 +94,14 @@
     color: var(--fg);
   }
 </style>
+
+<script>
+  // Backdrop click-to-close — matches SearchPalette behaviour so users
+  // get the same dismiss gesture for every modal on the site. Bound on
+  // mousedown so dragging text selection out of the dialog doesn't
+  // accidentally close it.
+  const dlg = document.getElementById('shortcuts-overlay') as HTMLDialogElement | null;
+  dlg?.addEventListener('mousedown', (e) => {
+    if (e.target === dlg && dlg.open) dlg.close();
+  });
+</script>

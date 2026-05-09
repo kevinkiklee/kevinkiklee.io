@@ -198,25 +198,42 @@ function isCurrent(href: string) {
   // Mobile (coarse pointer): fall through to /search route, since the palette
   // is a poor fit for touch + on-screen keyboard.
   // If JS is disabled entirely, the link still navigates to /search.
-  document.getElementById('search-trigger')?.addEventListener('click', (e) => {
+  //
+  // NOTE: ClientRouter replaces the header element on each navigation, so a
+  // single addEventListener at script-load time only covers the first page.
+  // We use document-level event delegation so the click handler survives
+  // every swap without re-binding.
+  document.addEventListener('click', (e) => {
+    const target = e.target as Element | null;
+    const trigger = target?.closest('#search-trigger');
+    if (!trigger) return;
     if (window.matchMedia?.('(pointer: coarse)').matches) return;
     e.preventDefault();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: '/' }));
   });
 
   // Sync aria-expanded on the trigger to the dialog's open state, so
-  // screen readers know whether the palette is open.
+  // screen readers know whether the palette is open. Re-binds the
+  // dialog event listeners after every swap because the <Header> is
+  // re-rendered (the listener attached on first load is lost when the
+  // <dialog> element gets recreated).
   function syncSearchTriggerExpanded() {
     const trigger = document.getElementById('search-trigger');
     const palette = document.getElementById('search-palette');
     if (!trigger || !palette) return;
     trigger.setAttribute('aria-expanded', String(palette.hasAttribute('open')));
   }
-  syncSearchTriggerExpanded();
-  const palette = document.getElementById('search-palette');
-  if (palette) {
+  function bindPaletteSync() {
+    const palette = document.getElementById('search-palette');
+    if (!palette || (palette as HTMLElement).dataset.expandedSyncBound === '1') return;
+    (palette as HTMLElement).dataset.expandedSyncBound = '1';
     palette.addEventListener('toggle', syncSearchTriggerExpanded);
     palette.addEventListener('close', syncSearchTriggerExpanded);
   }
-  document.addEventListener('astro:page-load', syncSearchTriggerExpanded);
+  syncSearchTriggerExpanded();
+  bindPaletteSync();
+  document.addEventListener('astro:page-load', () => {
+    syncSearchTriggerExpanded();
+    bindPaletteSync();
+  });
 </script>
