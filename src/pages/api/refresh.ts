@@ -1,6 +1,19 @@
+import { timingSafeEqual } from 'node:crypto';
 import type { APIContext } from 'astro';
 
 export const prerender = false;
+
+/**
+ * Constant-time string compare so an attacker can't byte-by-byte time the
+ * Authorization header. Buffers must be the same length, so we early-out
+ * on length mismatch (length itself isn't secret) before the safe compare.
+ */
+function safeEqual(a: string, b: string): boolean {
+  const ab = Buffer.from(a, 'utf8');
+  const bb = Buffer.from(b, 'utf8');
+  if (ab.length !== bb.length) return false;
+  return timingSafeEqual(ab, bb);
+}
 
 /**
  * Vercel Cron-only endpoint that pings a deploy hook to rebuild the site.
@@ -16,13 +29,30 @@ export async function GET(ctx: APIContext) {
     return new Response('CRON_SECRET not configured', { status: 503 });
   }
   const auth = ctx.request.headers.get('authorization') ?? '';
-  if (auth !== `Bearer ${secret}`) {
+  if (!safeEqual(auth, `Bearer ${secret}`)) {
     return new Response('unauthorized', { status: 401 });
   }
   const url = process.env.VERCEL_DEPLOY_HOOK_URL;
   if (!url) return new Response('no hook configured', { status: 503 });
-  const r = await fetch(url, { method: 'POST' });
-  return new Response(JSON.stringify({ ok: r.ok }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  try {
+    const r = await fetch(url, { method: 'POST' });
+    if (!r.ok) {
+      console.error(`[refresh] deploy hook returned ${r.status} ${r.statusText}`);
+    }
+    return new Response(JSON.stringify({ ok: r.ok, status: r.status }), {
+      status: r.ok ? 200 : 502,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    // Don't 500 the cron — the hook URL itself or upstream Vercel may be
+    // transiently unreachable, and a 502 keeps the cron run observable
+    // without paging the platform's serverless error rate alarms. Log so
+    // the failure shows up in Vercel function logs for the cron run.
+    const message = err instanceof Error ? err.message : 'unknown';
+    console.error(`[refresh] deploy hook failed: ${message}`);
+    return new Response(JSON.stringify({ ok: false, error: message }), {
+      status: 502,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 }
