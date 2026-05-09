@@ -12,6 +12,10 @@ export async function GET(context: APIContext) {
     feed_url: new URL('/feed.json', site).toString(),
     description: 'Field notes from a Chrome DevRel.',
     language: 'en-US',
+    // JSON Feed 1.1 supports `icon` (large square, ≥512px) and `favicon`
+    // (~64px). Readers display these in the feed list / sidebar.
+    icon: new URL('/favicon-512.png', site).toString(),
+    favicon: new URL('/favicon-32.png', site).toString(),
     authors: [{ name: 'Kevin Lee', url: site.toString() }],
     items: posts.map((p) => ({
       id: new URL(`/posts/${p.id}`, site).toString(),
