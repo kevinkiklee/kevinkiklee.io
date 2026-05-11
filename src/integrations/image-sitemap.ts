@@ -76,7 +76,11 @@ function readPostsWithCovers(siteUrl: string, distClient: string): CoverMeta[] {
       .split('/')
       .pop()
       ?.replace(/\.[^.]+$/, '');
-    if (!baseFromFm) continue;
+    // Defensive: a hostile or accidentally-pasted `cover.src` like
+    // "../../etc/passwd" would otherwise feed `..` straight to our
+    // directory scan. Cover assets are author-supplied, not user input,
+    // so this should never fire — but the guard is cheap insurance.
+    if (!baseFromFm || /[\\/]|\.\./.test(baseFromFm)) continue;
     const resolved = resolveBuiltAsset(distClient, baseFromFm);
     if (!resolved) continue;
     out.push({

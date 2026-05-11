@@ -34,8 +34,13 @@ export async function GET(ctx: APIContext) {
   }
   const url = process.env.VERCEL_DEPLOY_HOOK_URL;
   if (!url) return new Response('no hook configured', { status: 503 });
+  // Hard 10s timeout. The deploy-hook POST normally returns in <500ms; if
+  // Vercel's upstream is wedged, we'd rather fail with an actionable 502
+  // than let the function chew through its execution budget.
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 10_000);
   try {
-    const r = await fetch(url, { method: 'POST' });
+    const r = await fetch(url, { method: 'POST', signal: ctrl.signal });
     if (!r.ok) {
       console.error(`[refresh] deploy hook returned ${r.status} ${r.statusText}`);
     }
@@ -48,11 +53,18 @@ export async function GET(ctx: APIContext) {
     // transiently unreachable, and a 502 keeps the cron run observable
     // without paging the platform's serverless error rate alarms. Log so
     // the failure shows up in Vercel function logs for the cron run.
-    const message = err instanceof Error ? err.message : 'unknown';
+    const isAbort = err instanceof Error && err.name === 'AbortError';
+    const message = isAbort
+      ? 'timed out after 10000ms'
+      : err instanceof Error
+        ? err.message
+        : 'unknown';
     console.error(`[refresh] deploy hook failed: ${message}`);
     return new Response(JSON.stringify({ ok: false, error: message }), {
       status: 502,
       headers: { 'Content-Type': 'application/json' },
     });
+  } finally {
+    clearTimeout(timer);
   }
 }
