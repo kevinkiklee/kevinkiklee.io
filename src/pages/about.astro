@@ -5,9 +5,9 @@ import JsonLd from '~/components/JsonLd.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { crumbsFor } from '~/lib/crumbs';
 import { buildBreadcrumbs, buildPageGraph, buildPerson, buildWebSite } from '~/lib/schema';
-import { SITE } from '~/lib/site-config';
+import { SITE, resolveMastodonProfile } from '~/lib/site-config';
 
-const mastodon = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
+const mastodon = resolveMastodonProfile(MASTODON_INSTANCE_URL);
 const person = buildPerson({
   mastodon,
   github: SITE.github,

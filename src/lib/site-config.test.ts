@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SITE } from './site-config';
+import { DEFAULT_OG_IMAGE, SITE, resolveMastodonProfile } from './site-config';
 
 describe('SITE', () => {
   it('matches the expected shape', () => {
@@ -32,5 +32,22 @@ describe('SITE', () => {
 
   it('url is a valid https URL with no trailing slash', () => {
     expect(SITE.url).toMatch(/^https:\/\/[^/]+$/);
+  });
+});
+
+describe('resolveMastodonProfile', () => {
+  it('returns the env override when provided', () => {
+    expect(resolveMastodonProfile('https://hachyderm.io/@kevin')).toBe(
+      'https://hachyderm.io/@kevin',
+    );
+  });
+  it('falls back to the baked-in default when env value is undefined', () => {
+    expect(resolveMastodonProfile(undefined)).toBe(SITE.defaultMastodon);
+  });
+});
+
+describe('DEFAULT_OG_IMAGE', () => {
+  it('points to an absolute, public-served PNG path', () => {
+    expect(DEFAULT_OG_IMAGE).toMatch(/^\/[^/].*\.png$/);
   });
 });

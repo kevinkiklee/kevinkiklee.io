@@ -1,6 +1,6 @@
 ---
 import { MASTODON_INSTANCE_URL, TWITTER_HANDLE } from 'astro:env/client';
-import { SITE } from '~/lib/site-config';
+import { DEFAULT_OG_IMAGE, SITE, resolveMastodonProfile } from '~/lib/site-config';
 
 interface Props {
   title: string;
@@ -40,8 +40,8 @@ const {
 } = Astro.props;
 
 const canonical = canonicalProp ?? new URL(Astro.url.pathname, Astro.site).toString();
-const ogImage = ogImageUrl ?? new URL('/og-default.png', Astro.site).toString();
-const mastodonProfile = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
+const ogImage = ogImageUrl ?? new URL(DEFAULT_OG_IMAGE, Astro.site).toString();
+const mastodonProfile = resolveMastodonProfile(MASTODON_INSTANCE_URL);
 // Home title gets the tagline appended; everything else uses the title as-is.
 const isHome = Astro.url.pathname === '/';
 const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;

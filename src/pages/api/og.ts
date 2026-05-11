@@ -5,6 +5,7 @@ import type { APIContext } from 'astro';
 import { formatDate } from '~/lib/format';
 import { ogTemplate } from '~/lib/og';
 import { getPublishedPosts } from '~/lib/posts';
+import { DEFAULT_OG_IMAGE } from '~/lib/site-config';
 
 export const prerender = false;
 
@@ -45,7 +46,7 @@ const fontData = readOptional(resolve('./public/fonts/og/JetBrainsMono-Bold.ttf'
 // satori rendering fails. Social-network unfurlers fetch og:image directly,
 // so a 500 here breaks every preview for the affected post — returning a
 // valid (if generic) image keeps social cards working while we investigate.
-const fallbackPng = readOptional(resolve('./public/og-default.png'));
+const fallbackPng = readOptional(resolve(`./public${DEFAULT_OG_IMAGE}`));
 
 function fallbackResponse(): Response {
   if (!fallbackPng) {

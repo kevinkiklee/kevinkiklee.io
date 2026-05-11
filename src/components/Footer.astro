@@ -1,8 +1,8 @@
 ---
 import { MASTODON_INSTANCE_URL } from 'astro:env/client';
-import { SITE } from '~/lib/site-config';
+import { resolveMastodonProfile } from '~/lib/site-config';
 const year = new Date().getFullYear();
-const mastodon = MASTODON_INSTANCE_URL ?? SITE.defaultMastodon;
+const mastodon = resolveMastodonProfile(MASTODON_INSTANCE_URL);
 ---
 <footer class="site-footer">
   <div class="row">
