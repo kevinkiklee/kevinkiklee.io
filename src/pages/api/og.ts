@@ -28,20 +28,57 @@ async function ensureSentry(): Promise<typeof import('@sentry/node') | null> {
 
 // Static (instanced) bold cut — @vercel/og/Satori's opentype.js parser
 // cannot parse JetBrainsMono variable font's fvar table reliably.
-const fontPath = resolve('./public/fonts/og/JetBrainsMono-Bold.ttf');
-const fontData = readFileSync(fontPath);
-
+//
+// Both reads are wrapped so a missing/renamed asset surfaces as a 503 at
+// request time instead of crashing the function module on cold start
+// (which would 500 EVERY route the file is bundled into).
+function readOptional(absPath: string): Buffer | null {
+  try {
+    return readFileSync(absPath);
+  } catch (err) {
+    console.error(`[og] asset unavailable at ${absPath}:`, err);
+    return null;
+  }
+}
+const fontData = readOptional(resolve('./public/fonts/og/JetBrainsMono-Bold.ttf'));
 // Pre-read the default PNG so we can serve it as a binary fallback when
 // satori rendering fails. Social-network unfurlers fetch og:image directly,
 // so a 500 here breaks every preview for the affected post — returning a
 // valid (if generic) image keeps social cards working while we investigate.
-const fallbackPath = resolve('./public/og-default.png');
-const fallbackPng = readFileSync(fallbackPath);
+const fallbackPng = readOptional(resolve('./public/og-default.png'));
+
+function fallbackResponse(): Response {
+  if (!fallbackPng) {
+    return new Response('og unavailable', { status: 503 });
+  }
+  // TS narrows BodyInit to ArrayBuffer-backed views only, but Node's Buffer
+  // can carry a SharedArrayBuffer or ArrayBufferLike. Cast through unknown:
+  // at runtime fetch's Response accepts any Uint8Array and the Buffer bytes
+  // are immutable for our purposes (read once at module load).
+  return new Response(fallbackPng as unknown as BodyInit, {
+    status: 200,
+    headers: {
+      'Content-Type': 'image/png',
+      'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',
+      'X-OG-Fallback': '1',
+    },
+  });
+}
+
+// Post slugs are date-stripped lowercase ASCII with `-` separators (see
+// content.config.ts). Reject anything else early — it cannot map to a
+// post and probing the collection just wastes function time + adds noise
+// to logs for crawlers fuzzing the endpoint.
+const SLUG_OK = /^[a-z0-9][a-z0-9-]{0,80}$/;
 
 export async function GET(ctx: APIContext) {
+  // If the bundled font is missing, ship the static fallback rather than
+  // letting Satori crash with a cryptic glyph-table error per request.
+  if (!fontData) return fallbackResponse();
   try {
     const slug = ctx.url.searchParams.get('slug');
     if (!slug) return new Response('missing slug', { status: 400 });
+    if (!SLUG_OK.test(slug)) return new Response('bad slug', { status: 400 });
     const posts = await getPublishedPosts();
     const post = posts.find((p) => p.id === slug);
     if (!post) return new Response('not found', { status: 404 });
@@ -66,15 +103,6 @@ export async function GET(ctx: APIContext) {
     const Sentry = await ensureSentry();
     Sentry?.captureException(err);
     console.error('og render failed', err);
-    // Serve the default PNG as a binary fallback. Cache for 5 min so retries
-    // hit a fresh dynamic render once whatever broke is fixed.
-    return new Response(fallbackPng, {
-      status: 200,
-      headers: {
-        'Content-Type': 'image/png',
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',
-        'X-OG-Fallback': '1',
-      },
-    });
+    return fallbackResponse();
   }
 }
