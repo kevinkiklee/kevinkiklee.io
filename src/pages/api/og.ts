@@ -50,7 +50,10 @@ const fallbackPng = readOptional(resolve(`./public${DEFAULT_OG_IMAGE}`));
 
 function fallbackResponse(): Response {
   if (!fallbackPng) {
-    return new Response('og unavailable', { status: 503 });
+    return new Response('og unavailable', {
+      status: 503,
+      headers: { 'Cache-Control': 'no-store' },
+    });
   }
   // TS narrows BodyInit to ArrayBuffer-backed views only, but Node's Buffer
   // can carry a SharedArrayBuffer or ArrayBufferLike. Cast through unknown:
@@ -72,17 +75,27 @@ function fallbackResponse(): Response {
 // to logs for crawlers fuzzing the endpoint.
 const SLUG_OK = /^[a-z0-9][a-z0-9-]{0,80}$/;
 
+// Error responses need an explicit Cache-Control or they inherit the
+// route-level `s-maxage=1year, immutable` from vercel.ts — i.e. a single
+// 400/404/503 would pin per-slug at the edge until next deploy.
+function errorResponse(body: string, status: number): Response {
+  return new Response(body, {
+    status,
+    headers: { 'Cache-Control': 'no-store' },
+  });
+}
+
 export async function GET(ctx: APIContext) {
   // If the bundled font is missing, ship the static fallback rather than
   // letting Satori crash with a cryptic glyph-table error per request.
   if (!fontData) return fallbackResponse();
   try {
     const slug = ctx.url.searchParams.get('slug');
-    if (!slug) return new Response('missing slug', { status: 400 });
-    if (!SLUG_OK.test(slug)) return new Response('bad slug', { status: 400 });
+    if (!slug) return errorResponse('missing slug', 400);
+    if (!SLUG_OK.test(slug)) return errorResponse('bad slug', 400);
     const posts = await getPublishedPosts();
     const post = posts.find((p) => p.id === slug);
-    if (!post) return new Response('not found', { status: 404 });
+    if (!post) return errorResponse('not found', 404);
     const tree = ogTemplate({
       title: post.data.title,
       date: formatDate(post.data.pubDate),
