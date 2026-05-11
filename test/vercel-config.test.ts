@@ -52,4 +52,27 @@ describe('vercel.ts security headers', () => {
       expect(pp?.value).toContain(directive);
     }
   });
+
+  it('allows only same-origin clipboard-write (CopyButton on code blocks)', () => {
+    const rule = findGlobalRule();
+    const pp = rule?.headers.find((h) => h.key === 'Permissions-Policy');
+    expect(pp?.value).toContain('clipboard-write=(self)');
+    // clipboard-read is never needed — we never paste FROM the user.
+    expect(pp?.value).toContain('clipboard-read=()');
+  });
+
+  it('blocks newer fingerprinting / private-state surfaces', () => {
+    const rule = findGlobalRule();
+    const pp = rule?.headers.find((h) => h.key === 'Permissions-Policy');
+    for (const directive of [
+      'attribution-reporting=()',
+      'compute-pressure=()',
+      'local-fonts=()',
+      'private-state-token-issuance=()',
+      'private-state-token-redemption=()',
+      'window-management=()',
+    ]) {
+      expect(pp?.value).toContain(directive);
+    }
+  });
 });

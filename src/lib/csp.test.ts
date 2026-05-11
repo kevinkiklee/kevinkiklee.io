@@ -19,7 +19,13 @@ describe('CSP header', () => {
 
   it('does not allow giscus origins (Giscus removed in favour of Mastodon-only)', () => {
     expect(CSP).not.toContain('giscus.app');
-    expect(CSP).not.toContain('frame-src');
+  });
+
+  it('forbids embed surfaces we never use (frame / media / worker / child)', () => {
+    expect(CSP).toContain("frame-src 'none'");
+    expect(CSP).toContain("media-src 'none'");
+    expect(CSP).toContain("worker-src 'none'");
+    expect(CSP).toContain("child-src 'none'");
   });
 
   it('has no empty directive (a stray "; ;" or trailing ";")', () => {
@@ -36,6 +42,9 @@ describe('CSP header', () => {
       'style-src',
       'img-src',
       'frame-src',
+      'media-src',
+      'worker-src',
+      'child-src',
       'manifest-src',
       'connect-src',
       'font-src',
@@ -61,7 +70,7 @@ describe('CSP header', () => {
 
   it('matches a stable shape (snapshot)', () => {
     expect(CSP).toMatchInlineSnapshot(
-      `"default-src 'self'; script-src 'self' 'unsafe-inline' https://*.vercel-insights.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.gravatar.com https://avatars.githubusercontent.com; manifest-src 'self'; connect-src 'self' https://*.vercel-insights.com https://*.google-analytics.com https://webmention.io; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"`,
+      `"default-src 'self'; script-src 'self' 'unsafe-inline' https://*.vercel-insights.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.gravatar.com https://avatars.githubusercontent.com; frame-src 'none'; media-src 'none'; worker-src 'none'; child-src 'none'; manifest-src 'self'; connect-src 'self' https://*.vercel-insights.com https://*.google-analytics.com https://webmention.io; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"`,
     );
   });
 });

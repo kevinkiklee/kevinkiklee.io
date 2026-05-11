@@ -34,7 +34,18 @@ export const CSP = [
     // GitHub avatars used by webmentions from GH-authored replies.
     'https://avatars.githubusercontent.com',
   ].join(' '),
-  // No frame-src needed — we don't embed any third-party iframes.
+  // We don't embed any third-party iframes. Explicit `none` is defense in
+  // depth on top of `frame-ancestors 'none'` — that blocks others embedding
+  // us; this blocks us from embedding anything.
+  "frame-src 'none'",
+  // No <audio>/<video> on this site. Block in advance so an injected
+  // <video src="https://…"> can't beacon out.
+  "media-src 'none'",
+  // No Web Workers anywhere on the site today. Block by default; flip to
+  // 'self' if we ever introduce one.
+  "worker-src 'none'",
+  // Block child <iframe> / worker chains from inheriting a laxer policy.
+  "child-src 'none'",
   // Web app manifest fetched on every page load by Chrome.
   "manifest-src 'self'",
   [

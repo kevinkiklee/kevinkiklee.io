@@ -57,6 +57,10 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 <title>{finalTitle}</title>
 <meta name="description" content={description} />
 <meta name="author" content="Kevin Lee" />
+<!-- Mirror the server-side Referrer-Policy header in HTML so the policy
+     still applies if a downstream CDN strips response headers or a user
+     opens a saved-page copy. -->
+<meta name="referrer" content="strict-origin-when-cross-origin" />
 <meta name="robots" content={noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large'} />
 <link rel="canonical" href={canonical} />
 <link rel="alternate" hreflang="en" href={canonical} />
