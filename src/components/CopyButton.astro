@@ -18,6 +18,16 @@
 
   type AnyPre = HTMLPreElement;
 
+  // Track all in-flight label-reset timers across button instances so a
+  // ClientRouter swap that yanks the <pre> out of the DOM doesn't leave
+  // orphaned timers firing against a detached button.
+  const pendingResetTimers = new Set<number>();
+  function clearAllResetTimers() {
+    for (const id of pendingResetTimers) window.clearTimeout(id);
+    pendingResetTimers.clear();
+  }
+  document.addEventListener('astro:before-swap', clearAllResetTimers);
+
   function attach(): void {
     document.querySelectorAll<AnyPre>('.prose pre').forEach((pre) => {
       if (pre.querySelector('.copy-btn')) return;
@@ -52,12 +62,17 @@
         if (!ok) {
           btn.textContent = 'error';
           status.textContent = 'Failed to copy';
-          if (resetTimer !== undefined) window.clearTimeout(resetTimer);
+          if (resetTimer !== undefined) {
+            window.clearTimeout(resetTimer);
+            pendingResetTimers.delete(resetTimer);
+          }
           resetTimer = window.setTimeout(() => {
             btn.textContent = 'copy';
             status.textContent = '';
+            if (resetTimer !== undefined) pendingResetTimers.delete(resetTimer);
             resetTimer = undefined;
           }, 1200);
+          pendingResetTimers.add(resetTimer);
           return;
         }
         await withWillChange(btn, ['transform'], () =>
@@ -72,12 +87,17 @@
         );
         btn.textContent = '✓ copied';
         status.textContent = 'Copied';
-        if (resetTimer !== undefined) window.clearTimeout(resetTimer);
+        if (resetTimer !== undefined) {
+          window.clearTimeout(resetTimer);
+          pendingResetTimers.delete(resetTimer);
+        }
         resetTimer = window.setTimeout(() => {
           btn.textContent = 'copy';
           status.textContent = '';
+          if (resetTimer !== undefined) pendingResetTimers.delete(resetTimer);
           resetTimer = undefined;
         }, 1000);
+        pendingResetTimers.add(resetTimer);
       });
       pre.style.position = 'relative';
       pre.appendChild(btn);

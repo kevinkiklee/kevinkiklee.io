@@ -8,7 +8,6 @@ export type MotionToken = 'fast' | 'base' | 'slow';
 
 export const EASE_OUT = 'cubic-bezier(0.32, 0.72, 0, 1)';
 export const EASE_SPRING = 'cubic-bezier(0.34, 1.40, 0.64, 1)';
-export const EASE_IN = 'cubic-bezier(0.55, 0, 1, 0.45)';
 
 const _isMobile = typeof matchMedia !== 'undefined' ? matchMedia('(max-width: 640px)') : null;
 const _reduce =
@@ -24,13 +23,13 @@ interface NavConn {
 }
 
 function navConn(): NavConn | undefined {
-  if (typeof navigator === 'undefined') return undefined;
+  if (typeof navigator === 'undefined' || !('connection' in navigator)) return undefined;
   try {
     return (navigator as unknown as { connection?: NavConn }).connection;
   } catch {
-    // Some legacy WebKit builds throw on `navigator.connection` access
-    // (rather than returning undefined). Treat as "no signal" so the caller
-    // falls through to the unscaled-duration path.
+    // Some legacy WebKit builds throw on `navigator.connection` access even
+    // when the property exists (e.g. cross-origin iframe contexts). Treat as
+    // "no signal" so the caller falls through to the unscaled-duration path.
     return undefined;
   }
 }

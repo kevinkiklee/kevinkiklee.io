@@ -32,20 +32,37 @@
     return /^\/posts\/(?!page\/)[^/]+\/?$/.test(location.pathname);
   }
 
+  // Track in-flight rAF ids so a fast back-nav can cancel them before they
+  // dispatch animations against soon-to-be-removed DOM nodes. Listener is
+  // bound once; the ids list is mutated in place across reveal sequences.
+  const pendingRafIds: number[] = [];
+  function cancelPendingRafs() {
+    while (pendingRafIds.length) {
+      const id = pendingRafIds.pop();
+      if (id !== undefined) cancelAnimationFrame(id);
+    }
+  }
+  document.addEventListener('astro:before-swap', cancelPendingRafs);
+
   function runPostRevealSequence(): void {
     if (document.visibilityState !== 'visible') return;
     const dur = scaledDuration(180);
+    // Scale stagger delays in lockstep with the duration: when scaledDuration
+    // collapses to 1ms (reduce-motion / save-data / 2G), the staggered
+    // delays would otherwise still wait their full 90/280/380ms and produce
+    // a stuttery pseudo-animation. Ratio keeps the choreography proportional.
+    const scale = dur / 180;
     const seq: Array<{ sel: string; delay: number; kind: Kind }> = [
-      { sel: '.eyebrow',                     delay: 0,   kind: 'fade' },
-      { sel: '.post h1',                    delay: 90,  kind: 'fade-up' },
-      { sel: '.meta-rail',                  delay: 280, kind: 'fade' },
-      { sel: '.prose > *:first-child',      delay: 380, kind: 'fade-up' },
+      { sel: '.eyebrow',                     delay: 0,                          kind: 'fade' },
+      { sel: '.post h1',                    delay: Math.round(90 * scale),     kind: 'fade-up' },
+      { sel: '.meta-rail',                  delay: Math.round(280 * scale),    kind: 'fade' },
+      { sel: '.prose > *:first-child',      delay: Math.round(380 * scale),    kind: 'fade-up' },
     ];
     for (const { sel, delay, kind } of seq) {
       const el = document.querySelector(sel) as HTMLElement | null;
       if (!el) continue;
       if (el.hasAttribute('data-no-anim')) continue;
-      requestAnimationFrame(() => {
+      const rafId = requestAnimationFrame(() => {
         void withWillChange(el, ['opacity', 'transform'], () =>
           el.animate(getKeyframes(kind), {
             duration: dur,
@@ -55,6 +72,7 @@
           }).finished,
         );
       });
+      pendingRafIds.push(rafId);
     }
   }
 
