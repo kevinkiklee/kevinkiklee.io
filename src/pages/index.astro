@@ -7,6 +7,7 @@ import SectionTitle from '~/components/SectionTitle.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
 import { ENTITY_IDS, buildBlog, buildPageGraph, buildWebSite } from '~/lib/schema';
+import { SITE } from '~/lib/site-config';
 
 const posts = sortByDateDesc(await getPublishedPosts()).slice(0, 5);
 const projects = (await getCollection('projects'))
@@ -15,7 +16,7 @@ const projects = (await getCollection('projects'))
 ---
 <BaseLayout
   title="kevinkiklee.io"
-  description="Field notes from a Chrome DevRel — AI, web platform, and tangents."
+  description={SITE.description}
 >
   <JsonLd slot="head" data={buildPageGraph([
     buildWebSite(),

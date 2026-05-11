@@ -5,14 +5,17 @@ describe('SITE', () => {
   it('matches the expected shape', () => {
     expect(SITE).toMatchInlineSnapshot(`
       {
+        "author": "Kevin Lee",
         "bio": "Developer Relations Engineer at Google Chrome. Writes about the web platform, AI tooling, and browser internals.",
         "bsky": "https://bsky.app/profile/kevinkiklee.bsky.social",
         "defaultMastodon": "https://mastodon.social/@kevinkiklee",
         "description": "Field notes from a Chrome DevRel — AI, web platform, and tangents.",
         "github": "https://github.com/kevinkiklee",
+        "jobTitle": "Developer Relations Engineer",
         "license": undefined,
         "linkedin": "https://www.linkedin.com/in/kevinkiklee/",
         "locale": "en_US",
+        "org": "Google Chrome",
         "portraitUrl": undefined,
         "tagline": "Field notes from a Chrome DevRel",
         "title": "kevinkiklee.io",

@@ -5,7 +5,7 @@ import JsonLd from '~/components/JsonLd.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { crumbsFor } from '~/lib/crumbs';
 import { buildBreadcrumbs, buildPageGraph, buildPerson, buildWebSite } from '~/lib/schema';
-import { SITE, resolveMastodonProfile } from '~/lib/site-config';
+import { SITE, pageTitle, resolveMastodonProfile } from '~/lib/site-config';
 
 const mastodon = resolveMastodonProfile(MASTODON_INSTANCE_URL);
 const person = buildPerson({
@@ -19,15 +19,15 @@ const person = buildPerson({
 const crumbs = crumbsFor('/about');
 const graph = buildPageGraph([person, buildBreadcrumbs(crumbs, SITE.url), buildWebSite()]);
 ---
-<BaseLayout title="About · kevinkiklee.io" description="Who I am, what I work on, how to reach me." ogType="profile" profileFirstName="Kevin" profileLastName="Lee">
+<BaseLayout title={pageTitle('About')} description="Who I am, what I work on, how to reach me." ogType="profile" profileFirstName="Kevin" profileLastName="Lee">
   <JsonLd slot="head" data={graph} />
   <Breadcrumbs items={crumbs} />
   <article class="h-card">
     <h1 class="page-title">About</h1>
     <p class="lead">
-      Hi, I'm <a class="p-name u-url" rel="me author" href="https://kevinkiklee.io">Kevin Lee</a>.
-      I work as a <span class="p-job-title">Developer Relations Engineer</span>
-      at <span class="p-org">Google Chrome</span>.
+      Hi, I'm <a class="p-name u-url" rel="me author" href={SITE.url}>{SITE.author}</a>.
+      I work as a <span class="p-job-title">{SITE.jobTitle}</span>
+      at <span class="p-org">{SITE.org}</span>.
     </p>
     <p>This site is a place for field notes — heavy on AI and the web platform, lighter on everything else. Most posts are short. Some are long. RSS welcome.</p>
     <p class="credentials">
@@ -36,8 +36,8 @@ const graph = buildPageGraph([person, buildBreadcrumbs(crumbs, SITE.url), buildW
     <h2>Find me</h2>
     <ul class="links" role="list">
       <li><a class="u-url" rel="me" href={mastodon}><span class="ar" aria-hidden="true">↗</span> Mastodon — primary social</a></li>
-      <li><a class="u-url" rel="me" href="https://github.com/kevinkiklee"><span class="ar" aria-hidden="true">↗</span> GitHub</a></li>
-      <li><a class="u-url" rel="me" href="https://www.linkedin.com/in/kevinkiklee/"><span class="ar" aria-hidden="true">↗</span> LinkedIn</a></li>
+      <li><a class="u-url" rel="me" href={SITE.github}><span class="ar" aria-hidden="true">↗</span> GitHub</a></li>
+      <li><a class="u-url" rel="me" href={SITE.linkedin}><span class="ar" aria-hidden="true">↗</span> LinkedIn</a></li>
     </ul>
     <p class="discuss">Best way to reach me is on Mastodon. I read everything.</p>
   </article>

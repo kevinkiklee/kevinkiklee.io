@@ -24,7 +24,7 @@ draft: false                                     # true to hide in production
 cover:                                           # optional; powers OG + LCP
   src: ./cover.jpg
   alt: Diagram of the speculation rules graph
-mastodonUrl: https://mastodon.social/@kevin/123  # for webmention thread
+mastodonUrl: https://mastodon.social/@kevinkiklee/123  # for webmention thread
 series:                                          # optional series grouping
   name: Cache Components
   order: 1

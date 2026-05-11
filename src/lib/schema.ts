@@ -131,10 +131,10 @@ export function buildPerson(args: PersonArgs) {
   const out: Record<string, unknown> = {
     '@type': 'Person',
     '@id': ENTITY_IDS.person,
-    name: 'Kevin Lee',
-    url: 'https://kevinkiklee.io/about',
-    jobTitle: 'Developer Relations Engineer',
-    worksFor: { '@type': 'Organization', name: 'Google Chrome' },
+    name: SITE_CONFIG.author,
+    url: `${SITE}/about`,
+    jobTitle: SITE_CONFIG.jobTitle,
+    worksFor: { '@type': 'Organization', name: SITE_CONFIG.org },
     description: args.bio,
     knowsAbout: [...KNOWS_ABOUT],
     sameAs,
@@ -147,7 +147,7 @@ export function buildWebSite() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'kevinkiklee.io',
+    name: SITE_CONFIG.title,
     url: SITE,
     potentialAction: {
       '@type': 'SearchAction',
@@ -187,8 +187,8 @@ export function buildBlog() {
   return {
     '@type': 'Blog',
     '@id': ENTITY_IDS.blog,
-    name: 'kevinkiklee.io',
-    url: 'https://kevinkiklee.io/posts',
+    name: SITE_CONFIG.title,
+    url: `${SITE}/posts`,
     inLanguage: 'en-US',
     publisher: { '@id': ENTITY_IDS.person },
   } as const;

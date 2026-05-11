@@ -14,7 +14,7 @@ import {
   buildPageGraph,
   buildWebSite,
 } from '~/lib/schema';
-import { SITE } from '~/lib/site-config';
+import { SITE, pageTitle } from '~/lib/site-config';
 
 const allPosts = sortByDateDesc(await getPublishedPosts());
 const posts = allPosts.slice(0, 30);
@@ -52,7 +52,7 @@ const graph = buildPageGraph([
   { '@id': ENTITY_IDS.person },
 ]);
 ---
-<BaseLayout title="Posts · kevinkiklee.io" description="Archive of all posts.">
+<BaseLayout title={pageTitle('Posts')} description="Archive of all posts.">
   <JsonLd slot="head" data={graph} />
   <Breadcrumbs items={crumbs} />
   <h1 class="page-title">Posts</h1>

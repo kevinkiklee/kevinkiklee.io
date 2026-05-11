@@ -1,6 +1,7 @@
 import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
+import { SITE } from '~/lib/site-config';
 
 export async function GET(context: APIContext) {
   if (!context.site) throw new Error('astro.config site must be set');
@@ -14,8 +15,8 @@ export async function GET(context: APIContext) {
   );
   const lastBuild = newest > 0 ? new Date(newest) : new Date();
   return rss({
-    title: 'kevinkiklee.io',
-    description: 'Field notes from a Chrome DevRel — AI, web platform, tangents.',
+    title: SITE.title,
+    description: SITE.description,
     site: context.site,
     items: posts.map((p) => ({
       title: p.data.title,

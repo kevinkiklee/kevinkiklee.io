@@ -19,7 +19,7 @@ import {
   buildPageGraph,
   buildWebSite,
 } from '~/lib/schema';
-import { SITE } from '~/lib/site-config';
+import { SITE, pageTitle } from '~/lib/site-config';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
@@ -93,7 +93,7 @@ const graph = buildPageGraph([
 ]);
 ---
 <BaseLayout
-  title={`${title} · kevinkiklee.io`}
+  title={pageTitle(title)}
   description={description}
   ogType="article"
   ogImageUrl={ogImageUrl}

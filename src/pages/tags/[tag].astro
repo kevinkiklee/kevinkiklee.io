@@ -13,7 +13,7 @@ import {
   buildPageGraph,
   buildWebSite,
 } from '~/lib/schema';
-import { SITE } from '~/lib/site-config';
+import { SITE, pageTitle } from '~/lib/site-config';
 
 export const getStaticPaths = (async () => {
   const posts = await getPublishedPosts();
@@ -47,7 +47,7 @@ const graph = buildPageGraph([
   buildWebSite(),
 ]);
 ---
-<BaseLayout title={`#${tag} · kevinkiklee.io`} description={`Posts tagged ${tag}.`}>
+<BaseLayout title={pageTitle(`#${tag}`)} description={`Posts tagged ${tag}.`}>
   <JsonLd slot="head" data={graph} />
   {noindex && <meta name="robots" content="noindex" slot="head" />}
   <Breadcrumbs items={crumbs} />

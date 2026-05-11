@@ -1,10 +1,11 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import { pageTitle } from '~/lib/site-config';
 // Note: the requested path is NOT available at build time (404 is a static
 // asset served by Vercel), so we render the path on the client. The
 // fallback "—" keeps the layout stable until the script runs.
 ---
-<BaseLayout title="404 · kevinkiklee.io" description="Page not found" noindex={true}>
+<BaseLayout title={pageTitle('404')} description="Page not found" noindex={true}>
   <section class="not-found">
     <pre class="signage" aria-hidden="true">┌─────────────────────────────────────────┐
 │  ERROR 404 — FILE NOT FOUND             │

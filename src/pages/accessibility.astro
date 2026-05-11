@@ -6,7 +6,7 @@ import KnownLimits from '~/components/a11y/KnownLimits.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { crumbsFor } from '~/lib/crumbs';
 import { buildBreadcrumbs, buildPageGraph, buildWebPage, buildWebSite } from '~/lib/schema';
-import { SITE, resolveMastodonProfile } from '~/lib/site-config';
+import { SITE, pageTitle, resolveMastodonProfile } from '~/lib/site-config';
 
 const mastodon = resolveMastodonProfile(MASTODON_INSTANCE_URL);
 const crumbs = crumbsFor('/accessibility');
@@ -23,7 +23,7 @@ const graph = buildPageGraph([
   buildWebSite(),
 ]);
 ---
-<BaseLayout title="Accessibility · kevinkiklee.io" description="Accessibility statement and reporting channel for kevinkiklee.io.">
+<BaseLayout title={pageTitle('Accessibility')} description={`Accessibility statement and reporting channel for ${SITE.title}.`}>
   <JsonLd slot="head" data={graph} />
   <Breadcrumbs items={crumbs} />
   <article class="prose" style="max-width: var(--measure);">

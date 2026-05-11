@@ -12,7 +12,7 @@ import {
   buildPageGraph,
   buildWebSite,
 } from '~/lib/schema';
-import { SITE } from '~/lib/site-config';
+import { SITE, pageTitle } from '~/lib/site-config';
 
 const projects = (await getCollection('projects')).sort(
   (a, b) => (a.data.order ?? 999) - (b.data.order ?? 999),
@@ -41,7 +41,7 @@ const graph = buildPageGraph([
   buildWebSite(),
 ]);
 ---
-<BaseLayout title="Projects · kevinkiklee.io" description="Open-source projects and side experiments.">
+<BaseLayout title={pageTitle('Projects')} description="Open-source projects and side experiments.">
   <JsonLd slot="head" data={graph} />
   <Breadcrumbs items={crumbs} />
   <h1 class="page-title">Projects</h1>

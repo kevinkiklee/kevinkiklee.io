@@ -8,6 +8,12 @@
 export const SITE = {
   title: 'kevinkiklee.io',
   url: 'https://kevinkiklee.io',
+  /** Author / Person.name. Single source of truth for the byline. */
+  author: 'Kevin Lee',
+  /** Author's role, surfaced in JSON-LD (Person.jobTitle) and copy. */
+  jobTitle: 'Developer Relations Engineer',
+  /** Author's employer / organisation; surfaced in JSON-LD (Person.worksFor). */
+  org: 'Google Chrome',
   tagline: 'Field notes from a Chrome DevRel',
   description: 'Field notes from a Chrome DevRel — AI, web platform, and tangents.',
   bio: 'Developer Relations Engineer at Google Chrome. Writes about the web platform, AI tooling, and browser internals.',
@@ -39,4 +45,12 @@ export const DEFAULT_OG_IMAGE = '/og-default.png';
  */
 export function resolveMastodonProfile(envValue: string | undefined): string {
   return envValue ?? SITE.defaultMastodon;
+}
+
+/**
+ * Build a window-tab title like `"Posts · kevinkiklee.io"`. Single source of
+ * truth so the separator and site suffix can't drift across pages.
+ */
+export function pageTitle(name: string): string {
+  return `${name} · ${SITE.title}`;
 }

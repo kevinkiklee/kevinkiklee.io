@@ -11,7 +11,7 @@ import {
   buildPageGraph,
   buildWebSite,
 } from '~/lib/schema';
-import { SITE } from '~/lib/site-config';
+import { SITE, pageTitle } from '~/lib/site-config';
 
 const counts = tagCounts(await getPublishedPosts());
 const tags = Object.entries(counts).sort(([, a], [, b]) => b - a);
@@ -34,7 +34,7 @@ const graph = buildPageGraph([
   buildWebSite(),
 ]);
 ---
-<BaseLayout title="Tags · kevinkiklee.io" description="Browse posts by tag.">
+<BaseLayout title={pageTitle('Tags')} description="Browse posts by tag.">
   <JsonLd slot="head" data={graph} />
   <Breadcrumbs items={crumbs} />
   <h1 class="page-title">Tags</h1>

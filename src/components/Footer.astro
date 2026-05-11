@@ -1,15 +1,15 @@
 ---
 import { MASTODON_INSTANCE_URL } from 'astro:env/client';
-import { resolveMastodonProfile } from '~/lib/site-config';
+import { SITE, resolveMastodonProfile } from '~/lib/site-config';
 const year = new Date().getFullYear();
 const mastodon = resolveMastodonProfile(MASTODON_INSTANCE_URL);
 ---
 <footer class="site-footer">
   <div class="row">
-    <span><span class="eof" aria-hidden="true">$ exit </span>© {year} Kevin Lee</span>
+    <span><span class="eof" aria-hidden="true">$ exit </span>© {year} {SITE.author}</span>
     <ul role="list" aria-label="Footer links">
       <li><a href={mastodon} rel="me">mastodon</a></li>
-      <li><a href="https://github.com/kevinkiklee" rel="me">github</a></li>
+      <li><a href={SITE.github} rel="me">github</a></li>
       <li><a href="/rss.xml">rss</a></li>
       <li><a href="/feed.json">json feed</a></li>
       <li><a href="/privacy">privacy</a></li>
