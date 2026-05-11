@@ -1,7 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import tagsJson from './content/tags.json' with { type: 'json' };
-import { DESCRIPTION_MAX, TITLE_MAX } from './lib/meta';
+import { DESCRIPTION_MAX, PROJECT_NAME_MAX, TITLE_MAX } from './lib/meta';
 import { DATE_PREFIX } from './lib/post-id';
 
 const TAG_SET = new Set(tagsJson.tags);
@@ -42,7 +42,10 @@ const posts = defineCollection({
 const projects = defineCollection({
   loader: file('./src/content/projects/projects.yaml'),
   schema: z.object({
-    name: z.string(),
+    // PROJECT_NAME_MAX is also enforced by scripts/new-project.ts so the
+    // scaffolder and the schema can't drift; the schema is the source of
+    // truth, the scaffolder is just an early-fail.
+    name: z.string().min(1).max(PROJECT_NAME_MAX),
     blurb: z.string().max(200),
     url: z.string().url(),
     repoUrl: z.string().url().optional(),
