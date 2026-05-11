@@ -82,17 +82,16 @@ See [`.env.example`](./.env.example) for the canonical list and inline
 docs. Every variable is optional — the site degrades cleanly when
 each is absent.
 
-| Name                     | Scope  | Where used                       |
-| ------------------------ | ------ | -------------------------------- |
-| `GA_MEASUREMENT_ID`      | client | Partytown GA4 loader             |
-| `MASTODON_HANDLE`        | client | rel-me link, DiscussFooter       |
-| `MASTODON_INSTANCE_URL`  | client | rel-me link, DiscussFooter       |
+| Name                     | Scope  | Where used                              |
+| ------------------------ | ------ | --------------------------------------- |
+| `GA_MEASUREMENT_ID`      | client | Partytown GA4 loader                    |
+| `MASTODON_INSTANCE_URL`  | client | rel-me link, footer, about, a11y page   |
 | `TWITTER_HANDLE`         | client | `twitter:site` / `twitter:creator` meta |
-| `WEBMENTION_TOKEN`       | server | webmention.io sender             |
-| `VERCEL_DEPLOY_HOOK_URL` | server | `/api/refresh` cron target       |
-| `CRON_SECRET`            | server | `/api/refresh` Bearer auth       |
-| `SENTRY_DSN_OG`          | server | Sentry on `/api/og`              |
-| `INDEXNOW_KEY`           | CI     | IndexNow ping after deploy       |
+| `WEBMENTION_TOKEN`       | server | webmention.io sender                    |
+| `VERCEL_DEPLOY_HOOK_URL` | server | `/api/refresh` cron target              |
+| `CRON_SECRET`            | server | `/api/refresh` Bearer auth              |
+| `SENTRY_DSN_OG`          | server | Sentry on `/api/og`                     |
+| `INDEXNOW_KEY`           | CI     | IndexNow ping after deploy              |
 
 ## Project layout
 

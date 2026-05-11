@@ -171,7 +171,6 @@ export default defineConfig({
   env: {
     schema: {
       GA_MEASUREMENT_ID: envField.string({ context: 'client', access: 'public', optional: true }),
-      MASTODON_HANDLE: envField.string({ context: 'client', access: 'public', optional: true }),
       MASTODON_INSTANCE_URL: envField.string({
         context: 'client',
         access: 'public',
