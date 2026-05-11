@@ -49,6 +49,9 @@ const related = relatedPosts(post, all, limit);
   @media (hover: hover) and (pointer: fine) {
     .related li:hover { border-color: var(--fg); }
   }
+  /* Keyboard parity: a focused link should darken the card border the same
+     way hover does, so tab-through readers get the same affordance. */
+  .related li:focus-within { border-color: var(--fg); }
   .related h3 {
     font-size: var(--text-base);
     letter-spacing: -0.005em;

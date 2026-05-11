@@ -242,7 +242,13 @@
     function close() { if (dlg!.open) dlg!.close(); }
 
     dlg.addEventListener('close', () => {
-      const target = opener ?? (document.getElementById('main') as HTMLElement | null);
+      // `opener` may have been detached from the DOM during a ClientRouter
+      // swap. document.contains() guards against focusing an orphan node,
+      // which silently fails on most browsers but leaves keyboard users
+      // stranded at <body>. Fall through to main, then body as last resort.
+      const safeOpener = opener && document.contains(opener) ? opener : null;
+      const target =
+        safeOpener ?? (document.getElementById('main') as HTMLElement | null) ?? document.body;
       target?.focus({ preventScroll: true });
       opener = null;
     });

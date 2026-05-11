@@ -127,6 +127,9 @@ const { title, description, pubDate, tags } = post.data;
       transform: translateX(4px);
     }
   }
+  /* Keyboard parity: tab-focusing the card link should darken the top rule
+     the same way hovering does, so the active row is visually anchored. */
+  .post-card:focus-within { border-top-color: var(--rule); }
   .post-card a:focus-visible .cta {
     color: var(--accent);
     transform: translateX(4px);
