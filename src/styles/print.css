@@ -17,20 +17,17 @@
     color: #000 !important;
   }
 
-  /* Strip site chrome and any decorative aside (TOC, related posts, etc). */
-  header[role="banner"],
+  /* Strip site chrome and any decorative aside (TOC, related posts, etc).
+     Header.astro doesn't set role="banner" explicitly, so the body > header
+     descendant selector is what actually matches our wrapper element. */
   body > header,
   body > footer,
   nav,
   aside,
-  .skip-link,
   .skip-links,
   #search-palette,
   #shortcuts-overlay,
-  /* CopyButton mounts one .copy-btn per <pre>; the historical #copy-button
-     id never matched. Keep both for forward-compat. */
-    .copy-btn,
-  #copy-button,
+  .copy-btn,
   #route-announce {
     display: none !important;
   }

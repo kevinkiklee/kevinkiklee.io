@@ -4,8 +4,6 @@
 // Web Animations API calls (which can't read CSS custom properties without
 // getComputedStyle). Single point of truth for any JS-driven animation.
 
-export type MotionToken = 'fast' | 'base' | 'slow';
-
 export const EASE_OUT = 'cubic-bezier(0.32, 0.72, 0, 1)';
 export const EASE_SPRING = 'cubic-bezier(0.34, 1.40, 0.64, 1)';
 

@@ -1,45 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { escapeHtml } from './escape-html';
+import { ogTemplate } from './og';
 import { SITE } from './site-config';
-import { escapeHtml, ogTemplate } from './og';
-
-describe('escapeHtml', () => {
-  it('escapes the five XML-significant characters', () => {
-    expect(escapeHtml(`<script>"a&b"'</script>`)).toBe(
-      '&lt;script&gt;&quot;a&amp;b&quot;&#039;&lt;/script&gt;',
-    );
-  });
-
-  it('passes plain ASCII through unchanged', () => {
-    expect(escapeHtml('Hello, world')).toBe('Hello, world');
-  });
-
-  it('handles the empty string', () => {
-    expect(escapeHtml('')).toBe('');
-  });
-});
-
-describe('ogTemplate footer + wordmark', () => {
-  // Pull a representative tree and walk it for the strings we expect to
-  // appear in the rendered card. Locks the OG card to site-config so any
-  // future jobTitle / org rename can't silently drift the social preview.
-  function flatText(node: unknown): string {
-    if (typeof node === 'string') return node;
-    if (!node || typeof node !== 'object') return '';
-    const n = node as { children?: unknown[]; props?: { children?: unknown[] } };
-    const kids = n.props?.children ?? n.children ?? [];
-    return (Array.isArray(kids) ? kids : [kids]).map(flatText).join(' ');
-  }
-  it('renders the site wordmark in uppercase', () => {
-    const tree = ogTemplate({ title: 't', date: '2026-04-29', tags: [] });
-    expect(flatText(tree)).toContain(SITE.title.toUpperCase());
-  });
-  it('renders a footer derived from SITE.jobTitle and SITE.org', () => {
-    const tree = ogTemplate({ title: 't', date: '2026-04-29', tags: [] });
-    const text = flatText(tree);
-    expect(text).toContain(SITE.jobTitle.toLowerCase());
-    expect(text).toContain(SITE.org.toLowerCase());
-  });
-});
 
 describe('ogTemplate', () => {
   it('builds for a normal title without throwing', () => {
@@ -72,12 +34,33 @@ describe('ogTemplate', () => {
   it('escapes HTML in title to prevent satori-html injection', () => {
     // satori-html parses the template, so anything we emit must already be
     // valid HTML. This test just asserts ogTemplate returns SOMETHING for a
-    // hostile title without throwing — and that the source string we hand
-    // to satori-html contains no raw `<script>` tag.
+    // hostile title without throwing — escape-html's own tests cover the
+    // escaping contract directly.
     const hostile = '<script>alert(1)</script>';
-    // We don't have direct access to the intermediate HTML, but escaping
-    // the title must produce a substring with `&lt;script&gt;`.
     expect(escapeHtml(hostile)).toContain('&lt;script&gt;');
     expect(ogTemplate({ title: hostile, date: '2026-04-29', tags: [] })).toBeTruthy();
+  });
+});
+
+describe('ogTemplate footer + wordmark', () => {
+  // Pull a representative tree and walk it for the strings we expect to
+  // appear in the rendered card. Locks the OG card to site-config so any
+  // future jobTitle / org rename can't silently drift the social preview.
+  function flatText(node: unknown): string {
+    if (typeof node === 'string') return node;
+    if (!node || typeof node !== 'object') return '';
+    const n = node as { children?: unknown[]; props?: { children?: unknown[] } };
+    const kids = n.props?.children ?? n.children ?? [];
+    return (Array.isArray(kids) ? kids : [kids]).map(flatText).join(' ');
+  }
+  it('renders the site wordmark in uppercase', () => {
+    const tree = ogTemplate({ title: 't', date: '2026-04-29', tags: [] });
+    expect(flatText(tree)).toContain(SITE.title.toUpperCase());
+  });
+  it('renders a footer derived from SITE.jobTitle and SITE.org', () => {
+    const tree = ogTemplate({ title: 't', date: '2026-04-29', tags: [] });
+    const text = flatText(tree);
+    expect(text).toContain(SITE.jobTitle.toLowerCase());
+    expect(text).toContain(SITE.org.toLowerCase());
   });
 });

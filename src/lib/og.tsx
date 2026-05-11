@@ -2,8 +2,6 @@ import { html } from 'satori-html';
 import { escapeHtml } from './escape-html';
 import { SITE } from './site-config';
 
-export { escapeHtml };
-
 export function ogTemplate(args: { title: string; date: string; tags: string[] }) {
   // Title renders mixed-case as authored — matches the in-page <h1> and
   // BlogPosting.headline. The wordmark stays uppercase as visual signage.
