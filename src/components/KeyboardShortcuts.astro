@@ -52,7 +52,12 @@
             : null;
           dlg.showModal();
           dlg.addEventListener('close', () => {
-            const target = shortcutsOpener ?? (document.getElementById('main') as HTMLElement | null);
+            // Opener may have been detached by a ClientRouter swap while the
+            // dialog was open. Guard with document.contains so we fall
+            // through to #main rather than focus an orphan node.
+            const safeOpener = shortcutsOpener && document.contains(shortcutsOpener) ? shortcutsOpener : null;
+            const target =
+              safeOpener ?? (document.getElementById('main') as HTMLElement | null) ?? document.body;
             target?.focus({ preventScroll: true });
           }, { once: true });
         }
