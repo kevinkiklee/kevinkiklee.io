@@ -2,6 +2,7 @@ import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { AstroIntegration } from 'astro';
 import { parse as parseYaml } from 'yaml';
+import { DATE_PREFIX } from '../lib/post-id';
 
 /**
  * Image-sitemap integration.
@@ -38,7 +39,6 @@ type CoverMeta = {
 };
 
 const POSTS_DIR = './src/content/posts';
-const DATE_PREFIX = /^\d{4}-\d{2}-\d{2}-/;
 
 /**
  * Read post frontmatter at build time to discover covers. We can't use

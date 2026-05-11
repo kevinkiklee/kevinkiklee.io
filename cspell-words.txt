@@ -9,6 +9,7 @@ colour
 commitlint
 cspell
 devrel
+disqus
 dvh
 elk
 fluid
@@ -22,6 +23,7 @@ kevinkiklee
 lastmod
 lhci
 linkinator
+llms
 lychee
 markdownlint
 mastodon

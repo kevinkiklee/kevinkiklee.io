@@ -29,7 +29,9 @@ function readChildSitemap(loc: string): string {
 
 const indexXml = readFileSync(resolve(SITEMAP_DIR, 'sitemap-index.xml'), 'utf8');
 const childLocs = extractLocs(indexXml);
-const urls = childLocs.flatMap((loc) => extractLocs(readChildSitemap(loc)));
+// Deduplicate so an accidental cross-listing (a URL appearing in two child
+// sitemap chunks) doesn't pad the payload toward IndexNow's 10k limit.
+const urls = Array.from(new Set(childLocs.flatMap((loc) => extractLocs(readChildSitemap(loc)))));
 
 if (urls.length === 0) {
   console.error('no URLs found in sitemap');

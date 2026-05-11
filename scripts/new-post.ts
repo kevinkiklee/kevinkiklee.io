@@ -1,7 +1,8 @@
 #!/usr/bin/env tsx
-import { existsSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { TITLE_MAX } from '../src/lib/meta';
+import { DATE_PREFIX } from '../src/lib/post-id';
 
 const title = process.argv.slice(2).join(' ').trim();
 if (!title) {
@@ -28,7 +29,21 @@ if (!slug) {
   process.exit(1);
 }
 const date = new Date().toISOString().slice(0, 10);
-const file = resolve(`src/content/posts/${date}-${slug}.mdx`);
+const postsDir = resolve('src/content/posts');
+// Slugs are date-stripped at the content layer (see content.config.ts), so
+// two posts with the same title on different dates would both publish at
+// /posts/<slug>. Catch the collision here rather than ship a broken URL.
+const existingSlugs = new Set(
+  readdirSync(postsDir)
+    .filter((f) => f.endsWith('.md') || f.endsWith('.mdx'))
+    .map((f) => f.replace(/\.(md|mdx)$/, '').replace(DATE_PREFIX, '')),
+);
+if (existingSlugs.has(slug)) {
+  console.error(`error: slug "${slug}" already exists in src/content/posts/`);
+  console.error('tip: pick a different title so the /posts/<slug> URL stays unique.');
+  process.exit(1);
+}
+const file = resolve(`${postsDir}/${date}-${slug}.mdx`);
 if (existsSync(file)) {
   console.error(`error: file already exists at ${file}`);
   console.error('tip: pick a different title, or delete the existing file first.');
