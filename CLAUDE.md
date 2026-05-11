@@ -47,7 +47,7 @@ budget.
   `2026-04-12-hello-world.mdx`.
 - Do NOT add new dependencies without checking the bundle-size budget
   in `.github/workflows/size.yml`.
-- The OG image function (`src/pages/api/og.tsx`) is the ONLY non-static
+- The OG image function (`src/pages/api/og.ts`) is the ONLY non-static
   route. Do not add API routes casually.
 
 ## Common tasks
@@ -68,7 +68,7 @@ src/
   integrations/  # custom Astro integrations (image-sitemap)
   layouts/       # BaseLayout, PostLayout
   lib/           # pure TS helpers + colocated *.test.ts
-  pages/         # routes (incl. /api/og.tsx, rss.xml.ts, feed.json.ts)
+  pages/         # routes (incl. /api/og.ts, rss.xml.ts, feed.json.ts)
   styles/        # layered: reset → tokens → base → components → prose → utilities
 astro.config.ts  # integrations + sitemap serializer + envField schema
 vercel.ts        # typed CSP, cache headers, crons

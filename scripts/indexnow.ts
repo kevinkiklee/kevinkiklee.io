@@ -27,7 +27,15 @@ function readChildSitemap(loc: string): string {
   return readFileSync(resolve(SITEMAP_DIR, base), 'utf8');
 }
 
-const indexXml = readFileSync(resolve(SITEMAP_DIR, 'sitemap-index.xml'), 'utf8');
+let indexXml: string;
+try {
+  indexXml = readFileSync(resolve(SITEMAP_DIR, 'sitemap-index.xml'), 'utf8');
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`indexnow: ${SITEMAP_DIR}/sitemap-index.xml not found. Did the build complete?`);
+  console.error(`indexnow: underlying error: ${msg}`);
+  process.exit(1);
+}
 const childLocs = extractLocs(indexXml);
 // Deduplicate so an accidental cross-listing (a URL appearing in two child
 // sitemap chunks) doesn't pad the payload toward IndexNow's 10k limit.
