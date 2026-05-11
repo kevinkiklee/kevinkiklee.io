@@ -64,10 +64,13 @@ const hasContent = replies.length > 0 || likes.length + reposts.length > 0;
                     </span>
                   )}
                   <a href={m.url} itemprop="url" class="when">
-                    {/* datetime attribute carries the machine-readable ISO value;
-                        visible text is the human-friendly date. P13. */}
-                    <time class="dt-published" datetime={new Date(m.published).toISOString()}>
-                      {new Date(m.published).toISOString().slice(0, 10)}
+                    {/* datetime carries the machine-readable ISO value;
+                        visible text is the human-friendly YYYY-MM-DD slice.
+                        `m.published` is already normalised to a valid ISO
+                        string by webmentions.ts (malformed values are
+                        dropped at fetch time). */}
+                    <time class="dt-published" datetime={m.published}>
+                      {m.published.slice(0, 10)}
                     </time>
                   </a>
                 </div>

@@ -37,6 +37,18 @@ function clip(s: string | undefined, max: number): string | undefined {
 }
 
 /**
+ * Return the input as an ISO-string only when it parses to a finite date.
+ * Webmention.io occasionally returns an empty string or a non-RFC date for
+ * the `published` field — surfacing those raw would crash `new Date(...).
+ * toISOString()` at render time and fail the whole post build.
+ */
+function safeIsoDate(raw: string | undefined): string | undefined {
+  if (!raw) return undefined;
+  const t = new Date(raw).getTime();
+  return Number.isFinite(t) ? new Date(t).toISOString() : undefined;
+}
+
+/**
  * Pre-flight an http(s) URL string. Webmention.io aggregates third-party
  * sources, and we surface author-supplied photo + profile URLs straight
  * into the page. Reject anything that isn't a parseable http(s) URL so a
@@ -76,25 +88,34 @@ export async function fetchWebmentions(target: string): Promise<Webmention[]> {
     }
     const json = (await res.json()) as { children?: Jf2Child[] };
     const children = json.children ?? [];
-    return children.map((c) => ({
-      source: safeHttpUrl(c.url) ?? '',
-      author: {
-        name: clip(c.author?.name, AUTHOR_NAME_MAX) ?? 'Anonymous',
-        photo: safeHttpUrl(c.author?.photo),
-        url: safeHttpUrl(c.author?.url) ?? '',
-      },
-      content: { text: clip(c.content?.text, CONTENT_TEXT_MAX) ?? '' },
-      published: c.published ?? '',
-      type:
-        c['wm-property'] === 'in-reply-to'
-          ? 'reply'
-          : c['wm-property'] === 'like-of'
-            ? 'like'
-            : c['wm-property'] === 'repost-of'
-              ? 'repost'
-              : 'mention',
-      url: safeHttpUrl(c.url) ?? '',
-    }));
+    const out: Webmention[] = [];
+    for (const c of children) {
+      // Drop mentions with no parseable `published` timestamp — the schema
+      // requires a valid ISO date for rendering <time datetime=…>. A bad
+      // upstream record would otherwise crash the build at render time.
+      const published = safeIsoDate(c.published);
+      if (!published) continue;
+      out.push({
+        source: safeHttpUrl(c.url) ?? '',
+        author: {
+          name: clip(c.author?.name, AUTHOR_NAME_MAX) ?? 'Anonymous',
+          photo: safeHttpUrl(c.author?.photo),
+          url: safeHttpUrl(c.author?.url) ?? '',
+        },
+        content: { text: clip(c.content?.text, CONTENT_TEXT_MAX) ?? '' },
+        published,
+        type:
+          c['wm-property'] === 'in-reply-to'
+            ? 'reply'
+            : c['wm-property'] === 'like-of'
+              ? 'like'
+              : c['wm-property'] === 'repost-of'
+                ? 'repost'
+                : 'mention',
+        url: safeHttpUrl(c.url) ?? '',
+      });
+    }
+    return out;
   } catch (err) {
     // Build-time fetch failures shouldn't crash the build, but they should
     // surface in CI logs so we know whether the page rendered with no

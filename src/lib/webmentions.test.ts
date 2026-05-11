@@ -39,19 +39,21 @@ describe('fetchWebmentions wm-property mapping', () => {
   });
 
   it('maps like-of to "like"', async () => {
-    mockFetch.mockResolvedValueOnce(jf2([{ 'wm-property': 'like-of' }]));
+    mockFetch.mockResolvedValueOnce(jf2([{ 'wm-property': 'like-of', published: '2026-01-01' }]));
     const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
     expect(out[0]?.type).toBe('like');
   });
 
   it('maps repost-of to "repost"', async () => {
-    mockFetch.mockResolvedValueOnce(jf2([{ 'wm-property': 'repost-of' }]));
+    mockFetch.mockResolvedValueOnce(jf2([{ 'wm-property': 'repost-of', published: '2026-01-01' }]));
     const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
     expect(out[0]?.type).toBe('repost');
   });
 
   it('falls back to "mention" for unknown wm-property', async () => {
-    mockFetch.mockResolvedValueOnce(jf2([{ 'wm-property': 'bookmark-of' }]));
+    mockFetch.mockResolvedValueOnce(
+      jf2([{ 'wm-property': 'bookmark-of', published: '2026-01-01' }]),
+    );
     const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
     expect(out[0]?.type).toBe('mention');
   });
@@ -70,6 +72,7 @@ describe('fetchWebmentions strips unsafe URLs', () => {
             photo: 'data:image/svg+xml;base64,...',
           },
           content: { text: 'hi' },
+          published: '2026-01-01',
         },
       ]),
     );
@@ -90,12 +93,37 @@ describe('fetchWebmentions strips unsafe URLs', () => {
             photo: 'https://gravatar.com/avatar/abc',
           },
           content: { text: 'hi' },
+          published: '2026-01-01',
         },
       ]),
     );
     const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
     expect(out[0]?.author.url).toBe('https://a.example/');
     expect(out[0]?.author.photo).toBe('https://gravatar.com/avatar/abc');
+  });
+});
+
+describe('fetchWebmentions drops malformed published timestamps', () => {
+  it('skips mentions with no published field', async () => {
+    mockFetch.mockResolvedValueOnce(jf2([{ 'wm-property': 'in-reply-to' }]));
+    const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
+    expect(out).toEqual([]);
+  });
+
+  it('skips mentions with unparseable published date', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jf2([{ 'wm-property': 'in-reply-to', published: 'not-a-date' }]),
+    );
+    const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
+    expect(out).toEqual([]);
+  });
+
+  it('normalises a valid date to ISO', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jf2([{ 'wm-property': 'in-reply-to', published: '2026-01-01' }]),
+    );
+    const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
+    expect(out[0]?.published).toBe('2026-01-01T00:00:00.000Z');
   });
 });
 
@@ -121,6 +149,7 @@ describe('fetchWebmentions length caps', () => {
           'wm-property': 'in-reply-to',
           author: { name: 'A'.repeat(120), url: 'https://a.example' },
           content: { text: 'short' },
+          published: '2026-01-01',
         },
       ]),
     );
@@ -136,6 +165,7 @@ describe('fetchWebmentions length caps', () => {
           'wm-property': 'in-reply-to',
           author: { name: 'A', url: 'https://a.example' },
           content: { text: 'x'.repeat(1500) },
+          published: '2026-01-01',
         },
       ]),
     );
@@ -151,6 +181,7 @@ describe('fetchWebmentions length caps', () => {
           'wm-property': 'in-reply-to',
           author: { name: 'Kevin', url: 'https://a.example' },
           content: { text: 'great post!' },
+          published: '2026-01-01',
         },
       ]),
     );
