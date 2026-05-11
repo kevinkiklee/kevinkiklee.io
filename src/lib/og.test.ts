@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { SITE } from './site-config';
 import { escapeHtml, ogTemplate } from './og';
 
 describe('escapeHtml', () => {
@@ -14,6 +15,29 @@ describe('escapeHtml', () => {
 
   it('handles the empty string', () => {
     expect(escapeHtml('')).toBe('');
+  });
+});
+
+describe('ogTemplate footer + wordmark', () => {
+  // Pull a representative tree and walk it for the strings we expect to
+  // appear in the rendered card. Locks the OG card to site-config so any
+  // future jobTitle / org rename can't silently drift the social preview.
+  function flatText(node: unknown): string {
+    if (typeof node === 'string') return node;
+    if (!node || typeof node !== 'object') return '';
+    const n = node as { children?: unknown[]; props?: { children?: unknown[] } };
+    const kids = n.props?.children ?? n.children ?? [];
+    return (Array.isArray(kids) ? kids : [kids]).map(flatText).join(' ');
+  }
+  it('renders the site wordmark in uppercase', () => {
+    const tree = ogTemplate({ title: 't', date: '2026-04-29', tags: [] });
+    expect(flatText(tree)).toContain(SITE.title.toUpperCase());
+  });
+  it('renders a footer derived from SITE.jobTitle and SITE.org', () => {
+    const tree = ogTemplate({ title: 't', date: '2026-04-29', tags: [] });
+    const text = flatText(tree);
+    expect(text).toContain(SITE.jobTitle.toLowerCase());
+    expect(text).toContain(SITE.org.toLowerCase());
   });
 });
 

@@ -63,16 +63,29 @@ const hasContent = replies.length > 0 || likes.length + reposts.length > 0;
                       <strong class="p-name">{m.author.name}</strong>
                     </span>
                   )}
-                  <a href={m.url} itemprop="url" class="when">
-                    {/* datetime carries the machine-readable ISO value;
-                        visible text is the human-friendly YYYY-MM-DD slice.
-                        `m.published` is already normalised to a valid ISO
-                        string by webmentions.ts (malformed values are
-                        dropped at fetch time). */}
-                    <time class="dt-published" datetime={m.published}>
-                      {m.published.slice(0, 10)}
-                    </time>
-                  </a>
+                  {m.url ? (
+                    <a href={m.url} itemprop="url" class="when">
+                      {/* datetime carries the machine-readable ISO value;
+                          visible text is the human-friendly YYYY-MM-DD slice.
+                          `m.published` is already normalised to a valid ISO
+                          string by webmentions.ts (malformed values are
+                          dropped at fetch time). */}
+                      <time class="dt-published" datetime={m.published}>
+                        {m.published.slice(0, 10)}
+                      </time>
+                    </a>
+                  ) : (
+                    /* webmention.io occasionally returns a mention with no
+                       safe source URL (anonymous, or dropped by the http(s)
+                       filter in webmentions.ts). Render the time as plain
+                       text rather than `<a href="">`, which would navigate
+                       to the current page and fail link-purpose checks. */
+                    <span class="when">
+                      <time class="dt-published" datetime={m.published}>
+                        {m.published.slice(0, 10)}
+                      </time>
+                    </span>
+                  )}
                 </div>
               </div>
               <p class="p-content e-content" itemprop="text">{m.content.text}</p>
@@ -123,7 +136,12 @@ const hasContent = replies.length > 0 || likes.length + reposts.length > 0;
     min-height: 44px;
     color: var(--fg);
   }
+  /* `.who .when` may be rendered as <a> (tappable, 44px min) or as <span>
+     (no safe URL upstream). Apply the visual treatment to both so the
+     timestamp row reads identically either way. */
   .who .when {
+    display: flex;
+    align-items: center;
     color: var(--fg-muted);
     font-size: var(--text-xs);
   }

@@ -15,11 +15,14 @@ import { PROJECT_NAME_MAX } from '../src/lib/meta';
 
 const argv = process.argv.slice(2);
 const urlFlag = argv.find((a) => a.startsWith('--url='));
+const repoFlag = argv.find((a) => a.startsWith('--repo='));
 const positional = argv.filter((a) => !a.startsWith('--'));
 const name = positional.join(' ').trim();
 
 if (!name) {
-  console.error('usage: pnpm new:project "<name>" [--url=https://example.com]');
+  console.error(
+    'usage: pnpm new:project "<name>" [--url=https://example.com] [--repo=https://github.com/me/proj]',
+  );
   process.exit(1);
 }
 
@@ -30,11 +33,18 @@ if (name.length > PROJECT_NAME_MAX) {
   process.exit(1);
 }
 
-const explicitUrl = urlFlag ? urlFlag.slice('--url='.length) : undefined;
-if (explicitUrl && !/^https?:\/\//.test(explicitUrl)) {
-  console.error(`error: --url must start with http:// or https://. Got: ${explicitUrl}`);
-  process.exit(1);
+function readUrlFlag(flag: string | undefined, label: string): string | undefined {
+  if (!flag) return undefined;
+  const value = flag.slice(`--${label}=`.length);
+  if (!/^https?:\/\//.test(value)) {
+    console.error(`error: --${label} must start with http:// or https://. Got: ${value}`);
+    process.exit(1);
+  }
+  return value;
 }
+
+const explicitUrl = readUrlFlag(urlFlag, 'url');
+const explicitRepo = readUrlFlag(repoFlag, 'repo');
 
 const path = 'src/content/projects/projects.yaml';
 const raw = readFileSync(path, 'utf8');
@@ -55,9 +65,17 @@ parsed.push({
   name,
   blurb: 'TODO',
   url: explicitUrl ?? 'TODO',
+  // `repoUrl` is optional in the schema; omitted entirely when no --repo flag.
+  // Skipping the key (rather than writing 'TODO') keeps the YAML schema-valid
+  // even before the author fills the placeholder in for `url`.
+  ...(explicitRepo ? { repoUrl: explicitRepo } : {}),
   tech: [],
   featured: false,
 });
 
 writeFileSync(path, stringify(parsed));
-console.log(`appended ${id} to ${path}${explicitUrl ? '' : ' (url=TODO — fill in before commit)'}`);
+const missing: string[] = [];
+if (!explicitUrl) missing.push('url=TODO');
+console.log(
+  `appended ${id} to ${path}${missing.length > 0 ? ` (${missing.join(', ')} — fill in before commit)` : ''}`,
+);

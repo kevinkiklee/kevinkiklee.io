@@ -23,7 +23,9 @@ export function buildLlmsIndex(posts: Post[]): string {
     // archive. Omitted on an empty-archive build so we don't lie with `now`.
     ...(updated ? [`Updated: ${updated}`, ''] : []),
     '## About',
-    `- [About Kevin Lee](${SITE.url}/about): DevRel at Google Chrome.`,
+    // Bio is sourced from site-config so this line can't drift from the
+    // person record on /about or the JSON-LD Person.description.
+    `- [About ${SITE.author}](${SITE.url}/about): ${SITE.bio}`,
     '',
     '## Posts',
     postsBlock,

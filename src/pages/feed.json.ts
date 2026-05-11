@@ -2,6 +2,21 @@ import type { APIContext } from 'astro';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
 import { SITE } from '~/lib/site-config';
 
+/**
+ * Per-item cap on `content_text` chars. JSON Feed 1.1 doesn't bound the
+ * payload, and shipping every post body would push the feed past 1 MB for
+ * a busy archive — slow for readers and pointless for clients that just
+ * want a teaser before navigating to the canonical URL. 4 KB keeps the
+ * teaser useful (≈600 words) without bloating the feed envelope.
+ */
+const FEED_CONTENT_TEXT_MAX = 4000;
+
+function clipContent(raw: string | undefined, fallback: string): string {
+  const src = raw && raw.length > 0 ? raw : fallback;
+  if (src.length <= FEED_CONTENT_TEXT_MAX) return src;
+  return `${src.slice(0, FEED_CONTENT_TEXT_MAX - 1)}…`;
+}
+
 export async function GET(context: APIContext) {
   if (!context.site) throw new Error('astro.config site must be set');
   const site = context.site;
@@ -23,11 +38,11 @@ export async function GET(context: APIContext) {
       url: new URL(`/posts/${p.id}`, site).toString(),
       title: p.data.title,
       summary: p.data.description,
-      // JSON Feed 1.1 requires `content_html` OR `content_text`. We ship the
-      // raw markdown body as plain text (readers strip the formatting) and
-      // fall back to the description when the body is unavailable (e.g. in
-      // older content layer snapshots).
-      content_text: p.body || p.data.description,
+      // JSON Feed 1.1 requires `content_html` OR `content_text`. We ship a
+      // capped slice of the raw markdown body as plain text (readers strip
+      // the formatting) and fall back to the description when the body is
+      // unavailable (e.g. in older content layer snapshots).
+      content_text: clipContent(p.body, p.data.description),
       date_published: p.data.pubDate.toISOString(),
       date_modified: (p.data.updatedDate ?? p.data.pubDate).toISOString(),
       tags: p.data.tags,

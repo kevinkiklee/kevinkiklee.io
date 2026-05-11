@@ -21,6 +21,29 @@
     return false;
   }
 
+  // Astro `navigate()` triggers a ClientRouter swap (with view transitions)
+  // instead of a full document reload. Imported async so the chord handler
+  // doesn't block initial parse; on environments without ClientRouter the
+  // module would still resolve safely. `location.assign` is the fallback path
+  // if the import ever fails (extremely defensive — keeps `g h` working even
+  // under a chunk-loading failure).
+  type NavFn = (href: string, opts?: { history?: 'auto' | 'push' | 'replace' }) => void;
+  let cachedNavigate: NavFn | null = null;
+  async function resolveNavigate(): Promise<NavFn> {
+    if (cachedNavigate) return cachedNavigate;
+    try {
+      const mod = (await import('astro:transitions/client')) as { navigate?: NavFn };
+      if (typeof mod.navigate === 'function') {
+        cachedNavigate = mod.navigate;
+        return mod.navigate;
+      }
+    } catch {
+      // Fall through to assign.
+    }
+    cachedNavigate = (href) => window.location.assign(href);
+    return cachedNavigate;
+  }
+
   // Idempotent: this script may be inlined into multiple route bundles.
   if (!(window as unknown as { __kbInit?: boolean }).__kbInit) {
     (window as unknown as { __kbInit?: boolean }).__kbInit = true;
@@ -69,7 +92,7 @@
         const dest = ROUTES[k];
         if (dest) {
           e.preventDefault();
-          window.location.assign(dest);
+          void resolveNavigate().then((nav) => nav(dest));
         }
         clearChord();
         return;

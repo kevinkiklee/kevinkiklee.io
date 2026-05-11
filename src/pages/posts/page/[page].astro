@@ -62,7 +62,13 @@ const graph = buildPageGraph([
   { '@id': ENTITY_IDS.person },
 ]);
 ---
-<BaseLayout title={`Posts · page ${page}`} description="Older posts." canonical={canonical}>
+<BaseLayout
+  title={`Posts · page ${page}`}
+  description="Older posts."
+  canonical={canonical}
+  prevUrl={new URL(prevHref, Astro.site).toString()}
+  nextUrl={nextHref ? new URL(nextHref, Astro.site).toString() : undefined}
+>
   <JsonLd slot="head" data={graph} />
   <Breadcrumbs items={crumbs} />
   <h1 class="page-title">Posts <span class="page-num">— page {page}/{totalPages}</span></h1>

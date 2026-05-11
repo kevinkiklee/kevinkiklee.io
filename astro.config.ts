@@ -76,6 +76,11 @@ function priorityFor(url: string): number {
   const path = new URL(url).pathname.replace(/\/$/, '') || '/';
   if (path === '/') return 1.0;
   if (path === '/about' || path === '/posts' || path === '/projects') return 0.8;
+  // Paginated archives (/posts/page/2, /posts/page/3, ...) must come BEFORE
+  // the broader /posts/ match below, or they'd inherit the post-detail
+  // priority (0.8) — overstating their importance to crawlers. They list
+  // the same posts the index already exposes; treat as low-priority.
+  if (path.startsWith('/posts/page/')) return 0.4;
   if (path.startsWith('/posts/')) return 0.8;
   if (path.startsWith('/tags/') || path === '/tags') return 0.6;
   return 0.5;
