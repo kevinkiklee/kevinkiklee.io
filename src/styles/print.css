@@ -24,8 +24,12 @@
   nav,
   aside,
   .skip-link,
+  .skip-links,
   #search-palette,
   #shortcuts-overlay,
+  /* CopyButton mounts one .copy-btn per <pre>; the historical #copy-button
+     id never matched. Keep both for forward-compat. */
+    .copy-btn,
   #copy-button,
   #route-announce {
     display: none !important;

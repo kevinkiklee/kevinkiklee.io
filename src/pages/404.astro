@@ -20,9 +20,15 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
   </section>
   <script>
     // The static 404 has no server-rendered access to the requested URL,
-    // so we read it from the browser at runtime.
+    // so we read it from the browser at runtime. Cap the displayed path
+    // so a 5 KB hostile URL can't blow out the signage box on phones.
     const el = document.getElementById('not-found-path');
-    if (el) el.textContent = window.location.pathname.replace(/^\//, '');
+    if (el) {
+      const PATH_DISPLAY_MAX = 80;
+      const raw = window.location.pathname.replace(/^\//, '');
+      el.textContent =
+        raw.length > PATH_DISPLAY_MAX ? `${raw.slice(0, PATH_DISPLAY_MAX - 1)}…` : raw;
+    }
   </script>
 </BaseLayout>
 

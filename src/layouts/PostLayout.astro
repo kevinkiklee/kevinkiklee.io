@@ -281,24 +281,52 @@ const graph = buildPageGraph([
 <script>
   // P4: Conditional code-block keyboard scroll region.
   // Only adds tabindex / role / aria-label when the block actually overflows.
+  // Bi-directional: re-evaluating on resize means a block that goes from
+  // overflowing → fitting (e.g., portrait → landscape rotation) sheds its
+  // scroll-region wiring so the screen-reader doesn't announce a pointless
+  // "Code, region" label.
+  function labelCodeBlock(el: HTMLElement) {
+    el.tabIndex = 0;
+    el.setAttribute('role', 'region');
+    const codeEl = el.querySelector('code');
+    const langClass =
+      Array.from(el.classList).find((c) => c.startsWith('language-')) ??
+      Array.from(codeEl?.classList ?? []).find((c) => c.startsWith('language-'));
+    const lang = langClass?.replace('language-', '');
+    el.setAttribute(
+      'aria-label',
+      lang && lang !== 'plaintext' && lang !== 'text' ? `Code, ${lang}` : 'Code',
+    );
+    el.dataset.scrollRegion = '1';
+  }
+  function unlabelCodeBlock(el: HTMLElement) {
+    if (el.dataset.scrollRegion !== '1') return;
+    el.removeAttribute('tabindex');
+    el.removeAttribute('role');
+    el.removeAttribute('aria-label');
+    delete el.dataset.scrollRegion;
+  }
+  function evaluateCodeBlock(el: HTMLElement) {
+    if (el.scrollWidth > el.clientWidth) labelCodeBlock(el);
+    else unlabelCodeBlock(el);
+  }
+  let codeRO: ResizeObserver | null = null;
   function applyCodeBlockA11y() {
-    document.querySelectorAll('main pre').forEach((pre) => {
-      const el = pre as HTMLElement;
-      if (el.scrollWidth > el.clientWidth) {
-        el.tabIndex = 0;
-        el.setAttribute('role', 'region');
-        const codeEl = el.querySelector('code');
-        const langClass =
-          Array.from(el.classList).find((c) => c.startsWith('language-')) ??
-          Array.from(codeEl?.classList ?? []).find((c) => c.startsWith('language-'));
-        const lang = langClass?.replace('language-', '');
-        el.setAttribute(
-          'aria-label',
-          lang && lang !== 'plaintext' && lang !== 'text' ? `Code, ${lang}` : 'Code',
-        );
-      }
+    // Tear down any prior observer so we don't pile up listeners across
+    // ClientRouter swaps; each route does its own pass.
+    codeRO?.disconnect();
+    codeRO =
+      typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver((entries) => {
+            for (const entry of entries) evaluateCodeBlock(entry.target as HTMLElement);
+          })
+        : null;
+    document.querySelectorAll<HTMLElement>('main pre').forEach((pre) => {
+      evaluateCodeBlock(pre);
+      codeRO?.observe(pre);
     });
   }
+  document.addEventListener('astro:before-swap', () => codeRO?.disconnect());
 
   // P5: Conditional table scroll region.
   // Wraps overflowing tables in a role=region div; idempotent on re-runs.
