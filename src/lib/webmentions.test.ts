@@ -113,6 +113,53 @@ describe('fetchWebmentions short-circuits', () => {
   });
 });
 
+describe('fetchWebmentions length caps', () => {
+  it('truncates names over 60 chars with an ellipsis', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jf2([
+        {
+          'wm-property': 'in-reply-to',
+          author: { name: 'A'.repeat(120), url: 'https://a.example' },
+          content: { text: 'short' },
+        },
+      ]),
+    );
+    const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
+    expect(out[0]?.author.name.length).toBe(60);
+    expect(out[0]?.author.name.endsWith('…')).toBe(true);
+  });
+
+  it('truncates content text over 600 chars with an ellipsis', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jf2([
+        {
+          'wm-property': 'in-reply-to',
+          author: { name: 'A', url: 'https://a.example' },
+          content: { text: 'x'.repeat(1500) },
+        },
+      ]),
+    );
+    const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
+    expect(out[0]?.content.text.length).toBe(600);
+    expect(out[0]?.content.text.endsWith('…')).toBe(true);
+  });
+
+  it('keeps short names and content intact', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jf2([
+        {
+          'wm-property': 'in-reply-to',
+          author: { name: 'Kevin', url: 'https://a.example' },
+          content: { text: 'great post!' },
+        },
+      ]),
+    );
+    const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
+    expect(out[0]?.author.name).toBe('Kevin');
+    expect(out[0]?.content.text).toBe('great post!');
+  });
+});
+
 describe('fetchWebmentions missing-token short-circuit', () => {
   it('returns [] without calling fetch when token is empty', async () => {
     // Re-mock to simulate missing token, then re-import to get a fresh module.

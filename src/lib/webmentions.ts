@@ -25,6 +25,17 @@ type Jf2Child = {
  */
 const FETCH_TIMEOUT_MS = 8_000;
 
+/** Display caps: webmention.io carries author-supplied free text. A 50 KB
+ *  reply or 200-char name doesn't help readers and breaks the grid layout
+ *  on phones. Truncate at render time; the canonical record stays upstream. */
+const AUTHOR_NAME_MAX = 60;
+const CONTENT_TEXT_MAX = 600;
+
+function clip(s: string | undefined, max: number): string | undefined {
+  if (!s) return s;
+  return s.length <= max ? s : `${s.slice(0, max - 1)}…`;
+}
+
 /**
  * Pre-flight an http(s) URL string. Webmention.io aggregates third-party
  * sources, and we surface author-supplied photo + profile URLs straight
@@ -68,11 +79,11 @@ export async function fetchWebmentions(target: string): Promise<Webmention[]> {
     return children.map((c) => ({
       source: safeHttpUrl(c.url) ?? '',
       author: {
-        name: c.author?.name ?? 'Anonymous',
+        name: clip(c.author?.name, AUTHOR_NAME_MAX) ?? 'Anonymous',
         photo: safeHttpUrl(c.author?.photo),
         url: safeHttpUrl(c.author?.url) ?? '',
       },
-      content: { text: c.content?.text ?? '' },
+      content: { text: clip(c.content?.text, CONTENT_TEXT_MAX) ?? '' },
       published: c.published ?? '',
       type:
         c['wm-property'] === 'in-reply-to'

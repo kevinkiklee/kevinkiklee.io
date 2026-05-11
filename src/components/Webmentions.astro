@@ -49,9 +49,20 @@ const hasContent = replies.length > 0 || likes.length + reposts.length > 0;
                   />
                 )}
                 <div class="who">
-                  <a href={m.author.url} class="p-author h-card" itemprop="author">
-                    <strong class="p-name">{m.author.name}</strong>
-                  </a>
+                  {m.author.url ? (
+                    <a href={m.author.url} class="p-author h-card" itemprop="author">
+                      <strong class="p-name">{m.author.name}</strong>
+                    </a>
+                  ) : (
+                    /* webmention.io occasionally returns a name with no
+                       safe profile URL (anonymous reply, dropped by the
+                       http(s) filter in webmentions.ts). Render the name
+                       as plain text so we don't ship an empty-href <a>
+                       that fails link-name + link-purpose checks. */
+                    <span class="p-author h-card" itemprop="author">
+                      <strong class="p-name">{m.author.name}</strong>
+                    </span>
+                  )}
                   <a href={m.url} itemprop="url" class="when">
                     {/* datetime attribute carries the machine-readable ISO value;
                         visible text is the human-friendly date. P13. */}
