@@ -31,9 +31,18 @@ const ga = GA_MEASUREMENT_ID;
     // destructure) so Vite emits two distinct chunks for @vercel/analytics
     // and @vercel/speed-insights. They share no code, and a single tuple
     // import made Rollup occasionally collapse them into one fat chunk.
+    //
+    // allSettled (not all): a transient 404 on one provider's chunk shouldn't
+    // suppress the other. Each module is independent — degrading gracefully
+    // when one is unavailable is strictly better than dropping both.
     const analyticsP = import('@vercel/analytics').then((m) => m.inject());
     const speedP = import('@vercel/speed-insights').then((m) => m.injectSpeedInsights());
-    await Promise.all([analyticsP, speedP]);
+    const results = await Promise.allSettled([analyticsP, speedP]);
+    // Surface failures in dev/preview; production users won't see these,
+    // but they make debugging a missing provider in CI trivial.
+    for (const r of results) {
+      if (r.status === 'rejected') console.warn('[analytics] provider failed:', r.reason);
+    }
   }
 
   whenActivated(() => {

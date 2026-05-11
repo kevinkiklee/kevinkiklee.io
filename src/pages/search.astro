@@ -140,9 +140,11 @@ const uiOptions = { showImages: false, resetStyles: false };
 
   async function mountPagefindUI() {
     if (mounted || mounting) return;
-    mounting = true;
     const el = document.getElementById('search') as HTMLDivElement | null;
     if (!el) return;
+    // Flip the flag AFTER the early-out so a missing #search container
+    // doesn't leave us permanently stuck in "mounting" with no retry path.
+    mounting = true;
     const bundlePath = el.getAttribute('data-bundle-path') ?? '/pagefind/';
     try {
       await Promise.all([

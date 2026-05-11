@@ -6,6 +6,13 @@ import { DATE_PREFIX } from './lib/post-id';
 
 const TAG_SET = new Set(tagsJson.tags);
 
+// z.coerce.date() silently produces Invalid Date for unparseable input
+// (e.g. "tomorrow", "2026-13-01"). The post would then ship with literal
+// "Invalid Date" strings in feeds and JSON-LD. Refine to reject early so
+// the build fails with a useful error pointing at the offending file.
+const validDate = (d: Date) => Number.isFinite(d.getTime());
+const validDateMsg = { message: 'must be a parseable date (YYYY-MM-DD or ISO 8601)' };
+
 const posts = defineCollection({
   loader: glob({
     pattern: '**/*.{md,mdx}',
@@ -16,8 +23,8 @@ const posts = defineCollection({
     z.object({
       title: z.string().min(1).max(TITLE_MAX),
       description: z.string().min(1).max(DESCRIPTION_MAX),
-      pubDate: z.coerce.date(),
-      updatedDate: z.coerce.date().optional(),
+      pubDate: z.coerce.date().refine(validDate, validDateMsg),
+      updatedDate: z.coerce.date().refine(validDate, validDateMsg).optional(),
       tags: z
         .array(z.string())
         .default([])

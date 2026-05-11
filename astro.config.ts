@@ -30,6 +30,11 @@ type PostMeta = {
   draft: boolean;
 };
 const POSTS_DIR = './src/content/posts';
+function toIsoOrUndefined(raw: unknown): string | undefined {
+  if (typeof raw !== 'string' && !(raw instanceof Date)) return undefined;
+  const d = raw instanceof Date ? raw : new Date(raw);
+  return Number.isFinite(d.getTime()) ? d.toISOString() : undefined;
+}
 function readPostsMeta(): PostMeta[] {
   let entries: string[] = [];
   try {
@@ -50,10 +55,13 @@ function readPostsMeta(): PostMeta[] {
       // ignore malformed frontmatter; the content layer will surface errors
     }
     const slug = entry.replace(/\.(md|mdx)$/, '').replace(DATE_PREFIX, '');
+    // Validate dates: a malformed pubDate would otherwise throw inside
+    // toISOString() and crash the entire build at config-eval time —
+    // long before Zod's content-schema check could produce a useful error.
     out.push({
       slug,
-      pubDate: fm.pubDate ? new Date(fm.pubDate as string).toISOString() : undefined,
-      updatedDate: fm.updatedDate ? new Date(fm.updatedDate as string).toISOString() : undefined,
+      pubDate: toIsoOrUndefined(fm.pubDate),
+      updatedDate: toIsoOrUndefined(fm.updatedDate),
       draft: fm.draft === true,
     });
   }

@@ -67,10 +67,15 @@ export async function setThemeAnimated(t: Theme): Promise<void> {
 }
 
 export function initThemeListeners(): void {
-  // cross-tab sync
+  // Cross-tab sync. The other tab's `setTheme()` writes data-theme AND an
+  // inline background + the theme-color meta — replicating only data-theme
+  // here would leave the inline background stuck on the prior value, so
+  // every visible state property needs to flip in lockstep. localStorage
+  // is already written by the originating tab; suppress the re-write by
+  // calling setTheme but accepting the redundant set as cheap.
   window.addEventListener('storage', (e) => {
     if (e.key === 'theme' && (e.newValue === 'light' || e.newValue === 'dark')) {
-      document.documentElement.dataset.theme = e.newValue;
+      setTheme(e.newValue);
     }
   });
   // OS theme change (only if user hasn't manually picked).
