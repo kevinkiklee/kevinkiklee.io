@@ -15,6 +15,11 @@ import { remarkReadingTime } from './src/lib/reading-time';
 import { remarkHeadingIncrement } from './src/lib/remark-a11y/heading-increment';
 import { remarkImgAlt } from './src/lib/remark-a11y/img-alt';
 import { remarkAeo } from './src/lib/remark-aeo';
+import {
+  POSTS_PAGINATION_PREFIX,
+  POST_DETAIL_RE,
+  shouldIncludeInSitemap,
+} from './src/lib/sitemap-filter';
 
 // Read post frontmatter at config-evaluation time so the sitemap can:
 //  - exclude drafts in production builds
@@ -86,10 +91,6 @@ function priorityFor(url: string): number {
   return 0.5;
 }
 
-// Match a post-detail URL and capture its slug. Excludes the /posts/page/N
-// pagination URLs (the slug "page" is treated as a sentinel by callers).
-const POST_DETAIL_RE = /\/posts\/([^/]+)\/?$/;
-
 export default defineConfig({
   site: 'https://kevinkiklee.io',
   trailingSlash: 'never',
@@ -144,22 +145,15 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      filter: (page) => {
-        if (page.includes('/api/')) return false;
-        if (page.endsWith('/404')) return false;
-        // Exclude draft posts in production. Astro emits them in dev/preview
-        // builds when explicitly enabled via VERCEL_ENV !== 'preview'.
-        const m = page.match(POST_DETAIL_RE);
-        if (m) {
-          const slug = m[1];
-          if (slug && slug !== 'page' && !PUBLISHED_SLUGS.has(slug)) return false;
-        }
-        return true;
-      },
+      filter: (page) => shouldIncludeInSitemap(page, PUBLISHED_SLUGS),
       serialize(item) {
         item.priority = priorityFor(item.url);
-        const m = new URL(item.url).pathname.match(POST_DETAIL_RE);
-        if (m?.[1] && m[1] !== 'page') {
+        const pathOnly = new URL(item.url).pathname;
+        // Skip the post-detail lastmod injection for pagination URLs —
+        // they don't correspond to a single post.
+        if (pathOnly.startsWith(POSTS_PAGINATION_PREFIX)) return item;
+        const m = pathOnly.match(POST_DETAIL_RE);
+        if (m?.[1]) {
           const meta = POSTS_BY_SLUG.get(m[1]);
           if (meta) {
             const lm = meta.updatedDate ?? meta.pubDate;

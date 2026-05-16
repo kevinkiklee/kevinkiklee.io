@@ -4,7 +4,7 @@ import JsonLd from '~/components/JsonLd.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { crumbsFor } from '~/lib/crumbs';
 import { formatMonthDay } from '~/lib/format';
-import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
+import { POSTS_PER_PAGE, getPublishedPosts, sortByDateDesc } from '~/lib/posts';
 import {
   ENTITY_IDS,
   buildBlog,
@@ -17,8 +17,8 @@ import {
 import { SITE, pageTitle } from '~/lib/site-config';
 
 const allPosts = sortByDateDesc(await getPublishedPosts());
-const posts = allPosts.slice(0, 30);
-const hasOlder = allPosts.length > 30;
+const posts = allPosts.slice(0, POSTS_PER_PAGE);
+const hasOlder = allPosts.length > POSTS_PER_PAGE;
 const groupedByYear = posts.reduce<Record<number, typeof posts>>((acc, p) => {
   const y = p.data.pubDate.getFullYear();
   const bucket = acc[y] ?? [];

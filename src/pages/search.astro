@@ -157,10 +157,14 @@ const uiOptions = { showImages: false, resetStyles: false };
       const bootstrap = document.getElementById('search-bootstrap-input') as HTMLInputElement | null;
       const bootstrapValue = bootstrap?.value ?? '';
       const hint = el.querySelector('[data-bootstrap-hint]');
+      const opts = JSON.parse(el.getAttribute('data-ui-options') ?? '{}');
+      // Construct UI BEFORE removing the bootstrap fallback. If construction
+      // throws, the catch handler can still update the hint to surface the
+      // failure to the user — otherwise we'd leave an empty container with
+      // no feedback path.
+      new PagefindUI({ ...opts, element: '#search', bundlePath });
       bootstrap?.remove();
       hint?.remove();
-      const opts = JSON.parse(el.getAttribute('data-ui-options') ?? '{}');
-      new PagefindUI({ ...opts, element: '#search', bundlePath });
       el.classList.remove('pagefind-uninit');
       mounted = true;
       // F-007 — Pagefind UI labels the search input with `title` only, which

@@ -2,6 +2,15 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 
 type Post = CollectionEntry<'posts'>;
 
+/**
+ * Number of posts shown per archive page. The first page (`/posts`) shows the
+ * latest `POSTS_PER_PAGE` posts year-grouped, then `/posts/page/2..N` paginate
+ * the older entries. Both surfaces import this constant so the slicing logic
+ * stays in lockstep — a drift would silently overlap (duplicate posts shown
+ * on page 1 and page 2) or skip (a post missing from both).
+ */
+export const POSTS_PER_PAGE = 30;
+
 export function sortByDateDesc(posts: Post[]): Post[] {
   return [...posts].sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 }

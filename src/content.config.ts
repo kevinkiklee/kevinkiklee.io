@@ -1,7 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import tagsJson from './content/tags.json' with { type: 'json' };
-import { DESCRIPTION_MAX, PROJECT_NAME_MAX, TITLE_MAX } from './lib/meta';
+import { DESCRIPTION_MAX, PROJECT_BLURB_MAX, PROJECT_NAME_MAX, TITLE_MAX } from './lib/meta';
 import { DATE_PREFIX } from './lib/post-id';
 
 const TAG_SET = new Set(tagsJson.tags);
@@ -46,7 +46,11 @@ const projects = defineCollection({
     // scaffolder and the schema can't drift; the schema is the source of
     // truth, the scaffolder is just an early-fail.
     name: z.string().min(1).max(PROJECT_NAME_MAX),
-    blurb: z.string().max(200),
+    // `blurb` lands in JSON-LD `SoftwareSourceCode.description` AND on the
+    // visual card body. An empty value would silently degrade the
+    // structured-data quality signal Google reads, so enforce min length
+    // at schema time rather than discovering it post-deploy.
+    blurb: z.string().min(1).max(PROJECT_BLURB_MAX),
     url: z.string().url(),
     repoUrl: z.string().url().optional(),
     tech: z.array(z.string()).default([]),

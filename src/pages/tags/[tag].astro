@@ -47,9 +47,11 @@ const graph = buildPageGraph([
   buildWebSite(),
 ]);
 ---
-<BaseLayout title={pageTitle(`#${tag}`)} description={`Posts tagged ${tag}.`}>
+<BaseLayout title={pageTitle(`#${tag}`)} description={`Posts tagged ${tag}.`} noindex={noindex}>
   <JsonLd slot="head" data={graph} />
-  {noindex && <meta name="robots" content="noindex" slot="head" />}
+  {/* `noindex` is forwarded to BaseHead which emits a single, canonical
+      `<meta name="robots">` — injecting a second one here would let
+      conflicting directives slip through to validators. */}
   <Breadcrumbs items={crumbs} />
   <h1 class="page-title">Tag <span class="sep" aria-hidden="true">·</span> {tag} <span class="count">{count}</span></h1>
   {posts.length === 0 ? (

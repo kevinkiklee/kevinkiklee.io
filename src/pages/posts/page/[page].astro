@@ -4,7 +4,7 @@ import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import JsonLd from '~/components/JsonLd.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { crumbsFor } from '~/lib/crumbs';
-import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
+import { POSTS_PER_PAGE, getPublishedPosts, sortByDateDesc } from '~/lib/posts';
 import {
   ENTITY_IDS,
   buildBlog,
@@ -17,19 +17,21 @@ import {
 import { SITE } from '~/lib/site-config';
 
 export const getStaticPaths = (async () => {
-  // Astro hoists getStaticPaths and runs it in isolation; module-scope
-  // constants aren't visible. Keep config local to the function.
-  const PAGE_SIZE = 30;
+  // `POSTS_PER_PAGE` is imported from `~/lib/posts` so this route and
+  // `posts/index.astro` slice the archive identically — a drift between the
+  // two values would either duplicate (overlap) or skip (gap) posts at the
+  // page-1 → page-2 boundary. Astro permits imports inside getStaticPaths;
+  // only the .astro frontmatter's own module-scope vars are unreachable here.
   const posts = sortByDateDesc(await getPublishedPosts());
-  const totalPages = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
   // Page 1 lives at /posts (year-grouped). Numbered pages are 2..N.
   const out: {
     params: { page: string };
     props: { items: typeof posts; page: number; totalPages: number };
   }[] = [];
   for (let page = 2; page <= totalPages; page += 1) {
-    const start = (page - 1) * PAGE_SIZE;
-    const items = posts.slice(start, start + PAGE_SIZE);
+    const start = (page - 1) * POSTS_PER_PAGE;
+    const items = posts.slice(start, start + POSTS_PER_PAGE);
     out.push({ params: { page: String(page) }, props: { items, page, totalPages } });
   }
   return out;
