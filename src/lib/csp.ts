@@ -56,8 +56,10 @@ export const CSP = [
     'https://*.vercel-insights.com',
     // GA4 measurement protocol.
     'https://*.google-analytics.com',
-    // Webmention.io API for comment fetches at build time AND from the client.
-    'https://webmention.io',
+    // webmention.io is fetched at build time by `lib/webmentions.ts`, not
+    // from the visitor's browser, so it doesn't need a `connect-src` entry.
+    // The `<link rel="webmention">` in `BaseHead.astro` is a discovery
+    // declaration only — it never triggers a client-side fetch.
   ].join(' '),
   // Self-hosted JetBrains Mono + IBM Plex Mono — no third-party fonts.
   "font-src 'self'",

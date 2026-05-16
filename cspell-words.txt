@@ -43,9 +43,7 @@ speculation
 speculationrules
 summarisers
 tsx
-turborepo
 turbopack
-typegen
 unciteable
 vercel
 WCAG

@@ -3,4 +3,3 @@ dist/
 .astro/
 docs/
 a11y-findings.md
-audit-static-review.md

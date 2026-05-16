@@ -14,7 +14,5 @@ module.exports = {
     // spell-check doesn't trip on machine-generated tokens like axe rule ids.
     'a11y-findings.md',
     'a11y-findings.json',
-    'audit-static-review.md',
-    'audit-axe-raw.json',
   ],
 };

@@ -20,7 +20,7 @@
     "new:post": "tsx scripts/new-post.ts",
     "new:project": "tsx scripts/new-project.ts",
     "analyze": "open stats.html",
-    "clean": "rm -rf dist .astro node_modules/.vite playwright-report test-results stats.html .lighthouseci a11y-findings.json a11y-findings.md audit-axe-raw.json audit-static-review.md",
+    "clean": "rm -rf dist .astro node_modules/.vite playwright-report test-results stats.html .lighthouseci a11y-findings.json a11y-findings.md",
     "links:check": "lychee --no-progress dist/",
     "preview:static": "serve dist/client -l 4321 --no-clipboard",
     "a11y:audit": "tsx scripts/a11y/audit.ts",

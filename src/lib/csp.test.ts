@@ -13,8 +13,16 @@ describe('CSP header', () => {
 
   it('whitelists known third parties', () => {
     expect(CSP).toContain('https://*.vercel-insights.com');
-    expect(CSP).toContain('https://webmention.io');
     expect(CSP).toContain('https://*.google-analytics.com');
+  });
+
+  it('does not whitelist webmention.io (build-time only — no client fetch)', () => {
+    // Regression guard: webmention.io is contacted from the build server in
+    // lib/webmentions.ts, not from the visitor's browser. The `<link
+    // rel="webmention">` in BaseHead is a discovery declaration, not a
+    // fetch. Adding it back to connect-src widens the attack surface for
+    // no benefit.
+    expect(CSP).not.toContain('webmention.io');
   });
 
   it('does not allow giscus origins (Giscus removed in favour of Mastodon-only)', () => {
@@ -70,7 +78,7 @@ describe('CSP header', () => {
 
   it('matches a stable shape (snapshot)', () => {
     expect(CSP).toMatchInlineSnapshot(
-      `"default-src 'self'; script-src 'self' 'unsafe-inline' https://*.vercel-insights.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.gravatar.com https://avatars.githubusercontent.com; frame-src 'none'; media-src 'none'; worker-src 'none'; child-src 'none'; manifest-src 'self'; connect-src 'self' https://*.vercel-insights.com https://*.google-analytics.com https://webmention.io; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"`,
+      `"default-src 'self'; script-src 'self' 'unsafe-inline' https://*.vercel-insights.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.gravatar.com https://avatars.githubusercontent.com; frame-src 'none'; media-src 'none'; worker-src 'none'; child-src 'none'; manifest-src 'self'; connect-src 'self' https://*.vercel-insights.com https://*.google-analytics.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"`,
     );
   });
 });

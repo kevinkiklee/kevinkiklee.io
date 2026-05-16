@@ -28,7 +28,7 @@ const graph = buildPageGraph([
       <li><strong>Vercel Web Analytics</strong> — pageviews, referrers, country. Cookieless. Aggregated. ~30-day retention.</li>
       <li><strong>Vercel Speed Insights</strong> — anonymous Core Web Vitals (LCP, INP, CLS) from real visits. Cookieless.</li>
       <li><strong>Google Analytics 4</strong> — pageviews, referrers, country, anonymized IP. Loaded off the main thread via Partytown. ~14-month retention. No ad-personalization signals sent.</li>
-      <li><strong>webmention.io</strong> — when this site fetches replies from Mastodon/Bluesky for display alongside posts. Their privacy policy applies.</li>
+      <li><strong>webmention.io</strong> — replies are fetched at <em>build time</em> from the build server, not from your browser, so visiting a post does not contact webmention.io. (When a reply has an author avatar, your browser fetches it from Gravatar or GitHub avatars when the post loads.)</li>
     </ul>
     <h2>What's NOT collected</h2>
     <ul>

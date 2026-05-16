@@ -18,8 +18,6 @@ fonts/source/
 .worktrees/
 
 # Transient a11y audit outputs
-audit-axe-raw.json
-audit-static-review.md
 a11y-findings.md
 a11y-findings.json
 
