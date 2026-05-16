@@ -1,6 +1,9 @@
+import { readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { SLUG_OK } from '../pages/api/og';
 import { escapeHtml } from './escape-html';
 import { ogTemplate } from './og';
+import { DATE_PREFIX } from './post-id';
 import { SITE } from './site-config';
 
 describe('ogTemplate', () => {
@@ -39,6 +42,30 @@ describe('ogTemplate', () => {
     const hostile = '<script>alert(1)</script>';
     expect(escapeHtml(hostile)).toContain('&lt;script&gt;');
     expect(ogTemplate({ title: hostile, date: '2026-04-29', tags: [] })).toBeTruthy();
+  });
+});
+
+describe('SLUG_OK regression guard', () => {
+  // The OG endpoint hard-rejects slugs that don't match SLUG_OK. If the
+  // content loader's generateId ever produces an id this regex rejects,
+  // every social-card request for that post 400s. Lock the contract.
+  it('accepts every real post id', () => {
+    // Mirror content.config.ts generateId: strip extension + DATE_PREFIX.
+    const files = readdirSync('./src/content/posts').filter((f) => /\.mdx?$/.test(f));
+    expect(files.length).toBeGreaterThan(0);
+    for (const f of files) {
+      const id = f.replace(/\.(md|mdx)$/, '').replace(DATE_PREFIX, '');
+      expect(SLUG_OK.test(id), `post id rejected by SLUG_OK: ${id} (from ${f})`).toBe(true);
+    }
+  });
+
+  it('rejects obvious abuse patterns', () => {
+    expect(SLUG_OK.test('../etc/passwd')).toBe(false);
+    expect(SLUG_OK.test('Hello-World')).toBe(false);
+    expect(SLUG_OK.test('foo bar')).toBe(false);
+    expect(SLUG_OK.test('-leading-dash')).toBe(false);
+    expect(SLUG_OK.test('')).toBe(false);
+    expect(SLUG_OK.test('a'.repeat(82))).toBe(false);
   });
 });
 

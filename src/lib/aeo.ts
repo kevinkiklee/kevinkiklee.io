@@ -1,13 +1,16 @@
 import type { CollectionEntry } from 'astro:content';
 import { formatDate } from './format';
+import { sortByDateDesc } from './posts';
 import { SITE } from './site-config';
 
 type Post = CollectionEntry<'posts'>;
 
+function publishedSorted(posts: Post[]): Post[] {
+  return sortByDateDesc(posts.filter((p) => p.data.draft !== true));
+}
+
 export function buildLlmsIndex(posts: Post[]): string {
-  const published = posts
-    .filter((p) => p.data.draft !== true)
-    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+  const published = publishedSorted(posts);
 
   const postsBlock = published
     .map((p) => `- [${p.data.title}](${SITE.url}/posts/${p.id}.md): ${p.data.description}`)
@@ -46,11 +49,16 @@ export function buildLlmsFull(posts: Post[], cap = LLMS_FULL_DEFAULT_CAP): strin
   // semantics. Coerce to >= 1 instead of throwing — this is a build-time path
   // and we'd rather emit *something* than fail the build on a misconfigured
   // caller.
-  const safeCap = Number.isFinite(cap) && cap >= 1 ? Math.floor(cap) : LLMS_FULL_DEFAULT_CAP;
-  const published = posts
-    .filter((p) => p.data.draft !== true)
-    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
-    .slice(0, safeCap);
+  let safeCap: number;
+  if (Number.isFinite(cap) && cap >= 1) {
+    safeCap = Math.floor(cap);
+  } else {
+    safeCap = LLMS_FULL_DEFAULT_CAP;
+    console.warn(
+      `[aeo] buildLlmsFull received invalid cap=${cap}; falling back to ${LLMS_FULL_DEFAULT_CAP}`,
+    );
+  }
+  const published = publishedSorted(posts).slice(0, safeCap);
 
   const header = [
     `# ${SITE.title} — full content snapshot`,

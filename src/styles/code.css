@@ -79,19 +79,17 @@
   }
 
   /* Mobile: shrink code to keep ~50ch per line under the bumped body type;
-     preserve tap target via invisible ::before expander to 44×44. */
+     hit the WCAG 2.5.8 / Apple HIG 44×44 minimum on the visible button so
+     low-vision and motor-impaired users don't need to rely on the expander
+     to land a tap. */
   @media (max-width: 640px) {
     .prose pre {
       font-size: 0.875em;
     }
     .copy-btn {
-      min-height: 36px;
+      min-height: 44px;
+      min-width: 44px;
       padding: var(--space-2) var(--space-3);
-    }
-    .copy-btn::before {
-      content: "";
-      position: absolute;
-      inset: -4px;
     }
   }
 

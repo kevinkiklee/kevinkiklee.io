@@ -36,6 +36,13 @@ const hasContent = replies.length > 0 || likes.length + reposts.length > 0;
             <article class="h-entry" itemscope itemtype="https://schema.org/Comment">
               <div class="head">
                 {m.author.photo && (
+                  /* referrerpolicy=no-referrer blocks Gravatar/GitHub from
+                     learning which post fetched the avatar. We intentionally
+                     do NOT set crossorigin="anonymous" — browsers already
+                     drop cookies on cross-origin image requests under the
+                     SameSite=Lax default, and turning on CORS would make
+                     the avatar fail-closed on any host that doesn't
+                     advertise Access-Control-Allow-Origin. */
                   <img
                     class="avatar"
                     src={m.author.photo}

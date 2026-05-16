@@ -73,7 +73,10 @@ function fallbackResponse(): Response {
 // content.config.ts). Reject anything else early — it cannot map to a
 // post and probing the collection just wastes function time + adds noise
 // to logs for crawlers fuzzing the endpoint.
-const SLUG_OK = /^[a-z0-9][a-z0-9-]{0,80}$/;
+//
+// Exported so tests can assert real post IDs satisfy it; if you tighten
+// this regex you must keep the test suite green.
+export const SLUG_OK = /^[a-z0-9][a-z0-9-]{0,80}$/;
 
 // Error responses need an explicit Cache-Control or they inherit the
 // route-level `s-maxage=1year, immutable` from vercel.ts — i.e. a single

@@ -45,7 +45,9 @@ const POSTS_DIR = './src/content/posts';
  * Astro's content layer here because integration hooks run outside the
  * content collection scope. Cheap: only scans `.md`/`.mdx` files once.
  */
-function readPostsWithCovers(siteUrl: string, distClient: string): CoverMeta[] {
+type Warn = (msg: string) => void;
+
+function readPostsWithCovers(siteUrl: string, distClient: string, warn?: Warn): CoverMeta[] {
   let entries: string[] = [];
   try {
     entries = readdirSync(POSTS_DIR);
@@ -81,7 +83,7 @@ function readPostsWithCovers(siteUrl: string, distClient: string): CoverMeta[] {
     // directory scan. Cover assets are author-supplied, not user input,
     // so this should never fire — but the guard is cheap insurance.
     if (!baseFromFm || /[\\/]|\.\./.test(baseFromFm)) continue;
-    const resolved = resolveBuiltAsset(distClient, baseFromFm);
+    const resolved = resolveBuiltAsset(distClient, baseFromFm, warn);
     if (!resolved) continue;
     out.push({
       slug,
@@ -92,7 +94,7 @@ function readPostsWithCovers(siteUrl: string, distClient: string): CoverMeta[] {
   return out;
 }
 
-function resolveBuiltAsset(distClient: string, baseName: string): string | null {
+function resolveBuiltAsset(distClient: string, baseName: string, warn?: Warn): string | null {
   let files: string[] = [];
   try {
     files = readdirSync(join(distClient, '_astro'));
@@ -105,7 +107,16 @@ function resolveBuiltAsset(distClient: string, baseName: string): string | null 
   const candidates = files.filter((f) => f.startsWith(`${baseName}.`));
   if (candidates.length === 0) return null;
   const pickByExt = (ext: string) => candidates.find((f) => f.endsWith(ext));
-  const chosen = pickByExt('.avif') ?? pickByExt('.webp') ?? candidates[0];
+  const avif = pickByExt('.avif');
+  const webp = pickByExt('.webp');
+  const chosen = avif ?? webp ?? candidates[0];
+  // The image pipeline normally emits AVIF + WebP variants per cover. If we
+  // see neither, the optimizer almost certainly broke (or was misconfigured)
+  // and the sitemap will point at an unoptimized original — surface it so a
+  // build reviewer can investigate without grepping diffs by hand.
+  if (warn && !avif && !webp) {
+    warn(`image-sitemap: no AVIF or WebP variant for "${baseName}" (using ${chosen}).`);
+  }
   return chosen ? `/_astro/${chosen}` : null;
 }
 
@@ -153,7 +164,7 @@ export default function imageSitemap(): AstroIntegration {
         // output is dist/client/ already.
         const distClient = dir.pathname;
         const siteUrl = process.env.SITE_URL ?? 'https://kevinkiklee.io';
-        const covers = readPostsWithCovers(siteUrl, distClient);
+        const covers = readPostsWithCovers(siteUrl, distClient, (m) => logger.warn(m));
         if (covers.length === 0) {
           logger.info('image-sitemap: no posts with covers; skipping injection.');
           return;

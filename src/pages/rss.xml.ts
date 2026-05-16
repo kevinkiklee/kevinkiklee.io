@@ -14,10 +14,12 @@ export async function GET(context: APIContext) {
     0,
   );
   const lastBuild = newest > 0 ? new Date(newest) : new Date();
+  const feedUrl = new URL('/rss.xml', context.site).toString();
   return rss({
     title: SITE.title,
     description: SITE.description,
     site: context.site,
+    xmlns: { atom: 'http://www.w3.org/2005/Atom' },
     items: posts.map((p) => ({
       title: p.data.title,
       description: p.data.description,
@@ -28,6 +30,9 @@ export async function GET(context: APIContext) {
       // resurface the post as new in feed readers.
       customData: `<guid isPermaLink="true">${new URL(`/posts/${p.id}`, context.site).toString()}</guid>`,
     })),
-    customData: `<language>en-US</language><lastBuildDate>${lastBuild.toUTCString()}</lastBuildDate>`,
+    // <atom:link rel="self"> tells aggregators where the canonical feed lives
+    // (so a CDN-cached copy that's been mirrored elsewhere can be normalized
+    // back to this URL). Required by W3C feed validator.
+    customData: `<language>en-US</language><lastBuildDate>${lastBuild.toUTCString()}</lastBuildDate><atom:link href="${feedUrl}" rel="self" type="application/rss+xml" />`,
   });
 }

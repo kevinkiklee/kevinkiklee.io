@@ -33,7 +33,13 @@ const CONTENT_TEXT_MAX = 600;
 
 function clip(s: string | undefined, max: number): string | undefined {
   if (!s) return s;
-  return s.length <= max ? s : `${s.slice(0, max - 1)}…`;
+  // String.slice counts UTF-16 code units, so slicing in the middle of a
+  // surrogate pair (any emoji, every CJK supplementary character) corrupts
+  // the trailing glyph. Iterate by code point instead so emoji-laden
+  // webmentions clip cleanly.
+  const cps = Array.from(s);
+  if (cps.length <= max) return s;
+  return `${cps.slice(0, max - 1).join('')}…`;
 }
 
 /**

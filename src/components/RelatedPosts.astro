@@ -41,6 +41,14 @@ const related = relatedPosts(post, all, limit);
     gap: var(--space-3);
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
+  /* `auto-fit` will gladly pack 3 columns into a 640px viewport, leaving each
+     card at ~180px — title clamps to two lines and the body description
+     collapses below the readable measure. Force a single column on phones. */
+  @media (max-width: 640px) {
+    .related ul {
+      grid-template-columns: 1fr;
+    }
+  }
   .related li {
     border: 1px solid var(--rule-soft);
     padding: var(--space-3);

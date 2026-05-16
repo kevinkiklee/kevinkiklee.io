@@ -25,7 +25,13 @@ document.addEventListener('astro:before-preparation', (e: Event) => {
     history.replaceState({ ...(history.state ?? {}), depth: fromDepth + 1 }, '');
   }
 
-  // Reduced motion or save-data → skip transition
+  // Reduced motion or save-data → skip transition.
+  //
+  // `navigator.connection` is unstable in two ways we have to defend against
+  // (don't drop the try/catch): some browsers expose it but throw on access
+  // in cross-origin iframes; some user-script blockers (privacy add-ons)
+  // shim it as a poisoned property that throws. Either way, the right
+  // fallback is "no hint" — we just don't skip the transition.
   let slow = false;
   try {
     const c = navigator.connection;

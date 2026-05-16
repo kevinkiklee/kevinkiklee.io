@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { buildLlmsFull, buildLlmsIndex, lastUpdatedDate } from './aeo';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { LLMS_FULL_DEFAULT_CAP, buildLlmsFull, buildLlmsIndex, lastUpdatedDate } from './aeo';
 
 const fixturePosts = [
   {
@@ -143,5 +143,39 @@ describe('buildLlmsFull', () => {
     const out = buildLlmsFull(many as never, 2.7);
     const postEntries = (out.match(/^# Post /gm) ?? []).length;
     expect(postEntries).toBe(2);
+  });
+
+  describe('safeCap coercion', () => {
+    // Capture the console.warn the fallback emits so noise doesn't leak into
+    // the suite output. We also assert the warn fires only on bad input.
+    let warn: ReturnType<typeof vi.spyOn>;
+    beforeEach(() => {
+      warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+    afterEach(() => {
+      warn.mockRestore();
+    });
+
+    it('falls back to the default cap on NaN and warns', () => {
+      const out = buildLlmsFull(many as never, Number.NaN);
+      const postEntries = (out.match(/^# Post /gm) ?? []).length;
+      expect(postEntries).toBe(Math.min(LLMS_FULL_DEFAULT_CAP, many.length));
+      expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('falls back on Infinity and warns', () => {
+      buildLlmsFull(many as never, Number.POSITIVE_INFINITY);
+      expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('falls back on a negative cap and warns', () => {
+      buildLlmsFull(many as never, -5);
+      expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('does NOT warn for the default call signature', () => {
+      buildLlmsFull(many as never);
+      expect(warn).not.toHaveBeenCalled();
+    });
   });
 });

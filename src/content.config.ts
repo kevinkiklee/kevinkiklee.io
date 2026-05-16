@@ -20,23 +20,32 @@ const posts = defineCollection({
     generateId: ({ entry }) => entry.replace(/\.(md|mdx)$/, '').replace(DATE_PREFIX, ''),
   }),
   schema: ({ image }) =>
-    z.object({
-      title: z.string().min(1).max(TITLE_MAX),
-      description: z.string().min(1).max(DESCRIPTION_MAX),
-      pubDate: z.coerce.date().refine(validDate, validDateMsg),
-      updatedDate: z.coerce.date().refine(validDate, validDateMsg).optional(),
-      tags: z
-        .array(z.string())
-        .default([])
-        .refine((tags) => tags.every((t) => TAG_SET.has(t)), {
-          message: 'Tag not in allowlist (src/content/tags.json). Add it there first.',
-        }),
-      draft: z.boolean().default(false),
-      cover: z.object({ src: image(), alt: z.string().min(1) }).optional(),
-      mastodonUrl: z.string().url().optional(),
-      series: z.object({ name: z.string(), order: z.number().int().positive() }).optional(),
-      faq: z.array(z.object({ q: z.string(), a: z.string() })).optional(),
-    }),
+    z
+      .object({
+        title: z.string().min(1).max(TITLE_MAX),
+        description: z.string().min(1).max(DESCRIPTION_MAX),
+        pubDate: z.coerce.date().refine(validDate, validDateMsg),
+        updatedDate: z.coerce.date().refine(validDate, validDateMsg).optional(),
+        tags: z
+          .array(z.string())
+          .default([])
+          .refine((tags) => tags.every((t) => TAG_SET.has(t)), {
+            message: 'Tag not in allowlist (src/content/tags.json). Add it there first.',
+          }),
+        draft: z.boolean().default(false),
+        cover: z.object({ src: image(), alt: z.string().min(1) }).optional(),
+        mastodonUrl: z.string().url().optional(),
+        series: z.object({ name: z.string(), order: z.number().int().positive() }).optional(),
+        faq: z.array(z.object({ q: z.string(), a: z.string() })).optional(),
+      })
+      // A backwards-dated `updatedDate` produces nonsense feed `lastBuildDate`,
+      // confuses sitemap lastmod-aware crawlers, and breaks the JSON-LD
+      // `dateModified >= datePublished` guarantee. Catch the typo at build
+      // time rather than letting it ship.
+      .refine((d) => !d.updatedDate || d.updatedDate.getTime() >= d.pubDate.getTime(), {
+        message: 'updatedDate must be on or after pubDate',
+        path: ['updatedDate'],
+      }),
 });
 
 const projects = defineCollection({

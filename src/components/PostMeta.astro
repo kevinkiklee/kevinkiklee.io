@@ -91,7 +91,10 @@ const readLabel =
   .meta-rail dd.tags {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-1);
+    /* Pills are 24×24 so they pass WCAG 2.5.8 on size alone, but 4px between
+       adjacent tap targets is genuinely tight on phones. Bump to 8px (still
+       compact, easier to land a thumb on the intended tag). */
+    gap: var(--space-2);
   }
   /* On narrow viewports, collapse to one column: each label sits above its
      value. Keep the borders and the same vertical rhythm. */

@@ -1,5 +1,6 @@
+import type { Root } from 'mdast';
 import { describe, expect, it } from 'vitest';
-import { computeReadingTime, computeWordCount } from './reading-time';
+import { computeReadingTime, computeWordCount, proseText } from './reading-time';
 
 describe('computeReadingTime', () => {
   it('rounds 200 wpm to nearest minute, minimum 1', () => {
@@ -43,5 +44,62 @@ describe('computeReadingTime', () => {
     // 400 prose words → 2 min, code block contributes 0.
     expect(computeWordCount(md)).toBe(400);
     expect(computeReadingTime(md)).toBe(2);
+  });
+});
+
+describe('proseText AST walker', () => {
+  it('skips fenced code blocks', () => {
+    const tree: Root = {
+      type: 'root',
+      children: [
+        { type: 'paragraph', children: [{ type: 'text', value: 'hello world' }] },
+        { type: 'code', lang: 'ts', value: 'const a = 1; const b = 2;' },
+      ],
+    };
+    expect(proseText(tree).trim()).toBe('hello world');
+  });
+
+  it('skips inline code', () => {
+    const tree: Root = {
+      type: 'root',
+      children: [
+        {
+          type: 'paragraph',
+          children: [
+            { type: 'text', value: 'before ' },
+            { type: 'inlineCode', value: 'noisy code value' },
+            { type: 'text', value: ' after' },
+          ],
+        },
+      ],
+    };
+    // Inline code value is stripped; surrounding text remains.
+    const out = proseText(tree);
+    expect(out).toContain('before');
+    expect(out).toContain('after');
+    expect(out).not.toContain('noisy');
+  });
+
+  it('handles deeply nested structures', () => {
+    const tree: Root = {
+      type: 'root',
+      children: [
+        {
+          type: 'blockquote',
+          children: [
+            {
+              type: 'paragraph',
+              children: [
+                { type: 'text', value: 'quoted prose' },
+                { type: 'inlineCode', value: 'dropped' },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const out = proseText(tree);
+    expect(out).toContain('quoted prose');
+    expect(out).not.toContain('dropped');
   });
 });

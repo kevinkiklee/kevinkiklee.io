@@ -56,11 +56,18 @@ export const remarkAeo: Plugin<[], Root> = () => (tree, file) => {
   }
 
   const lead = tree.children[leadIndex] as Paragraph & {
-    data?: { hProperties?: { className?: string[] } };
+    data?: { hProperties?: { className?: string | string[] } };
   };
   if (!lead.data) lead.data = {};
   if (!lead.data.hProperties) lead.data.hProperties = {};
-  const cls = lead.data.hProperties.className ?? [];
+  // hast properties.className can be `string | string[]`. A later plugin
+  // setting a string form would break our `.includes/.push` calls.
+  const existing = lead.data.hProperties.className;
+  const cls: string[] = Array.isArray(existing)
+    ? existing
+    : typeof existing === 'string' && existing.length > 0
+      ? existing.split(/\s+/)
+      : [];
   if (!cls.includes('lead')) cls.push('lead');
   lead.data.hProperties.className = cls;
 

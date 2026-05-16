@@ -39,7 +39,24 @@ try {
 const childLocs = extractLocs(indexXml);
 // Deduplicate so an accidental cross-listing (a URL appearing in two child
 // sitemap chunks) doesn't pad the payload toward IndexNow's 10k limit.
-const urls = Array.from(new Set(childLocs.flatMap((loc) => extractLocs(readChildSitemap(loc)))));
+const rawUrls = Array.from(new Set(childLocs.flatMap((loc) => extractLocs(readChildSitemap(loc)))));
+// IndexNow rejects payloads that contain URLs outside the host we're keyed
+// for. A malformed sitemap (or a future cross-domain entry) would otherwise
+// poison the entire batch with a single bad row; filter eagerly so the
+// resulting POST always succeeds when at least one valid URL exists.
+const urls: string[] = [];
+for (const u of rawUrls) {
+  try {
+    const parsed = new URL(u);
+    if (parsed.protocol === 'https:' && parsed.hostname === HOST) {
+      urls.push(parsed.toString());
+    } else {
+      console.warn(`indexnow: skipping non-${HOST} url ${u}`);
+    }
+  } catch {
+    console.warn(`indexnow: skipping malformed url ${u}`);
+  }
+}
 
 if (urls.length === 0) {
   console.error('no URLs found in sitemap');

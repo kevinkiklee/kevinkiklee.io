@@ -90,9 +90,13 @@ const graph = buildPageGraph([
   </ul>
   </section>
   <nav aria-label="Pagination" class="pager">
-    <a href={prevHref}>← newer</a>
+    <a href={prevHref} aria-label="Go to newer posts (previous page)" rel="prev">← newer</a>
     {' · '}
-    {nextHref ? <a href={nextHref}>older →</a> : <span aria-hidden="true">older →</span>}
+    {nextHref ? (
+      <a href={nextHref} aria-label="Go to older posts (next page)" rel="next">older →</a>
+    ) : (
+      <span aria-hidden="true">older →</span>
+    )}
   </nav>
 </BaseLayout>
 

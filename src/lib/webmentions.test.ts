@@ -174,6 +174,30 @@ describe('fetchWebmentions length caps', () => {
     expect(out[0]?.content.text.endsWith('…')).toBe(true);
   });
 
+  it('clips by code-point so emoji surrogate pairs stay intact', async () => {
+    // 😀 is U+1F600 — two UTF-16 code units, one code point. With code-unit
+    // slicing, repeating 😀 60 times yields a 120-unit string and slicing
+    // at 59 lands in the middle of a surrogate pair, producing an invalid
+    // trailing char before the ellipsis.
+    const name = '😀'.repeat(80);
+    mockFetch.mockResolvedValueOnce(
+      jf2([
+        {
+          'wm-property': 'in-reply-to',
+          author: { name, url: 'https://a.example' },
+          content: { text: 'short' },
+          published: '2026-01-01',
+        },
+      ]),
+    );
+    const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
+    const clipped = out[0]?.author.name ?? '';
+    // 59 emoji + 1 ellipsis = 60 code points, ellipsis present, no lone surrogates.
+    expect([...clipped].length).toBe(60);
+    expect(clipped.endsWith('…')).toBe(true);
+    expect(clipped.slice(0, -1)).toBe('😀'.repeat(59));
+  });
+
   it('keeps short names and content intact', async () => {
     mockFetch.mockResolvedValueOnce(
       jf2([

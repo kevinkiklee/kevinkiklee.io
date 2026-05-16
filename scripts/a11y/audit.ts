@@ -6,6 +6,19 @@ import { runLhci } from './run-lhci.ts';
 const baseUrl = process.env.A11Y_BASE_URL ?? 'http://localhost:4321';
 const primaryOnly = process.argv.includes('--primary-only');
 
+// Fail fast on a misconfigured env var so we surface a usable error instead of
+// letting Playwright spin its wheels on `javascript:` or a missing host.
+try {
+  const parsed = new URL(baseUrl);
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new Error(`unsupported protocol "${parsed.protocol}" — only http(s) allowed`);
+  }
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`a11y audit: invalid A11Y_BASE_URL "${baseUrl}": ${msg}`);
+  process.exit(1);
+}
+
 const axe = await runAxe({ baseUrl, primaryOnly });
 runLhci({ baseUrl, primaryOnly });
 

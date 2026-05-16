@@ -34,6 +34,18 @@ export async function GET(ctx: APIContext) {
   }
   const url = process.env.VERCEL_DEPLOY_HOOK_URL;
   if (!url) return new Response('no hook configured', { status: 503 });
+  // Fail closed if the env var is corrupt or accidentally points at a non-
+  // Vercel host. Vercel deploy hooks are always under api.vercel.com.
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return new Response('malformed deploy hook URL', { status: 503 });
+  }
+  if (parsed.protocol !== 'https:' || parsed.hostname !== 'api.vercel.com') {
+    console.error(`[refresh] deploy hook URL rejected: ${parsed.protocol}//${parsed.hostname}`);
+    return new Response('deploy hook URL must be https://api.vercel.com/...', { status: 503 });
+  }
   // Hard 10s timeout. The deploy-hook POST normally returns in <500ms; if
   // Vercel's upstream is wedged, we'd rather fail with an actionable 502
   // than let the function chew through its execution budget.

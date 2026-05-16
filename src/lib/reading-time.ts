@@ -1,4 +1,4 @@
-import type { Root } from 'mdast';
+import type { Root, RootContent } from 'mdast';
 import { toString as mdastToString } from 'mdast-util-to-string';
 import type { Plugin } from 'unified';
 
@@ -19,8 +19,26 @@ export function computeReadingTime(markdown: string): number {
   return Math.max(1, Math.round(computeWordCount(markdown) / WPM));
 }
 
+/**
+ * Pull all renderable prose from an mdast tree, skipping fenced + inline code
+ * (which `mdast-util-to-string` would otherwise concatenate as words). Walking
+ * the AST is more accurate than `computeWordCount`'s regex strip because the
+ * regex can't model nested fences, while the AST already knows where code
+ * starts and ends.
+ *
+ * Exported only so tests can pin the contract — callers should prefer the
+ * `remarkReadingTime` plugin.
+ */
+export function proseText(node: Root | RootContent): string {
+  if (node.type === 'code' || node.type === 'inlineCode') return '';
+  if ('children' in node && Array.isArray(node.children)) {
+    return (node.children as RootContent[]).map(proseText).join(' ');
+  }
+  return mdastToString(node);
+}
+
 export const remarkReadingTime: Plugin<[], Root> = () => (tree, file) => {
-  const text = mdastToString(tree);
+  const text = proseText(tree);
   const wordCount = computeWordCount(text);
   const minutes = Math.max(1, Math.round(wordCount / WPM));
   // Astro injects astro.frontmatter into file.data
