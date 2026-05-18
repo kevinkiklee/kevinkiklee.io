@@ -7,5 +7,15 @@
     "MD036": false,
     "MD041": false
   },
-  "ignores": ["node_modules/**", "dist/**", ".astro/**", "docs/**", "a11y-findings.md"]
+  "ignores": [
+    "node_modules/**",
+    "dist/**",
+    ".astro/**",
+    ".vercel/**",
+    ".lighthouseci/**",
+    "playwright-report/**",
+    "docs/**",
+    "a11y-findings.md",
+    ".aider*"
+  ]
 }

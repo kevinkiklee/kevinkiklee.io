@@ -21,7 +21,6 @@
   --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
 
   --stagger: 30ms;
-  --stagger-cap: 240ms;
 }
 
 @media (max-width: 640px) {

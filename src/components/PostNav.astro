@@ -51,7 +51,16 @@ const { prev, next } = Astro.props;
   }
   .post-nav a:hover,
   .post-nav a:focus-visible { background: var(--code-bg); }
-  .post-nav .next { text-align: right; }
+  /* Explicit column placement so a post with only `.next` (the oldest in
+     the archive — no `prev`) still lands "next →" on the right, not on the
+     left of an empty grid row. Without this, grid auto-placement parks the
+     lone child in column 1 and the right-aligned text drifts mid-row. */
+  .post-nav .prev { grid-column: 1; }
+  .post-nav .next { grid-column: 2; text-align: right; }
+  @media (max-width: 480px) {
+    .post-nav .prev,
+    .post-nav .next { grid-column: 1; }
+  }
   .post-nav .label { color: var(--fg-subtle); font-size: var(--text-xs); }
   .post-nav .title {
     display: -webkit-box;

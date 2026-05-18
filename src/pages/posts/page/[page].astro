@@ -4,6 +4,7 @@ import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import JsonLd from '~/components/JsonLd.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { crumbsFor } from '~/lib/crumbs';
+import { formatDate } from '~/lib/format';
 import { POSTS_PER_PAGE, getPublishedPosts, sortByDateDesc } from '~/lib/posts';
 import {
   ENTITY_IDS,
@@ -81,7 +82,7 @@ const graph = buildPageGraph([
       <li>
         <a href={`/posts/${p.id}`}>
           <h3>
-            <time datetime={p.data.pubDate.toISOString()}>{p.data.pubDate.toISOString().slice(0, 10)}</time>
+            <time datetime={p.data.pubDate.toISOString()}>{formatDate(p.data.pubDate)}</time>
             <span>{p.data.title}</span>
           </h3>
         </a>
