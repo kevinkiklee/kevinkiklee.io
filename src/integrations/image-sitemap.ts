@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import type { AstroIntegration } from 'astro';
 import { parse as parseYaml } from 'yaml';
 import { DATE_PREFIX } from '../lib/post-id';
+import { SITE } from '../lib/site-config';
 
 /**
  * Image-sitemap integration.
@@ -163,7 +164,10 @@ export default function imageSitemap(): AstroIntegration {
         // sitemaps end up under dist/client/. Astro's `dir` for the static
         // output is dist/client/ already.
         const distClient = dir.pathname;
-        const siteUrl = process.env.SITE_URL ?? 'https://kevinkiklee.io';
+        // Source from SITE.url so a future rename can't leave the image
+        // sitemap pointing at a stale host. SITE_URL env override remains
+        // for one-off staging builds against a non-prod domain.
+        const siteUrl = process.env.SITE_URL ?? SITE.url;
         const covers = readPostsWithCovers(siteUrl, distClient, (m) => logger.warn(m));
         if (covers.length === 0) {
           logger.info('image-sitemap: no posts with covers; skipping injection.');

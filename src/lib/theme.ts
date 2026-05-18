@@ -1,12 +1,21 @@
+import { tokens } from './tokens';
+
 export type Theme = 'light' | 'dark';
 
 export function getTheme(): Theme {
   return (document.documentElement.dataset.theme as Theme) || 'light';
 }
 
+// Single source of truth for the bg colour the page paints to during a
+// theme flip. Kept in lockstep with `tokens.ts` (and the inline first-paint
+// script in BaseLayout.astro, which can't import — its values are baked in).
+function bgFor(t: Theme): string {
+  return tokens[t].bg;
+}
+
 export function setTheme(t: Theme): void {
   document.documentElement.dataset.theme = t;
-  document.documentElement.style.background = t === 'dark' ? '#0a0a0a' : '#f5f4ee';
+  document.documentElement.style.background = bgFor(t);
   try {
     localStorage.setItem('theme', t);
   } catch {}
@@ -15,7 +24,7 @@ export function setTheme(t: Theme): void {
 
 function updateThemeColorMeta(t: Theme) {
   const meta = document.querySelector('meta[name="theme-color"]:not([media])');
-  if (meta) meta.setAttribute('content', t === 'dark' ? '#0a0a0a' : '#f5f4ee');
+  if (meta) meta.setAttribute('content', bgFor(t));
 }
 
 /**

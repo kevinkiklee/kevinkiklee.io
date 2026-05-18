@@ -43,15 +43,31 @@ function clip(s: string | undefined, max: number): string | undefined {
 }
 
 /**
- * Return the input as an ISO-string only when it parses to a finite date.
- * Webmention.io occasionally returns an empty string or a non-RFC date for
- * the `published` field — surfacing those raw would crash `new Date(...).
- * toISOString()` at render time and fail the whole post build.
+ * The webmention spec dates back to ~2014; anything published before that
+ * is almost certainly a bad upstream timestamp (epoch zero, "1970",
+ * etc.). Likewise, future-dated mentions more than a day ahead of build
+ * time are nonsense — we drop both so a corrupt record can't surface as
+ * a phantom 1969 or 2999 reply on the live site.
  */
-function safeIsoDate(raw: string | undefined): string | undefined {
+const MIN_WM_YEAR = 2010;
+const FUTURE_SLACK_MS = 86_400_000;
+
+/**
+ * Return the input as an ISO-string only when it parses to a finite date
+ * inside a plausible window. Webmention.io occasionally returns an empty
+ * string or a non-RFC date for the `published` field — surfacing those
+ * raw would crash `new Date(...).toISOString()` at render time and fail
+ * the whole post build. Dates outside the sanity window are also rejected
+ * so a corrupt upstream record can't render a phantom 1969 or 9999 reply.
+ */
+function safeIsoDate(raw: string | undefined, now: number = Date.now()): string | undefined {
   if (!raw) return undefined;
   const t = new Date(raw).getTime();
-  return Number.isFinite(t) ? new Date(t).toISOString() : undefined;
+  if (!Number.isFinite(t)) return undefined;
+  const d = new Date(t);
+  if (d.getUTCFullYear() < MIN_WM_YEAR) return undefined;
+  if (t > now + FUTURE_SLACK_MS) return undefined;
+  return d.toISOString();
 }
 
 /**

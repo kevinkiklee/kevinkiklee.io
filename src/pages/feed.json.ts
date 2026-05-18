@@ -13,8 +13,13 @@ const FEED_CONTENT_TEXT_MAX = 4000;
 
 function clipContent(raw: string | undefined, fallback: string): string {
   const src = raw && raw.length > 0 ? raw : fallback;
-  if (src.length <= FEED_CONTENT_TEXT_MAX) return src;
-  return `${src.slice(0, FEED_CONTENT_TEXT_MAX - 1)}…`;
+  // Iterate by code point so slicing a body containing emoji or CJK
+  // supplementary characters doesn't cut a surrogate pair in half (which
+  // would render `\uD83D` as a lone surrogate in feed readers that
+  // surface byte-for-byte content).
+  const cps = Array.from(src);
+  if (cps.length <= FEED_CONTENT_TEXT_MAX) return src;
+  return `${cps.slice(0, FEED_CONTENT_TEXT_MAX - 1).join('')}…`;
 }
 
 export async function GET(context: APIContext) {

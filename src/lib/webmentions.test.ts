@@ -125,6 +125,25 @@ describe('fetchWebmentions drops malformed published timestamps', () => {
     const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
     expect(out[0]?.published).toBe('2026-01-01T00:00:00.000Z');
   });
+
+  // Webmention.io has been observed to return an `1970-01-01` for records
+  // with a corrupt or missing upstream timestamp. The webmention protocol
+  // dates back to ~2014 — anything pre-2010 is nonsense.
+  it('rejects an epoch-zero (pre-2010) date as nonsense', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jf2([{ 'wm-property': 'in-reply-to', published: '1970-01-01' }]),
+    );
+    const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
+    expect(out).toEqual([]);
+  });
+
+  it('rejects a far-future date so a corrupt record cannot ship', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jf2([{ 'wm-property': 'in-reply-to', published: '9999-12-31' }]),
+    );
+    const out = await fetchWebmentions('https://kevinkiklee.io/posts/foo');
+    expect(out).toEqual([]);
+  });
 });
 
 describe('fetchWebmentions short-circuits', () => {

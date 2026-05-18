@@ -147,6 +147,15 @@ loudly otherwise — the remark-aeo plugin enforces them.
 
 - `title`: ≤ 60 chars. (Google truncates search result titles around this length.)
 - `description`: ≤ 160 chars.
+- `tags`: each tag ≤ 40 chars; must exist in `src/content/tags.json`.
+- `mastodonUrl`: must be `http(s)://…` — `javascript:`/`data:` URLs are
+  rejected at build time.
+- `series.name`: ≤ 60 chars.
+- `faq[].q`: ≤ 200 chars; `faq[].a`: ≤ 1000 chars.
+
+All limits are sourced from `src/lib/meta.ts` and enforced by the Zod
+schema in `src/content.config.ts`. The build fails with a useful error
+pointing at the offending file if any cap is exceeded.
 
 ### Optional: FAQ schema
 

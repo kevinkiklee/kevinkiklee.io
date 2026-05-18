@@ -1,5 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import type { APIRoute } from 'astro';
+import { stringify as yamlStringify } from 'yaml';
 import { formatDate } from '~/lib/format';
 import { mdxToMarkdown } from '~/lib/mdx-to-md';
 import { getPublishedPosts } from '~/lib/posts';
@@ -14,17 +15,20 @@ export async function getStaticPaths() {
 
 export async function renderPostMarkdown(post: Post): Promise<string> {
   const body = await mdxToMarkdown(post.body ?? '');
-  const fm = [
-    '---',
-    `title: ${post.data.title}`,
-    `date: ${formatDate(post.data.pubDate)}`,
-    ...(post.data.updatedDate ? [`updatedDate: ${formatDate(post.data.updatedDate)}`] : []),
-    `tags: [${post.data.tags.join(', ')}]`,
-    `description: ${post.data.description}`,
-    `url: ${SITE.url}/posts/${post.id}`,
-    '---',
-    '',
-  ].join('\n');
+  // Build frontmatter through yaml.stringify so a title containing a colon
+  // (`Field notes: foo`) or other YAML-significant characters can't corrupt
+  // the emitted document. The previous string-concat approach would silently
+  // produce invalid YAML — visible only to downstream consumers (LLM crawlers,
+  // markdown viewers) that try to parse the front matter.
+  const fmObj: Record<string, unknown> = {
+    title: post.data.title,
+    date: formatDate(post.data.pubDate),
+  };
+  if (post.data.updatedDate) fmObj.updatedDate = formatDate(post.data.updatedDate);
+  fmObj.tags = post.data.tags;
+  fmObj.description = post.data.description;
+  fmObj.url = `${SITE.url}/posts/${post.id}`;
+  const fm = `---\n${yamlStringify(fmObj)}---\n\n`;
   return fm + body;
 }
 

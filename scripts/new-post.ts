@@ -1,6 +1,7 @@
 #!/usr/bin/env tsx
 import { existsSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { stringify as yamlStringify } from 'yaml';
 import { TITLE_MAX } from '../src/lib/meta';
 import { DATE_PREFIX } from '../src/lib/post-id';
 
@@ -50,15 +51,17 @@ if (existsSync(file)) {
   process.exit(1);
 }
 
-const fm = `---
-title: ${title}
-description: TODO write a 1-2 sentence description (max 160 chars).
-pubDate: ${date}
-tags: []
-draft: true
----
-
-`;
+// Build frontmatter through yaml.stringify so a title containing a colon
+// ("Field notes: foo") or quote can't produce a YAML-invalid scaffold that
+// the schema would reject at build time with a confusing parser error.
+const frontmatter = yamlStringify({
+  title,
+  description: 'TODO write a 1-2 sentence description (max 160 chars).',
+  pubDate: date,
+  tags: [],
+  draft: true,
+});
+const fm = `---\n${frontmatter}---\n\n`;
 
 writeFileSync(file, fm);
 console.log(`created ${file}`);
