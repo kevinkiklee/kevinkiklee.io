@@ -18,7 +18,11 @@ const related = relatedPosts(post, all, limit);
     <ul role="list">
       {related.map((p) => (
         <li>
-          <a href={`/posts/${p.id}`} aria-label={p.data.title}>
+          {/* No aria-label: the link's accessible name is computed from its
+              visible content (the h3 + description). An aria-label would
+              override the description for AT users — they'd hear the title
+              twice and never learn what the post is about. */}
+          <a href={`/posts/${p.id}`}>
             <h3><span class="marker" aria-hidden="true"></span><span>{p.data.title}</span></h3>
             <p>{p.data.description}</p>
           </a>

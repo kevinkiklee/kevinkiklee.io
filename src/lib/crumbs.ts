@@ -11,7 +11,14 @@ export interface CrumbsContext {
 const TITLE_MAX_CRUMB = 50;
 
 function truncate(s: string, max: number): string {
-  return s.length <= max ? s : `${s.slice(0, max - 1)}…`;
+  // String.slice counts UTF-16 code units, so slicing in the middle of a
+  // surrogate pair (any emoji past the BMP, CJK supplementary characters)
+  // would leave a lone surrogate at the cut and the breadcrumb would render
+  // a replacement-character glyph. Iterate by code point so emoji-laden
+  // post titles clip cleanly at the visual character boundary.
+  const cps = Array.from(s);
+  if (cps.length <= max) return s;
+  return `${cps.slice(0, max - 1).join('')}…`;
 }
 
 export function crumbsFor(pathname: string, ctx: CrumbsContext = {}): Crumb[] {

@@ -7,9 +7,13 @@ const mastodon = resolveMastodonProfile(MASTODON_INSTANCE_URL);
 <footer class="site-footer">
   <div class="row">
     <span><span class="eof" aria-hidden="true">$ exit </span>© {year} {SITE.author}</span>
+    {/* `rel="me"` is the IndieWeb identity-verification signal; pairing it
+        with `noopener noreferrer` doesn't disturb the `me` claim (rel is a
+        space-separated token list) but does plug the `window.opener` leak
+        on cmd-click / middle-click new-tab opens. */}
     <ul role="list" aria-label="Footer links">
-      <li><a href={mastodon} rel="me">mastodon</a></li>
-      <li><a href={SITE.github} rel="me">github</a></li>
+      <li><a href={mastodon} rel="me noopener noreferrer">mastodon</a></li>
+      <li><a href={SITE.github} rel="me noopener noreferrer">github</a></li>
       <li><a href="/rss.xml">rss</a></li>
       <li><a href="/feed.json">json feed</a></li>
       <li><a href="/privacy">privacy</a></li>

@@ -10,7 +10,12 @@ const { name, blurb, url, repoUrl, tech } = project.data;
 ---
 <article class="project-card reveal" style={`--i:${index}`}>
   <h3>
-    <a href={url}>
+    {/* `noopener noreferrer` is defense-in-depth even without target=_blank:
+        a future change that adds new-tab behaviour (or a user's middle-click /
+        cmd-click) won't leak `window.opener` to the project's site, and the
+        Referer header is suppressed so log analytics on the destination can't
+        attribute the click back to a specific kevinkiklee.io route. */}
+    <a href={url} rel="noopener noreferrer">
       <span class="marker" aria-hidden="true"></span><span class="title">{name}</span>
       <span class="ext" aria-hidden="true">↗</span>
     </a>
@@ -21,7 +26,11 @@ const { name, blurb, url, repoUrl, tech } = project.data;
       {tech.map((t) => <li>{t}</li>)}
     </ul>
   )}
-  {repoUrl && <a href={repoUrl} class="repo" aria-label={`View ${name} repository`}>view repo →</a>}
+  {repoUrl && (
+    <a href={repoUrl} class="repo" rel="noopener noreferrer" aria-label={`View ${name} repository`}>
+      view repo →
+    </a>
+  )}
 </article>
 
 <style>

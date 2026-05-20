@@ -34,10 +34,13 @@ const graph = buildPageGraph([person, buildBreadcrumbs(crumbs, SITE.url), buildW
       Previously: Software Engineer. Speaks/writes about: web platform, AI tooling, browser internals.
     </p>
     <h2>Find me</h2>
+    {/* `rel="me noopener noreferrer"` — `me` preserves the IndieWeb identity
+        verification signal; `noopener`/`noreferrer` plug the `window.opener`
+        leak and suppress the Referer header on cmd-click new-tab opens. */}
     <ul class="links" role="list">
-      <li><a class="u-url" rel="me" href={mastodon}><span class="ar" aria-hidden="true">↗</span> Mastodon — primary social</a></li>
-      <li><a class="u-url" rel="me" href={SITE.github}><span class="ar" aria-hidden="true">↗</span> GitHub</a></li>
-      <li><a class="u-url" rel="me" href={SITE.linkedin}><span class="ar" aria-hidden="true">↗</span> LinkedIn</a></li>
+      <li><a class="u-url" rel="me noopener noreferrer" href={mastodon}><span class="ar" aria-hidden="true">↗</span> Mastodon — primary social</a></li>
+      <li><a class="u-url" rel="me noopener noreferrer" href={SITE.github}><span class="ar" aria-hidden="true">↗</span> GitHub</a></li>
+      <li><a class="u-url" rel="me noopener noreferrer" href={SITE.linkedin}><span class="ar" aria-hidden="true">↗</span> LinkedIn</a></li>
     </ul>
     <p class="discuss">Best way to reach me is on Mastodon. I read everything.</p>
   </article>

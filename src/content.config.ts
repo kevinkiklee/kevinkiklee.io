@@ -4,11 +4,14 @@ import tagsJson from './content/tags.json' with { type: 'json' };
 import {
   DESCRIPTION_MAX,
   FAQ_A_MAX,
+  FAQ_ENTRIES_PER_POST_MAX,
   FAQ_Q_MAX,
   PROJECT_BLURB_MAX,
   PROJECT_NAME_MAX,
+  PROJECT_TECH_ENTRIES_MAX,
   PROJECT_TECH_TAG_MAX,
   SERIES_NAME_MAX,
+  TAGS_PER_POST_MAX,
   TAG_MAX,
   TITLE_MAX,
 } from './lib/meta';
@@ -51,6 +54,7 @@ const posts = defineCollection({
         updatedDate: z.coerce.date().refine(validDate, validDateMsg).optional(),
         tags: z
           .array(z.string().min(1).max(TAG_MAX))
+          .max(TAGS_PER_POST_MAX)
           .default([])
           .refine((tags) => tags.every((t) => TAG_SET.has(t)), {
             message: 'Tag not in allowlist (src/content/tags.json). Add it there first.',
@@ -71,6 +75,7 @@ const posts = defineCollection({
               a: z.string().min(1).max(FAQ_A_MAX),
             }),
           )
+          .max(FAQ_ENTRIES_PER_POST_MAX)
           .optional(),
       })
       // A backwards-dated `updatedDate` produces nonsense feed `lastBuildDate`,
@@ -97,7 +102,10 @@ const projects = defineCollection({
     blurb: z.string().min(1).max(PROJECT_BLURB_MAX),
     url: httpUrl,
     repoUrl: httpUrl.optional(),
-    tech: z.array(z.string().min(1).max(PROJECT_TECH_TAG_MAX)).default([]),
+    tech: z
+      .array(z.string().min(1).max(PROJECT_TECH_TAG_MAX))
+      .max(PROJECT_TECH_ENTRIES_MAX)
+      .default([]),
     featured: z.boolean().default(false),
     order: z.number().optional(),
   }),

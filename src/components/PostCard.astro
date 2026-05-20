@@ -10,7 +10,11 @@ const { post, index = 0 } = Astro.props;
 const { title, description, pubDate, tags } = post.data;
 ---
 <article class="post-card reveal" style={`--i:${index}`}>
-  <a href={`/posts/${post.id}`} aria-label={title}>
+  {/* No aria-label here: the link's accessible name is computed from its
+      child text (the <h3>'s title text), which already contains the title.
+      An aria-label would override that and silence the meta + description
+      for AT users who tab onto the card. */}
+  <a href={`/posts/${post.id}`}>
     <h3 data-slug={post.id}>
       <span class="marker" aria-hidden="true"></span><span class="title">{title}</span>
     </h3>
@@ -24,6 +28,7 @@ const { title, description, pubDate, tags } = post.data;
   // Only the topmost in-viewport post-card carries view-transition-name.
   // Idempotent: PostCard may render many times per page, but the script is
   // hoisted once globally by Astro. Guard prevents re-init on re-runs.
+  // `__postCardVTInit` is declared on `Window` in `src/env.d.ts`.
   if (!window.__postCardVTInit) {
     window.__postCardVTInit = true;
 

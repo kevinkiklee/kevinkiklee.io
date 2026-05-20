@@ -10,9 +10,16 @@ import { ENTITY_IDS, buildBlog, buildPageGraph, buildWebSite } from '~/lib/schem
 import { SITE } from '~/lib/site-config';
 
 const posts = sortByDateDesc(await getPublishedPosts()).slice(0, 5);
+// Cap on featured-project tiles shown on the home page. The full list lives
+// at /projects (linked via the section's "all projects" CTA). Keeping the
+// home tile count bounded means a runaway `featured: true` flag in YAML
+// can't push the LCP candidate further down the page or bloat above-the-
+// fold weight.
+const HOME_FEATURED_MAX = 6;
 const projects = (await getCollection('projects'))
   .filter((p) => p.data.featured)
-  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999));
+  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
+  .slice(0, HOME_FEATURED_MAX);
 ---
 <BaseLayout
   title="kevinkiklee.io"

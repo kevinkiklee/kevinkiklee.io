@@ -55,4 +55,28 @@ describe('crumbsFor', () => {
     expect(crumbsFor('/tags').map((c) => c.name)).toEqual(['~', 'tags']);
     expect(crumbsFor('/privacy').map((c) => c.name)).toEqual(['~', 'privacy']);
   });
+
+  it('truncates surrogate-pair titles cleanly (no lone surrogates)', () => {
+    // 49 ASCII chars + 2 emoji. Code-point length is 51 (49 + 2). UTF-16-naive
+    // `slice(0, 49)` would emit `A…A…A` followed by a lone high surrogate
+    // (U+D83C) at the cut. The code-point-aware truncate keeps the cut on a
+    // visual character boundary instead.
+    const title = `${'A'.repeat(49)}🎉🎉`;
+    const result = crumbsFor('/posts/my-slug', { title });
+    const name = result[2]?.name ?? '';
+    expect(name.endsWith('…')).toBe(true);
+    // Iterate by code point and verify no lone surrogates leaked through.
+    for (let i = 0; i < name.length; i++) {
+      const code = name.charCodeAt(i);
+      const isHigh = code >= 0xd800 && code <= 0xdbff;
+      const isLow = code >= 0xdc00 && code <= 0xdfff;
+      if (isHigh) {
+        const next = name.charCodeAt(i + 1);
+        expect(next >= 0xdc00 && next <= 0xdfff).toBe(true);
+        i += 1; // skip the matched low surrogate
+      } else {
+        expect(isLow).toBe(false);
+      }
+    }
+  });
 });

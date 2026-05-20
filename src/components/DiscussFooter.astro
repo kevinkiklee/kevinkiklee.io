@@ -15,13 +15,17 @@ const blueskyShare = `https://bsky.app/intent/compose?text=${encodeURIComponent(
 ---
 <aside class="discuss" aria-labelledby="discuss-h">
   <SectionTitle id="discuss-h" name="discuss" />
+  {/* All three targets are off-site (mastodon/elk, bsky). `noopener noreferrer`
+      prevents `window.opener` leakage on user-initiated new-tab opens
+      (cmd-click / middle-click) and suppresses the Referer header so the
+      destination can't see which post the share came from. */}
   <ul role="list" class="links">
     {mastodonUrl ? (
-      <li><a href={mastodonUrl}><span class="ar" aria-hidden="true">→</span> reply on mastodon</a></li>
+      <li><a href={mastodonUrl} rel="noopener noreferrer"><span class="ar" aria-hidden="true">→</span> reply on mastodon</a></li>
     ) : (
-      <li><a href={elkShare}><span class="ar" aria-hidden="true">→</span> start a thread on mastodon</a></li>
+      <li><a href={elkShare} rel="noopener noreferrer"><span class="ar" aria-hidden="true">→</span> start a thread on mastodon</a></li>
     )}
-    <li><a href={blueskyShare}><span class="ar" aria-hidden="true">→</span> share on bluesky</a></li>
+    <li><a href={blueskyShare} rel="noopener noreferrer"><span class="ar" aria-hidden="true">→</span> share on bluesky</a></li>
   </ul>
 
   <Webmentions url={postUrl} />

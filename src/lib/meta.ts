@@ -28,6 +28,24 @@ export const FAQ_A_MAX = 1000;
  *  so this is defensive — a malformed tags.json entry would otherwise
  *  ship into `<meta property="article:tag">` and the OG card. */
 export const TAG_MAX = 40;
+/** Per-post tag count cap. Posts tagged with 15+ topics dilute every
+ *  signal (RSS categories, article:tag head meta, the OG card line,
+ *  related-posts overlap scoring). Six well-chosen tags is plenty for a
+ *  personal blog; the cap is set high enough to never bite a real post
+ *  but low enough that an accidental copy-paste of the full allowlist
+ *  fails the build. */
+export const TAGS_PER_POST_MAX = 10;
+/** Per-post FAQ entry count cap. JSON-LD `FAQPage` emits one
+ *  `Question`/`Answer` pair per entry; a runaway list (e.g. an LLM
+ *  scaffold pasted in raw) bloats the prerendered HTML AND the
+ *  structured-data payload Google reads. */
+export const FAQ_ENTRIES_PER_POST_MAX = 25;
+/** Per-project `tech` chip count cap. Each chip is wrapped in `[…]` on
+ *  the project card and emitted as a `programmingLanguage` array entry
+ *  in JSON-LD. More than a dozen chips per card breaks the card layout
+ *  on phones AND signals nothing useful — it's a tech README, not the
+ *  project's elevator pitch. */
+export const PROJECT_TECH_ENTRIES_MAX = 12;
 
 export function validateTitleLength(s: string): boolean {
   return s.length > 0 && s.length <= TITLE_MAX;

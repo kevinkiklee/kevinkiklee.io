@@ -3,6 +3,22 @@ import type { APIContext } from 'astro';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
 import { SITE } from '~/lib/site-config';
 
+/**
+ * XML-escape an attribute value. Defense-in-depth for URL strings that
+ * end up interpolated into raw `customData` XML. Today `context.site`
+ * has no `&`/`<`/`>`/quote characters, but a future config change
+ * (query-string suffix, OAuth callback, etc.) shouldn't be a silent
+ * way to break the feed for every subscriber.
+ */
+function xmlAttrEscape(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 export async function GET(context: APIContext) {
   if (!context.site) throw new Error('astro.config site must be set');
   const posts = sortByDateDesc(await getPublishedPosts());
@@ -14,7 +30,7 @@ export async function GET(context: APIContext) {
     0,
   );
   const lastBuild = newest > 0 ? new Date(newest) : new Date();
-  const feedUrl = new URL('/rss.xml', context.site).toString();
+  const feedUrl = xmlAttrEscape(new URL('/rss.xml', context.site).toString());
   return rss({
     title: SITE.title,
     description: SITE.description,
@@ -28,7 +44,7 @@ export async function GET(context: APIContext) {
       categories: p.data.tags,
       // Explicit guid: stable, opaque identifier so a slug rename doesn't
       // resurface the post as new in feed readers.
-      customData: `<guid isPermaLink="true">${new URL(`/posts/${p.id}`, context.site).toString()}</guid>`,
+      customData: `<guid isPermaLink="true">${xmlAttrEscape(new URL(`/posts/${p.id}`, context.site).toString())}</guid>`,
     })),
     // <atom:link rel="self"> tells aggregators where the canonical feed lives
     // (so a CDN-cached copy that's been mirrored elsewhere can be normalized
