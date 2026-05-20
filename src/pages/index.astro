@@ -21,8 +21,10 @@ const projects = (await getCollection('projects'))
   .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
   .slice(0, HOME_FEATURED_MAX);
 ---
+{/* BaseHead appends the SITE.tagline on the home page only, so we pass
+    SITE.title (not pageTitle()) and let the head template add the suffix. */}
 <BaseLayout
-  title="kevinkiklee.io"
+  title={SITE.title}
   description={SITE.description}
 >
   <JsonLd slot="head" data={buildPageGraph([

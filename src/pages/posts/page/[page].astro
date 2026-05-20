@@ -15,7 +15,7 @@ import {
   buildPageGraph,
   buildWebSite,
 } from '~/lib/schema';
-import { SITE } from '~/lib/site-config';
+import { SITE, pageTitle } from '~/lib/site-config';
 
 export const getStaticPaths = (async () => {
   // `POSTS_PER_PAGE` is imported from `~/lib/posts` so this route and
@@ -66,7 +66,7 @@ const graph = buildPageGraph([
 ]);
 ---
 <BaseLayout
-  title={`Posts · page ${page}`}
+  title={pageTitle(`Posts — page ${page}`)}
   description="Older posts."
   canonical={canonical}
   prevUrl={new URL(prevHref, Astro.site).toString()}

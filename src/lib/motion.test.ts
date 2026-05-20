@@ -150,31 +150,6 @@ describe('withWillChange', () => {
   });
 });
 
-describe('cancelAnimations', () => {
-  beforeEach(() => {
-    vi.resetModules();
-    setMatchMediaMock({});
-  });
-
-  it('cancels every animation returned by getAnimations()', async () => {
-    const { cancelAnimations } = await import('./motion');
-    const cancel1 = vi.fn();
-    const cancel2 = vi.fn();
-    const el = {
-      getAnimations: () => [{ cancel: cancel1 }, { cancel: cancel2 }],
-    } as unknown as Element;
-    cancelAnimations(el);
-    expect(cancel1).toHaveBeenCalledOnce();
-    expect(cancel2).toHaveBeenCalledOnce();
-  });
-
-  it('is a no-op when getAnimations is unavailable', async () => {
-    const { cancelAnimations } = await import('./motion');
-    const el = {} as Element;
-    expect(() => cancelAnimations(el)).not.toThrow();
-  });
-});
-
 afterEach(() => {
   vi.unstubAllGlobals();
 });

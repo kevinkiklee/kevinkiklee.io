@@ -66,13 +66,3 @@ export async function withWillChange(
     html.style.willChange = prev;
   }
 }
-
-/**
- * Cancel every Web Animations API animation on an element. Called from
- * astro:before-swap to prevent memory leaks across navigations.
- */
-export function cancelAnimations(el: Element): void {
-  const anims = (el as HTMLElement).getAnimations?.();
-  if (!anims) return;
-  for (const a of anims) a.cancel();
-}

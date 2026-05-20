@@ -65,7 +65,7 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 <link rel="canonical" href={canonical} />
 <link rel="alternate" hreflang="en" href={canonical} />
 <link rel="alternate" hreflang="x-default" href={canonical} />
-<link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="kevinkiklee.io" />
+<link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title={SITE.title} />
 {markdownAlternateUrl && (
   <link rel="alternate" type="text/markdown" href={markdownAlternateUrl} />
 )}
@@ -76,7 +76,7 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
-<meta property="og:site_name" content="kevinkiklee.io" />
+<meta property="og:site_name" content={SITE.title} />
 <meta property="og:locale" content={SITE.locale} />
 <meta property="og:image" content={ogImage} />
 <meta property="og:image:width" content="1200" />
@@ -94,7 +94,7 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 
 {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
 {modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
-{ogType === 'article' && <meta property="article:author" content="https://kevinkiklee.io/about" />}
+{ogType === 'article' && <meta property="article:author" content={`${SITE.url}/about`} />}
 {ogType === 'article' && tags[0] && <meta property="article:section" content={tags[0]} />}
 {tags.map((t) => <meta property="article:tag" content={t} />)}
 
@@ -105,8 +105,8 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
   <meta property="profile:last_name" content={profileLastName} />
 )}
 
-<link rel="alternate" type="application/rss+xml" href="/rss.xml" title="kevinkiklee.io" />
-<link rel="alternate" type="application/feed+json" href="/feed.json" title="kevinkiklee.io" />
+<link rel="alternate" type="application/rss+xml" href="/rss.xml" title={SITE.title} />
+<link rel="alternate" type="application/feed+json" href="/feed.json" title={SITE.title} />
 <link rel="me" href={mastodonProfile} />
 <link rel="webmention" href="https://webmention.io/kevinkiklee.io/webmention" />
 
