@@ -17,13 +17,16 @@
     color: #000 !important;
   }
 
-  /* Strip site chrome and any decorative aside (TOC, related posts, etc).
-     Header.astro doesn't set role="banner" explicitly, so the body > header
-     descendant selector is what actually matches our wrapper element. */
-  body > header,
-  body > footer,
-  nav,
-  aside,
+  /* Strip site chrome and decorative asides, but preserve in-article
+     navigation (breadcrumbs, post-nav) so the printout still has context.
+     The post-nav contains prev/next links that expand to visible URLs via
+     the a[href^="http"]::after rule below, making the printout navigable. */
+  .site-header,
+  .site-footer,
+  .toc-inline,
+  .toc-aside,
+  .related,
+  .discuss,
   .skip-links,
   #search-palette,
   #shortcuts-overlay,

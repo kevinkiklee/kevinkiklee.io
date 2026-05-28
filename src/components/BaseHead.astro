@@ -49,6 +49,13 @@ const finalTitle = isHome ? `${title} — ${SITE.tagline}` : title;
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
+<!-- dns-prefetch: resolve external hostnames early so CSP-allowed third-party
+     requests (analytics beacons, webmention avatars) don't wait on DNS. These
+     are cheap (~0 bytes) hints; the browser ignores them if the origin was
+     already resolved or the page never fetches from it. -->
+<link rel="dns-prefetch" href="https://www.google-analytics.com" />
+<link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
+
 <!-- Critical preload: font dispatched before <title> so the browser preload
      scanner picks it up immediately. Same-origin font; `crossorigin` is
      required to match the CSS-triggered fetch. -->

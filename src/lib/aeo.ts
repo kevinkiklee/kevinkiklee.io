@@ -18,6 +18,10 @@ export function buildLlmsIndex(posts: Post[]): string {
 
   const updated = lastUpdatedDate(posts);
 
+  const allTags = new Set<string>();
+  for (const p of published) for (const t of p.data.tags) allTags.add(t);
+  const tagsLine = allTags.size > 0 ? `Topics: ${[...allTags].sort().join(', ')}` : null;
+
   return [
     `# ${SITE.title}`,
     `> ${SITE.description}`,
@@ -25,6 +29,7 @@ export function buildLlmsIndex(posts: Post[]): string {
     // Updated stamp lets AI crawlers detect freshness without re-fetching the
     // archive. Omitted on an empty-archive build so we don't lie with `now`.
     ...(updated ? [`Updated: ${updated}`, ''] : []),
+    ...(tagsLine ? [tagsLine, ''] : []),
     '## About',
     // Bio is sourced from site-config so this line can't drift from the
     // person record on /about or the JSON-LD Person.description.

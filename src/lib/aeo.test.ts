@@ -9,6 +9,7 @@ const fixturePosts = [
       description: 'Desc B',
       pubDate: new Date('2026-02-01'),
       draft: false,
+      tags: ['ai', 'chrome'],
     },
   },
   {
@@ -18,6 +19,7 @@ const fixturePosts = [
       description: 'Desc A',
       pubDate: new Date('2026-01-01'),
       draft: false,
+      tags: ['web-platform'],
     },
   },
   {
@@ -27,6 +29,7 @@ const fixturePosts = [
       description: 'X',
       pubDate: new Date('2026-03-01'),
       draft: true,
+      tags: ['personal'],
     },
   },
 ];
@@ -67,6 +70,13 @@ describe('buildLlmsIndex', () => {
     const out = buildLlmsIndex(fixturePosts as never);
     // Most recent non-draft is "B" at 2026-02-01
     expect(out).toContain('Updated: 2026-02-01');
+  });
+
+  it('includes a Topics: line aggregated from published post tags', () => {
+    const out = buildLlmsIndex(fixturePosts as never);
+    expect(out).toContain('Topics: ai, chrome, web-platform');
+    // Draft tags are excluded
+    expect(out).not.toContain('personal');
   });
 
   it('omits Updated when the archive is empty', () => {

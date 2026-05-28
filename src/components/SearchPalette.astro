@@ -204,7 +204,7 @@
 </style>
 
 <script>
-  import { escapeHtml } from '~/lib/escape-html';
+  import { escapeHtml, stripHtmlExceptMark } from '~/lib/escape-html';
   import { safeResultUrl as safeResultUrlLib } from '~/lib/safe-result-url';
 
   // How long to wait after the last keystroke before firing a search.
@@ -308,9 +308,8 @@
             if (!href) return null;
             const title = escapeHtml(d.meta.title ?? href);
             const url = escapeHtml(href);
-            // Pagefind returns excerpts pre-wrapped with <mark> highlighting.
-            // We deliberately don't escape `excerpt` to preserve those marks.
-            return `<li><a href="${url}" aria-label="Open: ${title}"><strong>${title}</strong><small>${d.excerpt}</small></a></li>`;
+            const excerpt = stripHtmlExceptMark(d.excerpt);
+            return `<li><a href="${url}" aria-label="Open: ${title}"><strong>${title}</strong><small>${excerpt}</small></a></li>`;
           })
           .filter((r): r is string => r !== null);
         if (safeRows.length === 0) {

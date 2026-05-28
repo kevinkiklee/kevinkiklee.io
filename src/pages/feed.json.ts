@@ -37,7 +37,7 @@ export async function GET(context: APIContext) {
     // (~64px). Readers display these in the feed list / sidebar.
     icon: new URL('/favicon-512.png', site).toString(),
     favicon: new URL('/favicon-32.png', site).toString(),
-    authors: [{ name: SITE.author, url: site.toString() }],
+    authors: [{ name: SITE.author, url: new URL('/about', site).toString() }],
     items: posts.map((p) => ({
       id: new URL(`/posts/${p.id}`, site).toString(),
       url: new URL(`/posts/${p.id}`, site).toString(),

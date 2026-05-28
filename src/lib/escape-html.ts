@@ -19,3 +19,15 @@ export function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+/**
+ * Strip all HTML tags from a string EXCEPT `<mark>` and `</mark>`.
+ *
+ * Pagefind returns excerpts pre-wrapped with `<mark>` highlighting. We
+ * trust the `<mark>` wrapper but nothing else — if the Pagefind index
+ * ever contains stale or injected markup (e.g. `<img onerror=…>`), this
+ * allowlist approach neutralises it while keeping highlight previews.
+ */
+export function stripHtmlExceptMark(s: string): string {
+  return s.replace(/<(?!\/?mark\b)[^>]*>/gi, '');
+}

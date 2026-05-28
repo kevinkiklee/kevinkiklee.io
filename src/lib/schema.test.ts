@@ -164,6 +164,14 @@ describe('buildPageGraph', () => {
     const out = buildPageGraph([a, b]);
     expect(out['@graph']).toHaveLength(2);
   });
+
+  it('keeps full object when a later bare ref has fewer keys', () => {
+    const full = { '@type': 'Person', '@id': 'https://example.com#x', name: 'A', url: '/a' };
+    const ref = { '@id': 'https://example.com#x' };
+    const out = buildPageGraph([full, ref]);
+    expect(out['@graph']).toHaveLength(1);
+    expect(out['@graph'][0]).toEqual(full);
+  });
 });
 
 describe('buildBlog', () => {
@@ -225,13 +233,20 @@ describe('buildBlogPosting (refactored)', () => {
     expect(out.articleSection).toBeUndefined();
   });
 
-  it('includes speakable + primaryImageOfPage', () => {
+  it('includes speakable + primaryImageOfPage + structured image', () => {
     const out = buildBlogPosting(base);
     expect(out.speakable).toEqual({
       '@type': 'SpeakableSpecification',
       cssSelector: ['.lead', 'h1'],
     });
     expect(out.primaryImageOfPage).toEqual({ '@type': 'ImageObject', url: base.imageUrl });
+    expect(out.image).toEqual({
+      '@type': 'ImageObject',
+      url: base.imageUrl,
+      width: 1200,
+      height: 630,
+      caption: base.title,
+    });
   });
 
   it('throws on headline > 110 chars', () => {
@@ -420,6 +435,31 @@ describe('buildWebPage', () => {
       description: 'Privacy policy',
       inLanguage: 'en-US',
     });
+  });
+
+  it('includes accessibility fields when provided', () => {
+    const out = buildWebPage({
+      url: 'https://kevinkiklee.io/about',
+      name: 'About',
+      description: 'About page',
+      accessibilityFeature: ['structuralNavigation', 'highContrastDisplay'],
+      accessibilityHazard: 'none',
+      accessibilityAPI: 'ARIA',
+    });
+    expect(out.accessibilityFeature).toEqual(['structuralNavigation', 'highContrastDisplay']);
+    expect(out.accessibilityHazard).toBe('none');
+    expect(out.accessibilityAPI).toBe('ARIA');
+  });
+
+  it('omits accessibility fields when not provided', () => {
+    const out = buildWebPage({
+      url: 'https://kevinkiklee.io/privacy',
+      name: 'Privacy',
+      description: 'Privacy policy',
+    });
+    expect('accessibilityFeature' in out).toBe(false);
+    expect('accessibilityHazard' in out).toBe(false);
+    expect('accessibilityAPI' in out).toBe(false);
   });
 });
 

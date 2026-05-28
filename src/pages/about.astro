@@ -65,6 +65,7 @@ const graph = buildPageGraph([person, buildBreadcrumbs(crumbs, SITE.url), buildW
   }
   .links { list-style: none; padding: 0; }
   .links li { padding: var(--space-2) 0; }
+  .links a { display: inline-flex; align-items: center; min-height: 44px; }
   .links .ar { color: var(--accent); margin-right: 0.3em; display: inline-block; transition: transform 180ms var(--ease); }
   @media (hover: hover) and (pointer: fine) {
     .links a:hover .ar { transform: translate(2px, -2px); }
