@@ -67,14 +67,10 @@
   // Bind once; the click listener lives on document so it survives ClientRouter
   // swaps. Without the dedupe guard, hot-module reload (and any future re-import
   // of this script) would attach a second listener and call syncLabel twice
-  // per swap.
-  type ThemeToggleWindow = Window & {
-    __themeToggleBound?: boolean;
-  };
-  const w = window as ThemeToggleWindow;
+  // per swap. `__themeToggleBound` is declared on `Window` in `src/env.d.ts`.
   syncLabel();
-  if (!w.__themeToggleBound) {
-    w.__themeToggleBound = true;
+  if (!window.__themeToggleBound) {
+    window.__themeToggleBound = true;
     document.addEventListener('astro:after-swap', syncLabel);
     document.addEventListener('click', async (e) => {
       const target = e.target as Element | null;

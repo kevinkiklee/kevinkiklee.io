@@ -15,10 +15,6 @@ export function computeWordCount(markdown: string): number {
   return stripped.length === 0 ? 0 : stripped.split(/\s+/).length;
 }
 
-export function computeReadingTime(markdown: string): number {
-  return Math.max(1, Math.round(computeWordCount(markdown) / WPM));
-}
-
 /**
  * Pull all renderable prose from an mdast tree, skipping fenced + inline code
  * (which `mdast-util-to-string` would otherwise concatenate as words). Walking

@@ -45,8 +45,9 @@
   }
 
   // Idempotent: this script may be inlined into multiple route bundles.
-  if (!(window as unknown as { __kbInit?: boolean }).__kbInit) {
-    (window as unknown as { __kbInit?: boolean }).__kbInit = true;
+  // `__kbInit` is declared on `Window` in `src/env.d.ts`.
+  if (!window.__kbInit) {
+    window.__kbInit = true;
 
     let chordPrefix: 'g' | null = null;
     let chordTimer: number | undefined;

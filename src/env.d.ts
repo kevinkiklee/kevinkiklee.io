@@ -31,4 +31,8 @@ interface Navigator {
 interface Window {
   /** PostCard view-transition init guard. Set once per page. */
   __postCardVTInit?: boolean;
+  /** ThemeToggle click-listener init guard. Set once per page. */
+  __themeToggleBound?: boolean;
+  /** KeyboardShortcuts chord-listener init guard. Set once per page. */
+  __kbInit?: boolean;
 }
