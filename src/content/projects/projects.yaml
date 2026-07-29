@@ -1,8 +1,8 @@
 - id: photo-tools
-  name: photo-tools
-  blurb: Photography toolkit — sensor comparison, lens calculators. Canvas/WebGL.
-  url: https://github.com/kevinkiklee/photo-tools
-  repoUrl: https://github.com/kevinkiklee/photo-tools
-  tech: [nextjs, typescript, canvas, webgl]
+  name: Lorem ipsum
+  blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.
+  url: https://example.com/lorem-ipsum
+  repoUrl: https://example.com/lorem-ipsum
+  tech: [lorem, ipsum, dolor, sit]
   featured: true
   order: 1

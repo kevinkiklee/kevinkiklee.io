@@ -3,7 +3,9 @@ module.exports = {
   language: 'en',
   words: [],
   dictionaryDefinitions: [{ name: 'project-words', path: './cspell-words.txt', addWords: true }],
-  dictionaries: ['project-words'],
+  // 'lorem-ipsum' is a cspell built-in (off by default): the site content is
+  // placeholder Latin while under construction.
+  dictionaries: ['project-words', 'lorem-ipsum'],
   ignorePaths: [
     'dist',
     '.astro',

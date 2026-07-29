@@ -11,12 +11,12 @@ export const SITE = {
   /** Author / Person.name. Single source of truth for the byline. */
   author: 'Kevin Lee',
   /** Author's role, surfaced in JSON-LD (Person.jobTitle) and copy. */
-  jobTitle: 'Developer Relations Engineer',
+  jobTitle: 'Lorem Ipsum Dolor',
   /** Author's employer / organisation; surfaced in JSON-LD (Person.worksFor). */
-  org: 'Google Chrome',
-  tagline: 'Field notes from a Chrome DevRel',
-  description: 'Field notes from a Chrome DevRel — AI, web platform, and tangents.',
-  bio: 'Developer Relations Engineer at Google Chrome. Writes about the web platform, AI tooling, and browser internals.',
+  org: 'Sit Amet',
+  tagline: 'Lorem ipsum dolor sit amet',
+  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
+  bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
   defaultMastodon: 'https://mastodon.social/@kevinkiklee',
   bsky: 'https://bsky.app/profile/kevinkiklee.bsky.social',
   github: 'https://github.com/kevinkiklee',

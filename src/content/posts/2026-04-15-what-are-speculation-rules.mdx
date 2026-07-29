@@ -1,63 +1,48 @@
 ---
-title: What are Speculation Rules?
-description: A short mental model for the Speculation Rules API and when prerendering is actually worth it.
+title: Consectetur adipiscing elit
+description: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.
 pubDate: 2026-04-15
 tags: [web-platform, performance, chrome]
 draft: false
 ---
 
-> Placeholder post — written to exercise rendering paths during development.
-> Will be replaced before launch.
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.
 
-Speculation Rules is a browser API that lets a page declare which URLs the user is likely to visit next, so the browser can prefetch or even fully prerender them in the background. Think of it as a structured replacement for `<link rel="prefetch">` with explicit eagerness levels and document-rules support.
+## Nemo enim ipsam voluptatem?
 
-## What problem does it solve?
-
-Navigation is the slowest part of most sites. By the time the user clicks, the network round-trip, parse, and paint are all still ahead. Speculation Rules moves that work earlier — the browser does it during idle time, gated by your hints.
-
-## How do you declare rules?
-
-Drop a JSON script in the document head. The browser parses it once and uses it for the lifetime of the page.
+Quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.
 
 ```html
-<script type="speculationrules">
+<script type="lorem-ipsum">
 {
-  "prerender": [
+  "dolor": [
     {
-      "where": { "href_matches": "/posts/*" },
-      "eagerness": "moderate"
+      "sit": { "amet": "/consectetur/*" },
+      "elit": "sed"
     }
   ]
 }
 </script>
 ```
 
-The `eagerness` levels are `immediate`, `eager`, `moderate`, and `conservative`. Most sites should start at `moderate` — the browser only prerenders when the user shows clear intent (e.g., hovers a link).
+## Quis autem vel eum iure?
 
-## When should you NOT prerender?
+Reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.
 
-Prerendering executes the target page's JavaScript. That means analytics fire, side-effect-heavy server actions run, and any non-idempotent code on first paint will misbehave.
+- lorem ipsum dolor sit amet
+- consectetur adipiscing elit
+- sed do eiusmod tempor incididunt
 
-Skip prerendering for:
+## At vero eos et accusamus?
 
-- pages with login-side-effects or token rotation
-- analytics dashboards that count page views on render
-- anything that mutates server state on initial GET (which you shouldn't be doing anyway)
+| Lorem          | Ipsum      | Dolor    |
+| -------------- | ---------- | -------- |
+| Sit amet       | Elit       | Sed do   |
+| Eiusmod tempor | Incididunt | Ut labore|
+| Et dolore      | Magna      | Aliqua   |
 
-## How does it compare to `<link rel="prerender">`?
+Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
 
-| Feature        | `<link rel="prerender">` | Speculation Rules |
-| -------------- | ------------------------ | ----------------- |
-| Status         | Deprecated               | Active            |
-| Granularity    | Single URL               | URL patterns      |
-| Eagerness      | Implicit                 | Explicit          |
-| Document rules | No                       | Yes               |
+## Temporibus autem quibusdam?
 
-The old `<link rel="prerender">` was removed in favour of this API precisely because it had no eagerness control and burnt the user's data plan.
-
-## Further reading
-
-- [Speculation Rules explainer](https://github.com/WICG/nav-speculation/blob/main/triggers.md)
-- [Chrome Status entry](https://chromestatus.com/feature/5740655119761408)
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. This trailing paragraph exists so the post has enough body text to test the reading-time estimate, the related-posts sidebar, and the prose stylesheet's vertical rhythm under longer flows.
+Et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus.

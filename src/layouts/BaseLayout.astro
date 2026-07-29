@@ -85,6 +85,9 @@ const { title, description = '', ...rest } = Astro.props;
       <a href="#main">Skip to content</a>
       <a href="#site-nav">Skip to navigation</a>
     </nav>
+    <aside class="uc-banner" aria-label="Site status">
+      /// under construction ///
+    </aside>
     <Header />
     <main id="main" tabindex="-1">
       <slot />
@@ -115,3 +118,18 @@ const { title, description = '', ...rest } = Astro.props;
     </script>
   </body>
 </html>
+
+<style>
+  /* ASCII-only marker text on purpose: box-drawing / warning glyphs live in
+     the extended font subset and would force its fetch on every page. */
+  .uc-banner {
+    background: var(--fg);
+    color: var(--bg);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: var(--space-2) var(--space-4);
+  }
+</style>
