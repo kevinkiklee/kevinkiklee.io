@@ -16,7 +16,9 @@ import { pageTitle } from '~/lib/site-config';
 
 <style>
   .not-found { max-width: 600px; }
-  .not-found .garden-seedscene { display: block; margin-bottom: var(--space-5); }
+  /* :global() because SeedScene is a child component rendering its own
+     top-level <span>, which never receives this page's cid. */
+  .not-found :global(.garden-seedscene) { display: block; margin-bottom: var(--space-5); }
   h1 {
     font-size: var(--text-2xl);
     letter-spacing: -0.01em;

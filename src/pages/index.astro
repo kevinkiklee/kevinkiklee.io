@@ -75,9 +75,11 @@ const projects = (await getCollection('projects'))
     margin-top: var(--space-4);
     max-width: 48ch;
   }
-  .hero .garden-hero-cluster { position: absolute; right: var(--space-4); bottom: -6px; }
-  .hero .garden-swallow { position: absolute; left: 0; top: -18px; }
-  @media (max-width: 640px) { .hero .garden-hero-cluster { display: none; } }
+  /* :global() because HeroCluster/Swallow are child components rendering
+     their own top-level <span>, which never receives this page's cid. */
+  .hero :global(.garden-hero-cluster) { position: absolute; right: var(--space-4); bottom: -6px; }
+  .hero :global(.garden-swallow) { position: absolute; left: 0; top: -18px; }
+  @media (max-width: 640px) { .hero :global(.garden-hero-cluster) { display: none; } }
 
   .grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 </style>
