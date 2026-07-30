@@ -44,4 +44,8 @@ export const aaPairs: Array<[keyof typeof tokens.light, keyof typeof tokens.ligh
   ['fg', 'codeBg'],
   ['accent', 'bg'],
   ['accent', 'codeBg'],
+  ['fg', 'panel'],
+  ['fgMuted', 'panel'],
+  ['fgSubtle', 'panel'],
+  ['accent', 'panel'],
 ];

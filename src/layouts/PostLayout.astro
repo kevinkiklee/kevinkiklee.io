@@ -255,8 +255,11 @@ const graph = buildPageGraph([
     .toc-aside { display: block; }
   }
 
-  /* Fin mark: centered ornament closing the article body, drawn in once
-     the reader reaches it (garden-draw, gated by data-garden-anim).
+  /* Fin mark: centered ornament closing the article body. Its draw-in
+     (garden-draw, gated by data-garden-anim) fires once at page load —
+     NOT when the reader scrolls to it — and finishes in 0.6s, well
+     before the fold on most posts. In practice it's only observable on
+     short posts or a fast scroll straight to the end.
      :global() because FinMark is a child component rendering its own
      top-level <span>. */
   .post > :global(.garden-fin) {

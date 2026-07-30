@@ -81,6 +81,10 @@ jobs:
             printf '%8d B  %s\n' "$b" "$f"
           done < <(find public/fonts -maxdepth 1 -type f \( -name '*.woff2' -o -name '*.woff' -o -name '*.ttf' \) -print0)
           echo "TOTAL: $total B (budget $BUDGET B)"
+          if [ "$total" -eq 0 ]; then
+            echo "::error::No font files found in public/fonts — path renamed?"
+            exit 1
+          fi
           if [ "$total" -gt "$BUDGET" ]; then
             echo "::error::Fonts exceed the 125 KB budget"
             exit 1
