@@ -25,3 +25,4 @@ a11y-findings.json
 playwright-report/
 test-results/
 .aider*
+.claude/worktrees/
