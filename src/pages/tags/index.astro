@@ -1,6 +1,7 @@
 ---
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import JsonLd from '~/components/JsonLd.astro';
+import Swallow from '~/components/garden/Swallow.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { crumbsFor } from '~/lib/crumbs';
 import { getPublishedPosts, tagCounts } from '~/lib/posts';
@@ -39,18 +40,8 @@ const graph = buildPageGraph([
   <Breadcrumbs items={crumbs} />
   <div class="title-row">
     <h1 class="page-title">Tags</h1>
-    <span class="garden swallow-a" aria-hidden="true">
-      <svg viewBox="0 0 40 20" width="26" height="13">
-        <path d="M2 13 C8 5 14 5 20 11 C26 5 32 5 38 13 M20 11 L20 14"
-          fill="none" stroke="var(--garden-ink)" stroke-width="1.2" stroke-linecap="round" />
-      </svg>
-    </span>
-    <span class="garden swallow-b" aria-hidden="true">
-      <svg viewBox="0 0 40 20" width="26" height="13">
-        <path d="M2 13 C8 5 14 5 20 11 C26 5 32 5 38 13 M20 11 L20 14"
-          fill="none" stroke="var(--garden-ink)" stroke-width="1.2" stroke-linecap="round" />
-      </svg>
-    </span>
+    <span class="swallow-a"><Swallow static /></span>
+    <span class="swallow-b"><Swallow static /></span>
   </div>
   {tags.length === 0 ? (
     <p class="empty">No tags yet — tags appear once posts are published.</p>
@@ -75,9 +66,11 @@ const graph = buildPageGraph([
     line-height: var(--leading-tight);
     margin-bottom: var(--space-6);
   }
-  /* Two static swallows (no garden-fly animation — see Task 9 brief) drift
-     just above the heading, offset so they read as a small pair in flight
-     rather than a stacked duplicate. */
+  /* Two `<Swallow static />` instances (no garden-fly animation) drift just
+     above the heading, offset so they read as a small pair in flight rather
+     than a stacked duplicate. These wrapper spans are this file's own
+     elements (not a child component's root), so plain scoping — no
+     :global() — positions them; Swallow's own root span just rides along. */
   .swallow-a, .swallow-b { position: absolute; top: -14px; opacity: 0.55; }
   .swallow-a { left: 10ch; }
   .swallow-b { left: 15ch; top: -20px; }

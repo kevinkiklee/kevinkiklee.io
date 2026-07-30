@@ -141,6 +141,14 @@
   html[data-season="winter"] .garden [data-g-season="winter"] {
     display: inline;
   }
+  /* No-JS fallback: `data-season` is set by an inline head script (spec
+     §3.4). If JS never runs, `html` never gets a `data-season` attribute
+     and every seasonal <g> above stays `display: none` — the garden goes
+     empty year-round. Default to summer so there's always something to
+     see. Same selector shape/specificity as the block above. */
+  html:not([data-season]) .garden [data-g-season="summer"] {
+    display: inline;
+  }
 }
 
 /* Pause + reduced motion live OUTSIDE @layer so they outrank every layered
