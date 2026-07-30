@@ -10,18 +10,19 @@ const { post, index = 0 } = Astro.props;
 const { title, description, pubDate, tags } = post.data;
 ---
 <article class="post-card reveal" style={`--i:${index}`}>
-  {/* No aria-label here: the link's accessible name is computed from its
-      child text (the <h3>'s title text), which already contains the title.
-      An aria-label would override that and silence the meta + description
-      for AT users who tab onto the card. */}
-  <a href={`/posts/${post.id}`}>
-    <h3 data-slug={post.id}>
-      <span class="title">{title}</span>
-    </h3>
-    <PostMeta pubDate={pubDate} tags={tags} />
-    <p>{description}</p>
-    <span class="cta">→ read post</span>
-  </a>
+  {/* Only the title is a real <a> — its ::after stretches the hit area to
+      the whole card (see .post-card h3 a::after below). The title text is
+      already the link's accessible name. Nesting an <a> around the meta
+      row would put TagPill's own <a> INSIDE this one; nested <a> is invalid
+      HTML, and browsers silently split the outer anchor into multiple
+      fragments (one per run of text around the nested link), each far
+      short of a usable — or WCAG 2.5.8-sized — tap target. */}
+  <h3 data-slug={post.id}>
+    <a href={`/posts/${post.id}`}><span class="title">{title}</span></a>
+  </h3>
+  <PostMeta pubDate={pubDate} tags={tags} />
+  <p>{description}</p>
+  <span class="cta">→ read post</span>
 </article>
 
 <script>
@@ -75,6 +76,7 @@ const { title, description, pubDate, tags } = post.data;
 
 <style>
   .post-card {
+    position: relative;
     border-top: 1px solid var(--rule-soft);
     padding: var(--space-4) 0;
     container-type: inline-size;
@@ -82,7 +84,15 @@ const { title, description, pubDate, tags } = post.data;
     contain-intrinsic-size: 1px 200px;
     contain: layout paint;
   }
-  .post-card a { display: block; }
+  /* Stretched-link pattern: the title <a> is the only real link, but its
+     ::after covers the whole card (absolute + inset:0 resolve against the
+     nearest positioned ancestor, .post-card, not the <a>'s own small box).
+     TagPill's own z-index keeps the tag links clickable above this layer. */
+  .post-card h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
   .post-card h3 {
     font-family: var(--font-serif);
     font-weight: 600;
@@ -115,7 +125,7 @@ const { title, description, pubDate, tags } = post.data;
   /* Keyboard parity: tab-focusing the card link should darken the top rule
      the same way hovering does, so the active row is visually anchored. */
   .post-card:focus-within { border-top-color: var(--rule); }
-  .post-card a:focus-visible .cta { transform: translateX(4px); }
+  .post-card:focus-within .cta { transform: translateX(4px); }
   @media (max-width: 640px) {
     .post-card p {
       display: -webkit-box;

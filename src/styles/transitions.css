@@ -170,8 +170,15 @@
       animation-fill-mode: both;
     }
     @keyframes reveal-fade {
+      /* Opacity floor is 0.92, not 0: the scroll-timeline path ties progress
+         directly to scroll position, so an element straddling the initial
+         viewport fold (e.g. the first "latest" post card, below the taller
+         redesign hero) renders at a PERSISTENT partial opacity on first
+         paint, not a transient mid-transition frame. 0.92 keeps --accent
+         (the tightest pair, 5.80:1 at full opacity) above the 4.5:1 AA floor
+         at every point in the range; the translateY carries the reveal cue. */
       from {
-        opacity: 0;
+        opacity: 0.92;
         transform: translateY(8px);
       }
       to {

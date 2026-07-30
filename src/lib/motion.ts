@@ -4,7 +4,7 @@
 // Web Animations API calls (which can't read CSS custom properties without
 // getComputedStyle). Single point of truth for any JS-driven animation.
 
-export const EASE_OUT = 'cubic-bezier(0.32, 0.72, 0, 1)';
+export const EASE_OUT = 'cubic-bezier(0.33, 1, 0.68, 1)';
 export const EASE_SPRING = 'cubic-bezier(0.34, 1.40, 0.64, 1)';
 
 const _isMobile = typeof matchMedia !== 'undefined' ? matchMedia('(max-width: 640px)') : null;

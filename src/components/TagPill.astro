@@ -29,6 +29,16 @@ const { tag, asLink = true } = Astro.props;
     font-family: var(--font-sans);
     font-size: var(--text-xs);
     text-decoration: none;
+    /* WCAG 2.5.8 (24 x 24 min target): text-xs at 1.8 line-height renders as
+       little as ~22.5px tall. padding-block is invisible (no background/
+       border on .tag) but still expands the hit/rendered box, so this is a
+       pure tap-target fix, not a visual one. */
+    padding-block: 5px;
+    /* PostCard stretches its title link's ::after over the whole card
+       (see PostCard.astro); raise tags above that layer so they stay their
+       own tap target instead of triggering the card link underneath. */
+    position: relative;
+    z-index: 1;
   }
   a.tag:hover,
   a.tag:focus-visible {

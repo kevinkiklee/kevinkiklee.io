@@ -16,6 +16,11 @@
     "playwright-report/**",
     "docs/**",
     "a11y-findings.md",
-    ".aider*"
+    ".aider*",
+    // Gitignored SDD planning/tracking artifacts (task briefs, progress
+    // ledgers, per-task reports) — never committed, not shipped content.
+    // cspell already skips these implicitly; markdownlint-cli2 does not
+    // honor .gitignore by default, so it needs an explicit entry here.
+    ".superpowers/**"
   ]
 }

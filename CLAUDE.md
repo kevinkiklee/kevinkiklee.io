@@ -41,8 +41,9 @@ budget.
 
 ## Important guardrails
 
-- The visual design is intentional. Do NOT redesign without explicit
-  user direction. Theme tokens live in `src/styles/tokens.css`.
+- The visual design is intentional — see [`docs/superpowers/specs/2026-07-29-quiet-meadow-redesign-design.md`](./docs/superpowers/specs/2026-07-29-quiet-meadow-redesign-design.md).
+  Do NOT redesign without explicit user direction. Theme tokens live in
+  `src/styles/tokens.css`.
 - Do NOT fabricate blog post content. The only sample post is
   `2026-04-12-hello-world.mdx`.
 - Do NOT add new dependencies without checking the bundle-size budget
