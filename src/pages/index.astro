@@ -4,6 +4,8 @@ import JsonLd from '~/components/JsonLd.astro';
 import PostCard from '~/components/PostCard.astro';
 import ProjectCard from '~/components/ProjectCard.astro';
 import SectionTitle from '~/components/SectionTitle.astro';
+import HeroCluster from '~/components/garden/HeroCluster.astro';
+import Swallow from '~/components/garden/Swallow.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { getPublishedPosts, sortByDateDesc } from '~/lib/posts';
 import { ENTITY_IDS, buildBlog, buildPageGraph, buildWebSite } from '~/lib/schema';
@@ -32,6 +34,16 @@ const projects = (await getCollection('projects'))
     buildBlog(),
     { '@id': ENTITY_IDS.person },
   ])} />
+  <section class="hero" aria-labelledby="hero-title">
+    <Swallow />
+    <h1 id="hero-title">Essays on the web platform, written at a walking pace.</h1>
+    <p class="hero-sub">
+      Developer relations at Chrome. Prerendering, performance, and the parts of the platform
+      nobody reads the spec for.
+    </p>
+    <HeroCluster />
+  </section>
+
   <section aria-labelledby="latest">
     <SectionTitle id="latest" name="latest" allHref="/posts" allLabel="all posts" />
     {posts.map((post, i) => <PostCard post={post} index={i} />)}
@@ -48,5 +60,24 @@ const projects = (await getCollection('projects'))
 </BaseLayout>
 
 <style>
+  .hero { position: relative; margin-top: var(--space-7); overflow-x: clip; }
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    font-weight: 400;
+    line-height: 1.3;
+    max-width: 22ch;
+  }
+  .hero-sub {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    margin-top: var(--space-4);
+    max-width: 48ch;
+  }
+  .hero .garden-hero-cluster { position: absolute; right: var(--space-4); bottom: -6px; }
+  .hero .garden-swallow { position: absolute; left: 0; top: -18px; }
+  @media (max-width: 640px) { .hero .garden-hero-cluster { display: none; } }
+
   .grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 </style>

@@ -16,7 +16,7 @@ const { title, description, pubDate, tags } = post.data;
       for AT users who tab onto the card. */}
   <a href={`/posts/${post.id}`}>
     <h3 data-slug={post.id}>
-      <span class="marker" aria-hidden="true"></span><span class="title">{title}</span>
+      <span class="title">{title}</span>
     </h3>
     <PostMeta pubDate={pubDate} tags={tags} />
     <p>{description}</p>
@@ -76,7 +76,7 @@ const { title, description, pubDate, tags } = post.data;
 <style>
   .post-card {
     border-top: 1px solid var(--rule-soft);
-    padding: var(--space-5) 0;
+    padding: var(--space-4) 0;
     container-type: inline-size;
     content-visibility: auto;
     contain-intrinsic-size: 1px 200px;
@@ -84,43 +84,29 @@ const { title, description, pubDate, tags } = post.data;
   }
   .post-card a { display: block; }
   .post-card h3 {
+    font-family: var(--font-serif);
+    font-weight: 600;
     font-size: var(--text-lg);
-    letter-spacing: -0.005em;
     line-height: var(--leading-tight);
     margin-bottom: var(--space-2);
-    transition: color 180ms var(--ease);
-    display: flex;
-    align-items: baseline;
-    gap: 0.5em;
   }
-  /*
-   * Marker triangle (▸) rendered as a CSS shape so we never have to ship the
-   * extended font subset for chrome glyphs. Sizes follow the heading via em.
-   */
-  .post-card .marker {
-    flex: 0 0 auto;
-    width: 0;
-    height: 0;
-    border-left: 0.45em solid var(--accent);
-    border-top: 0.32em solid transparent;
-    border-bottom: 0.32em solid transparent;
-    transform: translateY(-0.05em);
-  }
-  .post-card .title { flex: 1 1 auto; }
   .post-card p {
-    margin-top: var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
     color: var(--fg-muted);
+    margin-top: var(--space-3);
     max-width: var(--measure);
     /* Reserve two lines so the card doesn't reflow when the variable font
        weight resolves and slightly changes line wrap. */
     min-height: calc(2 * var(--leading-body) * var(--text-base));
   }
   .post-card .cta {
+    font-family: var(--font-sans);
+    color: var(--accent);
     display: inline-block;
     margin-top: var(--space-3);
     font-size: var(--text-xs);
     letter-spacing: 0.04em;
-    color: var(--fg-subtle);
     transition:
       transform 180ms var(--ease),
       color 180ms var(--ease);
@@ -140,7 +126,6 @@ const { title, description, pubDate, tags } = post.data;
     transform: translateX(4px);
   }
   @media (max-width: 640px) {
-    .post-card { padding: var(--space-4) 0; }
     .post-card p {
       display: -webkit-box;
       -webkit-line-clamp: 2;
