@@ -96,9 +96,6 @@ const { title, description, pubDate, tags } = post.data;
     color: var(--fg-muted);
     margin-top: var(--space-3);
     max-width: var(--measure);
-    /* Reserve two lines so the card doesn't reflow when the variable font
-       weight resolves and slightly changes line wrap. */
-    min-height: calc(2 * var(--leading-body) * var(--text-base));
   }
   .post-card .cta {
     font-family: var(--font-sans);
@@ -113,27 +110,18 @@ const { title, description, pubDate, tags } = post.data;
   }
   @media (hover: hover) and (pointer: fine) {
     .post-card:hover { border-top-color: var(--rule); }
-    .post-card:hover .cta {
-      color: var(--accent);
-      transform: translateX(4px);
-    }
+    .post-card:hover .cta { transform: translateX(4px); }
   }
   /* Keyboard parity: tab-focusing the card link should darken the top rule
      the same way hovering does, so the active row is visually anchored. */
   .post-card:focus-within { border-top-color: var(--rule); }
-  .post-card a:focus-visible .cta {
-    color: var(--accent);
-    transform: translateX(4px);
-  }
+  .post-card a:focus-visible .cta { transform: translateX(4px); }
   @media (max-width: 640px) {
     .post-card p {
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      /* The desktop-default `min-height` reservation still applies so the card
-         doesn't reflow when the variable font weight resolves; line-clamp adds
-         the visual truncation on top. */
     }
   }
 </style>

@@ -16,10 +16,7 @@ interface Props {
   name: string;
   level?: 'h2' | 'h3' | undefined;
   allHref?: string | undefined;
-  allLabel?: string | undefined;
 }
-// `allLabel` stays in Props for API stability (existing callers pass it),
-// but the new markup always renders the literal "All →" link text.
 const { id, name, level = 'h2', allHref } = Astro.props;
 const Tag = level;
 ---

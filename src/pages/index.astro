@@ -45,13 +45,13 @@ const projects = (await getCollection('projects'))
   </section>
 
   <section aria-labelledby="latest">
-    <SectionTitle id="latest" name="latest" allHref="/posts" allLabel="all posts" />
+    <SectionTitle id="latest" name="latest" allHref="/posts" />
     {posts.map((post, i) => <PostCard post={post} index={i} />)}
   </section>
 
   {projects.length > 0 && (
     <section aria-labelledby="featured">
-      <SectionTitle id="featured" name="featured projects" allHref="/projects" allLabel="all projects" />
+      <SectionTitle id="featured" name="featured projects" allHref="/projects" />
       <div class="grid">
         {projects.map((project, i) => <ProjectCard project={project} index={i} />)}
       </div>
