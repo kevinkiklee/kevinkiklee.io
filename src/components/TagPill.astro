@@ -1,16 +1,15 @@
 ---
 /**
- * Brutalist tag chip. Renders as an <a> by default (linked to /tags/<slug>);
- * pass `asLink={false}` for a non-interactive label (e.g. on the tag page
+ * Tag metadata link (spec §1.3): accent-colored sans text, standalone
+ * outside running prose — underline appears on hover/focus only, never
+ * color-only. Renders as an <a> by default (linked to /tags/<slug>); pass
+ * `asLink={false}` for a non-interactive label (e.g. on the tag page
  * heading itself, where linking back to the same page would be redundant).
  *
- * Use everywhere a tag pill appears so styling, padding, and the touch hit
- * area stay consistent.
+ * Use everywhere a tag appears so styling stays consistent.
  *
- * Hover/active state uses an inverse-fill: a ::before layer slides out from
- * the right edge (transform: scaleX(0)) revealing the bordered outline
- * beneath. Reads as "pulling the fill out". Both states stay AA-contrast
- * in light + dark themes.
+ * `--accent` remaps to `LinkText` under forced-colors and to `--fg` under
+ * `prefers-contrast: more` (tokens.css) — no per-component override needed.
  */
 interface Props {
   tag: string;
@@ -19,66 +18,31 @@ interface Props {
 const { tag, asLink = true } = Astro.props;
 ---
 {asLink ? (
-  <a href={`/tags/${tag}`} class="pill">{tag}</a>
+  <a href={`/tags/${tag}`} class="tag">{tag}</a>
 ) : (
-  <span class="pill">{tag}</span>
+  <span class="tag">{tag}</span>
 )}
 
 <style>
-  .pill {
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-    background: transparent;
-    color: var(--bg);
-    border: 1px solid var(--fg);
-    /* Reads as a label, not a button. WCAG 2.5.8 wants ≥24px target size or
-       24px clear space; min-height + the inline-flex centring satisfies the
-       size criterion (the row gap satisfies neighbour spacing). Below 44px
-       is acceptable because the pill is one of several links in a meta line
-       — the surrounding flex gap supplies the spacing budget. */
-    padding: 1px var(--space-2);
-    min-height: 24px;
-    display: inline-flex;
-    align-items: center;
-    line-height: 1.4;
+  .tag {
+    color: var(--accent);
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
     text-decoration: none;
-    transition: color var(--t-fast) var(--ease-out);
+    /* WCAG 2.5.8 (24 x 24 min target): text-xs at 1.8 line-height renders as
+       little as ~22.5px tall. padding-block is invisible (no background/
+       border on .tag) but still expands the hit/rendered box, so this is a
+       pure tap-target fix, not a visual one. */
+    padding-block: 5px;
+    /* PostCard stretches its title link's ::after over the whole card
+       (see PostCard.astro); raise tags above that layer so they stay their
+       own tap target instead of triggering the card link underneath. */
+    position: relative;
+    z-index: 1;
   }
-  .pill::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--fg);
-    transform: scaleX(1);
-    transform-origin: right;
-    transition: transform var(--t-base) var(--ease-out);
-    z-index: -1;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .pill:hover { color: var(--fg); }
-    .pill:hover::before { transform: scaleX(0); }
-  }
-  .pill:focus-visible { color: var(--fg); }
-  .pill:focus-visible::before { transform: scaleX(0); }
-  @media (hover: none) {
-    .pill:active { color: var(--fg); }
-    .pill:active::before { transform: scaleX(0); }
-  }
-  /* Forced-colors: lean on system Highlight so the inversion still reads.
-     The ::before layer is removed (background: transparent on a
-     forced-colors surface is treated as no fill anyway). */
-  @media (forced-colors: active) {
-    .pill {
-      background: ButtonFace;
-      color: ButtonText;
-      border: 1px solid ButtonText;
-    }
-    .pill::before { display: none; }
-    a.pill:hover,
-    a.pill:focus-visible {
-      background: Highlight;
-      color: HighlightText;
-    }
+  a.tag:hover,
+  a.tag:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 </style>

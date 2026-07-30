@@ -27,10 +27,11 @@ async function ensureSentry(): Promise<typeof import('@sentry/node') | null> {
   return Sentry;
 }
 
-// Static (instanced) bold cut — @vercel/og/Satori's opentype.js parser
-// cannot parse JetBrainsMono variable font's fvar table reliably.
+// Static (instanced) cuts — @vercel/og/Satori's opentype.js parser cannot
+// parse variable fonts' fvar table reliably, so both the display serif and
+// the mono chrome font are pinned to static weight instances.
 //
-// Both reads are wrapped so a missing/renamed asset surfaces as a 503 at
+// All reads are wrapped so a missing/renamed asset surfaces as a 503 at
 // request time instead of crashing the function module on cold start
 // (which would 500 EVERY route the file is bundled into).
 function readOptional(absPath: string): Buffer | null {
@@ -41,7 +42,12 @@ function readOptional(absPath: string): Buffer | null {
     return null;
   }
 }
-const fontData = readOptional(resolve('./public/fonts/og/JetBrainsMono-Bold.ttf'));
+// Primary display font for the title. Weight must match the static cut
+// (Semibold/600) — Satori has no synthetic bold to fall back on.
+const serifFontData = readOptional(resolve('./public/fonts/og/SourceSerif4-Semibold-og.ttf'));
+// Still used for the small mono meta line (date · tags) — mono survives
+// as the site's "instrument readout" voice for metadata and code.
+const monoFontData = readOptional(resolve('./public/fonts/og/JetBrainsMono-Bold.ttf'));
 // Pre-read the default PNG so we can serve it as a binary fallback when
 // satori rendering fails. Social-network unfurlers fetch og:image directly,
 // so a 500 here breaks every preview for the affected post — returning a
@@ -89,9 +95,9 @@ function errorResponse(body: string, status: number): Response {
 }
 
 export async function GET(ctx: APIContext) {
-  // If the bundled font is missing, ship the static fallback rather than
+  // If either bundled font is missing, ship the static fallback rather than
   // letting Satori crash with a cryptic glyph-table error per request.
-  if (!fontData) return fallbackResponse();
+  if (!serifFontData || !monoFontData) return fallbackResponse();
   try {
     const slug = ctx.url.searchParams.get('slug');
     if (!slug) return errorResponse('missing slug', 400);
@@ -111,7 +117,10 @@ export async function GET(ctx: APIContext) {
     return new ImageResponse(tree as unknown as ReactLike, {
       width: 1200,
       height: 630,
-      fonts: [{ name: 'JetBrains Mono', data: fontData, weight: 700, style: 'normal' }],
+      fonts: [
+        { name: 'Source Serif 4', data: serifFontData, weight: 600, style: 'normal' },
+        { name: 'JetBrains Mono', data: monoFontData, weight: 700, style: 'normal' },
+      ],
       headers: {
         'Cache-Control': 'public, s-maxage=31536000, immutable, stale-while-revalidate=86400',
       },

@@ -9,6 +9,8 @@ import PostMeta from '~/components/PostMeta.astro';
 import PostNav from '~/components/PostNav.astro';
 import RelatedPosts from '~/components/RelatedPosts.astro';
 import TableOfContents from '~/components/TableOfContents.astro';
+import FinMark from '~/components/garden/FinMark.astro';
+import ProgressVine from '~/components/garden/ProgressVine.astro';
 import { crumbsFor } from '~/lib/crumbs';
 import { getPublishedPosts, prevNextFor, sortByDateDesc } from '~/lib/posts';
 import {
@@ -109,9 +111,7 @@ const graph = buildPageGraph([
   <JsonLd slot="head" data={graph} />
   <Breadcrumbs items={crumbs} />
   <article class="post">
-    <p class="eyebrow" aria-hidden="true">
-      <span class="dol">$</span> cat {post.id}.md
-    </p>
+    <ProgressVine />
     <header>
       <h1 data-no-anim style={`view-transition-name: post-title-${post.id};`}>{title}</h1>
       <PostMeta variant="rail" {pubDate} {updatedDate} {tags} {minutesRead} {wordCount} />
@@ -150,6 +150,7 @@ const graph = buildPageGraph([
         </div>
       )}
     </div>
+    <FinMark />
     <RelatedPosts post={post} />
     {faq.length > 0 && (
       <section class="faq" aria-labelledby="faq-heading">
@@ -174,19 +175,12 @@ const graph = buildPageGraph([
 </BaseLayout>
 
 <style>
-  .eyebrow {
-    font-size: var(--text-xs);
-    color: var(--fg-muted);
-    margin-bottom: var(--space-2);
-    letter-spacing: 0.02em;
-    font-family: var(--font-mono);
-  }
-  /* `.eyebrow .dol` color is `var(--accent)`; `tokens.css` already remaps
-     that to `LinkText` under forced-colors. No per-component override needed. */
-  .eyebrow .dol {
-    color: var(--accent);
-    margin-right: 0.35em;
-    font-weight: 700;
+  /* Anchors the ProgressVine mark (absolutely positioned in the left
+     margin) and its scroll-driven reveal (--post named view-timeline,
+     consumed by ProgressVine's @supports (animation-timeline) block). */
+  .post {
+    view-timeline-name: --post;
+    position: relative;
   }
   .post header { margin-bottom: var(--space-6); }
   h1 {
@@ -244,6 +238,19 @@ const graph = buildPageGraph([
     .toc-aside { display: block; }
   }
 
+  /* Fin mark: centered ornament closing the article body. Its draw-in
+     (garden-draw, gated by data-garden-anim) fires once at page load —
+     NOT when the reader scrolls to it — and finishes in 0.6s, well
+     before the fold on most posts. In practice it's only observable on
+     short posts or a fast scroll straight to the end.
+     :global() because FinMark is a child component rendering its own
+     top-level <span>. */
+  .post > :global(.garden-fin) {
+    display: flex;
+    justify-content: center;
+    margin: var(--space-7) 0;
+  }
+
   /* Below-the-fold rhythm: gap between major post-tail sections.
      :global() because .related and .discuss are rendered by child
      components and carry their own scoped cid attribute. */
@@ -258,25 +265,6 @@ const graph = buildPageGraph([
     }
   }
 </style>
-
-<script>
-  // Set / clear data-progress on body around post navigations.
-  function setProgress() { document.body.setAttribute('data-progress', ''); }
-  function clearProgress() { document.body.removeAttribute('data-progress'); }
-
-  // Fired on initial load and after each ClientRouter navigation.
-  document.addEventListener('astro:page-load', () => {
-    if (document.querySelector('.post')) setProgress();
-    else clearProgress();
-  });
-  // Cleared before navigating away.
-  document.addEventListener('astro:before-swap', clearProgress);
-
-  // Fallback for browsers without CSS scroll-driven animations.
-  if (!CSS.supports('animation-timeline', '--x')) {
-    import('~/lib/reading-progress-fallback').then(({ attach }) => attach());
-  }
-</script>
 
 <script>
   // P4: Conditional code-block keyboard scroll region.

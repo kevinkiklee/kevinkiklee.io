@@ -1,0 +1,38 @@
+---
+interface Props {
+  variant: 1 | 2 | 3 | 4 | 5;
+}
+const { variant } = Astro.props;
+const sway = ['garden-sway', 'garden-sway-b', 'garden-sway-c'][variant % 3];
+// Five silhouettes so the meadow doesn't repeat; seasons alter density.
+const summer: Record<number, string> = {
+  1: 'M30 58 C28 44 22 34 14 27 M30 58 C31 42 36 32 45 24 M30 58 C30 46 29 38 28 30',
+  2: 'M30 58 C28 42 21 30 12 22 M30 58 C31 40 36 28 46 18 M30 58 C33 46 38 40 44 36',
+  3: 'M14 58 C20 46 30 34 46 24 M22 47 C20 44 20 40 21 36 M30 39 C27 37 26 33 27 29 M38 31 C35 30 33 26 34 22',
+  4: 'M30 58 C29 46 24 36 16 30 M30 58 C32 44 38 36 46 30 M30 58 C30 48 30 40 30 34',
+  5: 'M30 58 C30 44 30 36 30 26 M30 26 L21 18 M30 26 L30 12 M30 26 L39 17',
+};
+const winter: Record<number, string> = {
+  1: 'M30 58 C30 46 30 38 30 28 M30 38 L24 32 M30 38 L36 32',
+  2: 'M30 58 C29 44 27 36 26 28 M26 34 L21 29',
+  3: 'M30 58 C31 46 33 38 34 30 M34 36 L39 31',
+  4: 'M30 58 C30 48 30 42 30 34',
+  5: 'M30 58 C30 46 30 40 30 30 M30 36 L25 31 M30 36 L35 31',
+};
+---
+<span class="garden garden-tuft" aria-hidden="true">
+  <svg class={sway} viewBox="0 0 60 60" width="38" height="42">
+    <g data-g-season="spring" fill="none" stroke="var(--garden-ink)" stroke-width="1.2" stroke-linecap="round" opacity="0.3">
+      <path d={winter[variant]} /><ellipse cx="30" cy="26" rx="1.8" ry="2.6" />
+    </g>
+    <g data-g-season="summer" fill="none" stroke="var(--garden-ink)" stroke-width="1.2" stroke-linecap="round" opacity="0.3">
+      <path d={summer[variant]} />
+    </g>
+    <g data-g-season="autumn" fill="none" stroke="var(--garden-ink)" stroke-width="1.2" stroke-linecap="round" opacity="0.3">
+      <path d={summer[variant]} /><circle cx="30" cy="24" r="1.5" /><circle cx="22" cy="20" r="1.5" />
+    </g>
+    <g data-g-season="winter" fill="none" stroke="var(--garden-ink)" stroke-width="1.2" stroke-linecap="round" opacity="0.3">
+      <path d={winter[variant]} />
+    </g>
+  </svg>
+</span>

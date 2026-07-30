@@ -8,7 +8,14 @@ import { pageTitle } from '~/lib/site-config';
 // /pagefind/pagefind-ui.{js,css} (which Pagefind emits next to the index)
 // via dynamic script + link injection on first focus or idle.
 const bundlePath = '/pagefind/';
-const uiOptions = { showImages: false, resetStyles: false };
+const uiOptions = {
+  showImages: false,
+  resetStyles: false,
+  // Match the garden voice used by the SearchPalette empty state
+  // (src/components/SearchPalette.astro) — Pagefind UI's own stock
+  // "No results" copy would otherwise ship on this route only.
+  translations: { zero_results: 'Nothing sprouted for that query.' },
+};
 ---
 <BaseLayout title={pageTitle('Search')} description="Search the archive." noindex={true}>
   <Fragment slot="head">

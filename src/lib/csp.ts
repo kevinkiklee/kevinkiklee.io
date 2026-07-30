@@ -61,7 +61,7 @@ export const CSP = [
     // The `<link rel="webmention">` in `BaseHead.astro` is a discovery
     // declaration only — it never triggers a client-side fetch.
   ].join(' '),
-  // Self-hosted JetBrains Mono + IBM Plex Mono — no third-party fonts.
+  // Self-hosted Source Serif 4 + JetBrains Mono — no third-party fonts.
   "font-src 'self'",
   // No legacy <object>/<embed>/<applet> plugins. Defense in depth — the
   // tag types are obsolete but blocking them costs nothing.

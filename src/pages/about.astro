@@ -2,6 +2,7 @@
 import { MASTODON_INSTANCE_URL } from 'astro:env/client';
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import JsonLd from '~/components/JsonLd.astro';
+import Heron from '~/components/garden/Heron.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { crumbsFor } from '~/lib/crumbs';
 import { buildBreadcrumbs, buildPageGraph, buildPerson, buildWebSite } from '~/lib/schema';
@@ -24,11 +25,14 @@ const graph = buildPageGraph([person, buildBreadcrumbs(crumbs, SITE.url), buildW
   <Breadcrumbs items={crumbs} />
   <article class="h-card">
     <h1 class="page-title">About</h1>
-    <p class="lead">
-      Hi, I'm <a class="p-name u-url" rel="me author" href={SITE.url}>{SITE.author}</a>.
-      I work as a <span class="p-job-title">{SITE.jobTitle}</span>
-      at <span class="p-org">{SITE.org}</span>.
-    </p>
+    <div class="bio-row">
+      <p class="lead">
+        Hi, I'm <a class="p-name u-url" rel="me author" href={SITE.url}>{SITE.author}</a>.
+        I work as a <span class="p-job-title">{SITE.jobTitle}</span>
+        at <span class="p-org">{SITE.org}</span>.
+      </p>
+      <Heron />
+    </div>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
     <p class="credentials">
       Quis nostrud: exercitation ullamco. Laboris nisi: ut aliquip, ex ea commodo, consequat duis.
@@ -53,7 +57,16 @@ const graph = buildPageGraph([person, buildBreadcrumbs(crumbs, SITE.url), buildW
     line-height: var(--leading-tight);
     margin-bottom: var(--space-6);
   }
+  .bio-row { position: relative; }
   .lead { font-size: var(--text-lg); max-width: var(--measure); }
+  /* Heron stands just past the bio's measure width — decorative only,
+     dropped below the fold-width breakpoint so it never crowds the text.
+     :global() because Heron is a child component rendering its own
+     top-level <span>, which never receives this page's cid. */
+  .bio-row :global(.garden-heron) { position: absolute; right: var(--space-2); top: -10px; }
+  @media (max-width: 780px) {
+    .bio-row :global(.garden-heron) { display: none; }
+  }
   .credentials { color: var(--fg-muted); margin-top: var(--space-3); }
   h2 {
     font-size: var(--text-base);

@@ -1,72 +1,38 @@
 ---
+import SeedScene from '~/components/garden/SeedScene.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { pageTitle } from '~/lib/site-config';
-// Note: the requested path is NOT available at build time (404 is a static
-// asset served by Vercel), so we render the path on the client. The
-// fallback "—" keeps the layout stable until the script runs.
 ---
 <BaseLayout title={pageTitle('404')} description="Page not found" noindex={true}>
   <section class="not-found">
-    <pre class="signage" aria-hidden="true">┌─────────────────────────────────────────┐
-│  ERROR 404 — FILE NOT FOUND             │
-│  $ ls /<span id="not-found-path">—</span>_
-└─────────────────────────────────────────┘</pre>
-    <h1>Nothing here</h1>
-    <p>That URL does not match a post or page on this site.</p>
-    <ul role="list">
-      <li><a href="/"><span class="ar" aria-hidden="true">→</span> home</a></li>
-      <li><a href="/posts"><span class="ar" aria-hidden="true">→</span> all posts</a></li>
-      <li><a href="/search"><span class="ar" aria-hidden="true">→</span> search</a></li>
-    </ul>
+    <SeedScene />
+    <h1>This page went to seed.</h1>
+    <p>The path you followed doesn't grow here anymore.</p>
+    <p class="back">
+      <a href="/"><span class="ar" aria-hidden="true">←</span> Back to the garden</a>
+    </p>
   </section>
-  <script>
-    // The static 404 has no server-rendered access to the requested URL,
-    // so we read it from the browser at runtime. Cap the displayed path
-    // so a 5 KB hostile URL can't blow out the signage box on phones.
-    const el = document.getElementById('not-found-path');
-    if (el) {
-      const PATH_DISPLAY_MAX = 80;
-      const raw = window.location.pathname.replace(/^\//, '');
-      el.textContent =
-        raw.length > PATH_DISPLAY_MAX ? `${raw.slice(0, PATH_DISPLAY_MAX - 1)}…` : raw;
-    }
-  </script>
 </BaseLayout>
 
 <style>
   .not-found { max-width: 600px; }
-  /* The signage pre block is the only place caps body text lives — single-
-     purpose error page, accent-highlighted to read as a system message. */
-  .signage {
-    font-size: var(--text-xs);
-    color: var(--accent);
-    margin-bottom: var(--space-5);
-    white-space: pre;
-    overflow-x: auto;
-    letter-spacing: 0.04em;
-  }
-  /* Very long paths (deeply nested or query-string heavy) would otherwise
-     blow out the signage on mobile. The path is purely decorative inside
-     the aria-hidden block, so wrap and let the signage box scroll. */
-  #not-found-path {
-    word-break: break-all;
-    overflow-wrap: anywhere;
-  }
+  /* :global() because SeedScene is a child component rendering its own
+     top-level <span>, which never receives this page's cid. */
+  .not-found :global(.garden-seedscene) { display: block; margin-bottom: var(--space-5); }
   h1 {
     font-size: var(--text-2xl);
     letter-spacing: -0.01em;
     line-height: var(--leading-tight);
     margin-bottom: var(--space-3);
   }
-  ul { margin-top: var(--space-5); list-style: none; padding: 0; }
-  li { padding: var(--space-2) 0; }
-  li a {
+  .back { margin-top: var(--space-5); }
+  .back a {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
   }
   .ar { color: var(--accent); margin-right: 0.3em; display: inline-block; transition: transform 180ms var(--ease); }
   @media (hover: hover) and (pointer: fine) {
-    a:hover .ar { transform: translateX(3px); }
+    a:hover .ar { transform: translateX(-3px); }
   }
 </style>

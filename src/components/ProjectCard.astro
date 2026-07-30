@@ -36,7 +36,9 @@ const { name, blurb, url, repoUrl, tech } = project.data;
 <style>
   .project-card {
     border: 1px solid var(--rule-soft);
+    background: var(--panel);
     padding: var(--space-4);
+    font-family: var(--font-sans);
     contain: layout paint;
     transition: border-color 180ms var(--ease);
   }
@@ -63,7 +65,8 @@ const { name, blurb, url, repoUrl, tech } = project.data;
     align-items: baseline;
     gap: 0.4em;
   }
-  /* Same CSS triangle as PostCard — kept in sync visually. */
+  /* CSS-shape triangle marker (▸) — panel tiles keep this affordance even
+     though PostCard's hairline rows dropped theirs. */
   .marker {
     flex: 0 0 auto;
     width: 0;

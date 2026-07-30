@@ -69,6 +69,27 @@ jobs:
             exit 1
           fi
 
+      - name: Check font budget (125 KB total, public/fonts excl. og/)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BUDGET=$((125 * 1024))
+          total=0
+          while IFS= read -r -d '' f; do
+            b=$(wc -c <"$f" | tr -d ' ')
+            total=$((total + b))
+            printf '%8d B  %s\n' "$b" "$f"
+          done < <(find public/fonts -maxdepth 1 -type f \( -name '*.woff2' -o -name '*.woff' -o -name '*.ttf' \) -print0)
+          echo "TOTAL: $total B (budget $BUDGET B)"
+          if [ "$total" -eq 0 ]; then
+            echo "::error::No font files found in public/fonts — path renamed?"
+            exit 1
+          fi
+          if [ "$total" -gt "$BUDGET" ]; then
+            echo "::error::Fonts exceed the 125 KB budget"
+            exit 1
+          fi
+
       - name: Comment size report on PR
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7
