@@ -1,8 +1,9 @@
 @import "./motion.css";
 
 :root {
+  --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --font-display: "IBM Plex Mono", var(--font-mono);
 
   --text-xs: clamp(0.78rem, 0.75rem + 0.12vw, 0.83rem);
   --text-sm: clamp(0.92rem, 0.88rem + 0.18vw, 1.00rem);
@@ -11,109 +12,108 @@
   --text-xl: clamp(1.50rem, 1.40rem + 0.60vw, 1.875rem);
   --text-2xl: clamp(1.90rem, 1.70rem + 1.05vw, 2.625rem);
 
-  --leading-body: 1.65;
+  --leading-body: 1.8;
   --leading-tight: 1.25;
-  --measure: 68ch;
+  /* ~68 rendered chars of Source Serif 4 at 1em. Tuned by counting rendered
+     characters (spec §1.2) — not ported from the mono-era 68ch. */
+  --measure: 33em;
 
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --space-7: 48px;
-  --space-8: 64px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
 
-  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease: cubic-bezier(0.33, 1, 0.68, 1);
   --header-h-mobile: 96px;
   --header-h-desktop: 80px;
+  --weight-body: 400;
 }
 
 :root[data-theme="light"] {
-  --bg: #f5f4ee;
-  --fg: #0a0a0a;
-  --fg-muted: #4a4a4a;
-  --fg-subtle: #525252; /* bumped to AAA per spec §4 P7 — 7.09:1 on --bg */
-  --rule: #0a0a0a;
-  --rule-soft: #c8c5b8;
-  --pill-bg: #0a0a0a;
-  --pill-fg: #f5f4ee;
-  --code-bg: #ebe9df;
-  --selection-bg: #0a0a0a;
-  --selection-fg: #f5f4ee;
-  --weight-body: 400;
-  /* Signal orange — 5.16:1 on --bg (AA). Was #d44715 (4.04:1, axe-flagged
-     in the F-001 finding); darkened to clear AA on every visible chrome
-     surface (page bg, code bg ≈ 4.62:1) without losing the orange-red hue. */
-  --accent: #b83c10;
-  --accent-rule: #b83c10;
+  --bg: #eff1e7;
+  --fg: #2c352b;
+  --fg-muted: #49523f;
+  --fg-subtle: #464f3b;
+  --rule: #2c352b;
+  --rule-soft: #ccd3bd;
+  --panel: #f6f7ef;
+  --pill-bg: var(--panel);      /* legacy alias until TagPill dies in Task 8 */
+  --pill-fg: var(--fg);
+  --code-bg: #e6e9da;
+  --selection-bg: #2c352b;
+  --selection-fg: #eff1e7;
+  --accent: #8f4a26;
+  --accent-rule: #8f4a26;
+  --garden-ink: #3f4c3a;
 }
+:root[data-theme="light"][data-season="spring"] { --bg: #eef2e4; }
+:root[data-theme="light"][data-season="autumn"] { --bg: #f2f0e3; }
+:root[data-theme="light"][data-season="winter"] { --bg: #edefe9; }
 
 :root[data-theme="dark"] {
-  --bg: #0a0a0a;
-  --fg: #f4f4f4;
-  --fg-muted: #c8c8c8;
-  --fg-subtle: #9a9a9a;
-  --rule: #f4f4f4;
-  --rule-soft: #2f2f2f;
-  --pill-bg: #f4f4f4;
-  --pill-fg: #0a0a0a;
-  --code-bg: #161616;
-  --selection-bg: #f4f4f4;
-  --selection-fg: #0a0a0a;
-  /* Mono fonts at 400 on dark backgrounds read thin. The variable axis lets
-     us bump the body slightly without changing the type aesthetic. */
-  --weight-body: 450;
-  --accent: #ff7849;
-  --accent-rule: #ff7849;
+  --bg: #161b14;
+  --fg: #dfe3cf;
+  --fg-muted: #aab599;
+  --fg-subtle: #a0ac8e;
+  --rule: #dfe3cf;
+  --rule-soft: #313c2b;
+  --panel: #1c221a;
+  --pill-bg: var(--panel);
+  --pill-fg: var(--fg);
+  --code-bg: #10140e;
+  --selection-bg: #dfe3cf;
+  --selection-fg: #161b14;
+  --accent: #d9a05b;
+  --accent-rule: #d9a05b;
+  --garden-ink: #7d8a6e;
 }
+:root[data-theme="dark"][data-season="spring"] { --bg: #151c12; }
+:root[data-theme="dark"][data-season="autumn"] { --bg: #191b12; }
+:root[data-theme="dark"][data-season="winter"] { --bg: #14181a; }
 
-/* Forced-colors and high-contrast users: defer to system colours so the
-   accent never carries the only signal of state. */
 @media (forced-colors: active) {
-  :root {
-    --accent: LinkText;
-    --accent-rule: LinkText;
-  }
+  :root { --accent: LinkText; --accent-rule: LinkText; }
 }
 @media (prefers-contrast: more) {
-  :root {
-    --accent: var(--fg);
-    --accent-rule: var(--fg);
-  }
+  :root { --accent: var(--fg); --accent-rule: var(--fg); }
 }
 
 /*
- * JetBrains Mono is split into two unicode-range subsets so the browser
- * only fetches the heavier "extended" file (box-drawing, currency, arrows)
- * when those glyphs are actually used. Body text on most pages stays well
- * under our 30 KB font budget by relying on the primary file alone.
- *
- * Both @font-face blocks share identical metric overrides so they line up
- * pixel-for-pixel when both are loaded simultaneously.
+ * Source Serif 4 static instances (latin subset, Task 2). Georgia fallback
+ * is metric-matched so the swap costs zero CLS — the override numbers below
+ * are STARTING values; Task 13 verifies CLS 0.00 and tunes if needed.
  */
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("/fonts/source-serif-4-roman-400.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+  size-adjust: 106%; ascent-override: 66%; descent-override: 21%; line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("/fonts/source-serif-4-roman-600.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+  size-adjust: 106%; ascent-override: 66%; descent-override: 21%; line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("/fonts/source-serif-4-italic-400.woff2") format("woff2");
+  font-weight: 400; font-style: italic; font-display: swap;
+  size-adjust: 106%; ascent-override: 66%; descent-override: 21%; line-gap-override: 0%;
+}
+
+/* JetBrains Mono — code blocks only. Both subsets retained; existing posts
+   use box-drawing glyphs from the extended file. Metric overrides unchanged. */
 @font-face {
   font-family: "JetBrains Mono";
   src: url("/fonts/jetbrains-mono.woff2") format("woff2-variations");
-  font-weight: 100 800;
-  font-display: swap;
-  /* Primary file owns ASCII + Latin-1 + the two chrome arrows (→ ↗) so that
-     no page in the chrome triggers a fetch of the extended subset. */
+  font-weight: 100 800; font-display: swap;
   unicode-range: U+0000-007F, U+00A0-00FF, U+2192, U+2197;
-  size-adjust: 102%;
-  ascent-override: 80%;
-  descent-override: 20%;
-  line-gap-override: 0%;
+  size-adjust: 102%; ascent-override: 80%; descent-override: 20%; line-gap-override: 0%;
 }
 @font-face {
   font-family: "JetBrains Mono";
   src: url("/fonts/jetbrains-mono-ext.woff2") format("woff2-variations");
-  font-weight: 100 800;
-  font-display: swap;
+  font-weight: 100 800; font-display: swap;
   unicode-range: U+2010-2027, U+2030, U+2032-2033, U+2070, U+2074-2079, U+20A0-20BF, U+2122, U+2191,
     U+2193-2196, U+2198-2199, U+2500-257F, U+2580-259F;
-  size-adjust: 102%;
-  ascent-override: 80%;
-  descent-override: 20%;
-  line-gap-override: 0%;
+  size-adjust: 102%; ascent-override: 80%; descent-override: 20%; line-gap-override: 0%;
 }

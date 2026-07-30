@@ -67,8 +67,8 @@ describe('setTheme', () => {
 
     setTheme('dark');
     expect(document.documentElement.dataset.theme).toBe('dark');
-    expect(document.documentElement.style.background).toBe('rgb(10, 10, 10)');
-    expect(meta.getAttribute('content')).toBe('#0a0a0a');
+    expect(document.documentElement.style.background).toBe('rgb(22, 27, 20)');
+    expect(meta.getAttribute('content')).toBe('#161b14');
   });
 
   it("writes the light palette for 'light'", () => {
@@ -78,20 +78,20 @@ describe('setTheme', () => {
 
     setTheme('light');
     expect(document.documentElement.dataset.theme).toBe('light');
-    expect(document.documentElement.style.background).toBe('rgb(245, 244, 238)');
-    expect(meta.getAttribute('content')).toBe('#f5f4ee');
+    expect(document.documentElement.style.background).toBe('rgb(239, 241, 231)');
+    expect(meta.getAttribute('content')).toBe('#eff1e7');
   });
 
   it("ignores theme-color metas with a media= attribute (those track the OS, not the user's manual pick)", () => {
     const tracked = document.createElement('meta');
     tracked.setAttribute('name', 'theme-color');
     tracked.setAttribute('media', '(prefers-color-scheme: dark)');
-    tracked.setAttribute('content', '#0a0a0a');
+    tracked.setAttribute('content', '#161b14');
     document.head.appendChild(tracked);
 
     setTheme('light');
     // Mediaed meta should be unchanged.
-    expect(tracked.getAttribute('content')).toBe('#0a0a0a');
+    expect(tracked.getAttribute('content')).toBe('#161b14');
   });
 
   it('persists the choice to localStorage so the no-FOUC bootstrap can read it', () => {
