@@ -112,7 +112,7 @@ export default defineConfig({
     remarkPlugins: [remarkReadingTime, remarkAeo, remarkHeadingIncrement, remarkImgAlt],
     rehypePlugins: [rehypeAssertImgDims],
     shikiConfig: {
-      themes: { light: 'min-light', dark: 'min-dark' },
+      themes: { light: 'everforest-light', dark: 'everforest-dark' },
       wrap: true,
     },
   },

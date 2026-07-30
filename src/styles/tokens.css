@@ -41,8 +41,6 @@
   --rule: #2c352b;
   --rule-soft: #ccd3bd;
   --panel: #f6f7ef;
-  --pill-bg: var(--panel); /* legacy alias until TagPill dies in Task 8 */
-  --pill-fg: var(--fg);
   --code-bg: #e6e9da;
   --selection-bg: #2c352b;
   --selection-fg: #eff1e7;
@@ -68,8 +66,6 @@
   --rule: #dfe3cf;
   --rule-soft: #313c2b;
   --panel: #1c221a;
-  --pill-bg: var(--panel);
-  --pill-fg: var(--fg);
   --code-bg: #10140e;
   --selection-bg: #dfe3cf;
   --selection-fg: #161b14;

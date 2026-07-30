@@ -257,13 +257,11 @@
   @media (hover: none) and (pointer: coarse) {
     button,
     .post-card,
-    .pill,
     [role="button"] {
       position: relative;
     }
     button:active::after,
     .post-card:active::after,
-    .pill:active::after,
     [role="button"]:active::after {
       content: "";
       position: absolute;
