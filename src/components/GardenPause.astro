@@ -1,0 +1,46 @@
+<button type="button" class="garden-pause" data-garden-pause aria-pressed="false">
+  <span class="when-running">Pause the garden</span>
+  <span class="when-paused">Resume the garden</span>
+</button>
+
+<script>
+  // WCAG 2.2.2 mechanism (spec §3.5). Head script restores persisted state
+  // pre-paint; this button toggles it. Document-level delegation survives
+  // ClientRouter swaps (same pattern as Header's #search-trigger).
+  function syncPauseButtons() {
+    const paused = 'gardenPaused' in document.documentElement.dataset;
+    document.querySelectorAll<HTMLButtonElement>('[data-garden-pause]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(paused));
+    });
+  }
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as Element | null)?.closest('[data-garden-pause]');
+    if (!btn) return;
+    const d = document.documentElement;
+    const paused = !('gardenPaused' in d.dataset);
+    if (paused) d.dataset.gardenPaused = '';
+    else delete d.dataset.gardenPaused;
+    try { localStorage.setItem('garden-paused', paused ? '1' : '0'); } catch {}
+    syncPauseButtons();
+  });
+  syncPauseButtons();
+  document.addEventListener('astro:page-load', syncPauseButtons);
+</script>
+
+<style>
+  .garden-pause {
+    background: none;
+    border: 1px solid var(--rule-soft);
+    color: var(--fg-muted);
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    padding: var(--space-2) var(--space-4);
+    min-height: 44px;
+    cursor: pointer;
+    transition: color 180ms var(--ease), border-color 180ms var(--ease);
+  }
+  .garden-pause:hover, .garden-pause:focus-visible { color: var(--fg); border-color: var(--fg-muted); }
+  .garden-pause .when-paused { display: none; }
+  :global(html[data-garden-paused]) .garden-pause .when-running { display: none; }
+  :global(html[data-garden-paused]) .garden-pause .when-paused { display: inline; }
+</style>

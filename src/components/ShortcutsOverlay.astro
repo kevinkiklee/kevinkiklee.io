@@ -1,6 +1,7 @@
 ---
 // Modal listing keyboard shortcuts. Triggered by `?` or by JS calling
 // document.getElementById('shortcuts-overlay').showModal().
+import GardenPause from './GardenPause.astro';
 ---
 <dialog id="shortcuts-overlay" aria-label="Keyboard shortcuts">
   <form method="dialog" class="frame">
@@ -18,6 +19,7 @@
       <div><dt><kbd>/</kbd> · <kbd>⌘K</kbd></dt><dd>Open search palette</dd></div>
       <div><dt><kbd>?</kbd></dt><dd>Show this overlay</dd></div>
       <div><dt><kbd>Esc</kbd></dt><dd>Close any overlay</dd></div>
+      <div><dt>Garden</dt><dd><GardenPause /></dd></div>
     </dl>
   </form>
 </dialog>

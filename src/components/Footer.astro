@@ -1,12 +1,29 @@
 ---
 import { MASTODON_INSTANCE_URL } from 'astro:env/client';
 import { SITE, resolveMastodonProfile } from '~/lib/site-config';
+import GardenPause from './GardenPause.astro';
+import MeadowTuft from './garden/MeadowTuft.astro';
 const year = new Date().getFullYear();
 const mastodon = resolveMastodonProfile(MASTODON_INSTANCE_URL);
+const isHome = Astro.url.pathname === '/';
 ---
 <footer class="site-footer">
+  <div class="meadow" aria-hidden="true">
+    <MeadowTuft variant={1} /><MeadowTuft variant={2} /><MeadowTuft variant={3} /><MeadowTuft variant={4} /><MeadowTuft variant={5} />
+    {isHome && (
+      <span class="garden meadow-bird" aria-hidden="true">
+        <svg viewBox="0 0 56 40" width="30" height="22">
+          <g fill="none" stroke="var(--garden-ink)" stroke-width="1.3" stroke-linecap="round" opacity="0.45">
+            <path d="M12 29 C13 21 21 15 29 16 C36 16.5 40 20 41 24 C41.5 26.5 39 28.5 36 29.2 L14 29.2" />
+            <path d="M13 29 L4 34" />
+            <circle cx="34.5" cy="20.5" r="0.9" fill="var(--garden-ink)" stroke="none" />
+          </g>
+        </svg>
+      </span>
+    )}
+  </div>
   <div class="row">
-    <span><span class="eof" aria-hidden="true">$ exit </span>© {year} {SITE.author}</span>
+    <span>© {year} {SITE.author}</span>
     {/* `rel="me"` is the IndieWeb identity-verification signal; pairing it
         with `noopener noreferrer` doesn't disturb the `me` claim (rel is a
         space-separated token list) but does plug the `window.opener` leak
@@ -19,17 +36,37 @@ const mastodon = resolveMastodonProfile(MASTODON_INSTANCE_URL);
       <li><a href="/privacy">privacy</a></li>
       <li><a href="/accessibility">accessibility</a></li>
     </ul>
+    <GardenPause />
   </div>
 </footer>
 
 <style>
   .site-footer {
-    border-top: 2px solid var(--rule);
+    border-top: 1px solid var(--rule-soft);
     padding: var(--space-5);
     margin-top: var(--space-8);
     font-size: var(--text-xs);
     letter-spacing: 0.02em;
     color: var(--fg-muted);
+    position: relative;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 160px;
+  }
+  /* Meadow strip grows up out of the footer's top rule. `aria-hidden` +
+     `pointer-events: none` keep it decorative-only for AT and pointer input;
+     `.garden` (garden.css) adds the same `pointer-events: none` to each
+     tuft/bird individually, so the strip stays inert even if this wrapper
+     rule is ever dropped. */
+  .meadow {
+    position: absolute;
+    top: -42px;
+    left: 0;
+    right: 0;
+    height: 42px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 6%;
+    pointer-events: none;
   }
   .row { display: flex; justify-content: space-between; gap: var(--space-5); max-width: 1100px; margin: 0 auto; flex-wrap: wrap; }
   ul { display: flex; gap: var(--space-4); list-style: none; padding: 0; margin: 0; }
@@ -41,11 +78,4 @@ const mastodon = resolveMastodonProfile(MASTODON_INSTANCE_URL);
     min-height: 44px;
   }
   .site-footer a:hover, .site-footer a:focus-visible { color: var(--fg); }
-  /* `.eof` color is `var(--accent)`; `tokens.css` already remaps that to
-     `LinkText` under forced-colors, so no per-component override is needed. */
-  .site-footer .eof {
-    color: var(--accent);
-    margin-right: 0.5em;
-    font-weight: 600;
-  }
 </style>
