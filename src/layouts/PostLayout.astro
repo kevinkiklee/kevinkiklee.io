@@ -112,9 +112,6 @@ const graph = buildPageGraph([
   <Breadcrumbs items={crumbs} />
   <article class="post">
     <ProgressVine />
-    <p class="eyebrow" aria-hidden="true">
-      <span class="dol">$</span> cat {post.id}.md
-    </p>
     <header>
       <h1 data-no-anim style={`view-transition-name: post-title-${post.id};`}>{title}</h1>
       <PostMeta variant="rail" {pubDate} {updatedDate} {tags} {minutesRead} {wordCount} />
@@ -184,20 +181,6 @@ const graph = buildPageGraph([
   .post {
     view-timeline-name: --post;
     position: relative;
-  }
-  .eyebrow {
-    font-size: var(--text-xs);
-    color: var(--fg-muted);
-    margin-bottom: var(--space-2);
-    letter-spacing: 0.02em;
-    font-family: var(--font-mono);
-  }
-  /* `.eyebrow .dol` color is `var(--accent)`; `tokens.css` already remaps
-     that to `LinkText` under forced-colors. No per-component override needed. */
-  .eyebrow .dol {
-    color: var(--accent);
-    margin-right: 0.35em;
-    font-weight: 700;
   }
   .post header { margin-bottom: var(--space-6); }
   h1 {

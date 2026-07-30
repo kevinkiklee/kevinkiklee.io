@@ -45,8 +45,8 @@ function readOptional(absPath: string): Buffer | null {
 // Primary display font for the title. Weight must match the static cut
 // (Semibold/600) — Satori has no synthetic bold to fall back on.
 const serifFontData = readOptional(resolve('./public/fonts/og/SourceSerif4-Semibold-og.ttf'));
-// Still used for the small mono meta line (date · tags), matching the
-// mono "eyebrow" treatment used on the post page itself.
+// Still used for the small mono meta line (date · tags) — mono survives
+// as the site's "instrument readout" voice for metadata and code.
 const monoFontData = readOptional(resolve('./public/fonts/og/JetBrainsMono-Bold.ttf'));
 // Pre-read the default PNG so we can serve it as a binary fallback when
 // satori rendering fails. Social-network unfurlers fetch og:image directly,

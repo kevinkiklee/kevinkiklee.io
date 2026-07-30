@@ -7,7 +7,6 @@
 // set in BaseLayout).
 //
 // Sequence (durations sourced from scaledDuration):
-//   0ms    .eyebrow fades in
 //   90ms   .post h1 fades up  (skipped: data-no-anim on h1)
 //   280ms  .meta-rail fades in
 //   380ms  .prose > *:first-child fades up
@@ -53,7 +52,6 @@
     // a stuttery pseudo-animation. Ratio keeps the choreography proportional.
     const scale = dur / 180;
     const seq: Array<{ sel: string; delay: number; kind: Kind }> = [
-      { sel: '.eyebrow',                     delay: 0,                          kind: 'fade' },
       { sel: '.post h1',                    delay: Math.round(90 * scale),     kind: 'fade-up' },
       { sel: '.meta-rail',                  delay: Math.round(280 * scale),    kind: 'fade' },
       { sel: '.prose > *:first-child',      delay: Math.round(380 * scale),    kind: 'fade-up' },
