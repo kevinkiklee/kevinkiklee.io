@@ -1,0 +1,15 @@
+---
+interface Props {
+  kind?: 'grass' | 'fern';
+}
+const { kind = 'grass' } = Astro.props;
+const d =
+  kind === 'fern'
+    ? 'M2 10 C10 9 14 6 20 3 M8 8 C8 6 8 5 9 3 M14 6 C13 4 13 3 14 1'
+    : 'M2 9 C10 9 12 3 20 3 M20 3 L24 6 M20 3 L25 1';
+---
+<span class="garden garden-sprig" aria-hidden="true">
+  <svg viewBox="0 0 46 12" width="40" height="11">
+    <path d={d} fill="none" stroke="var(--garden-ink)" stroke-width="1" stroke-linecap="round" opacity="0.6" />
+  </svg>
+</span>
