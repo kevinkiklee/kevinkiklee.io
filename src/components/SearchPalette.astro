@@ -220,9 +220,11 @@
   // aria-live status region so sighted and screen-reader users hear/see
   // the same message.
   const EMPTY_RESULTS_TEXT = 'Nothing sprouted for that query.';
-  // Mirrors the static markup of <LeafMarker /> (src/components/garden/LeafMarker.astro).
-  // A client script can't render an Astro component, so the glyph is inlined here —
-  // keep the two in sync if the leaf path ever changes.
+  // A client script can't render an Astro component, so the leaf glyph is
+  // inlined here directly. There is no separate `LeafMarker` component to
+  // keep in sync with (it was deleted as dead code — this constant is the
+  // canonical source for the empty-state leaf markup); change it in place
+  // if the glyph ever needs to change.
   const EMPTY_RESULTS_HTML =
     `<p class="empty"><span class="garden garden-leaf" aria-hidden="true"><svg viewBox="0 0 20 20" width="18" height="18"><path d="M10 17 C10 11 11 7 16 3 M10 17 C10 12 8 8 4 5" fill="none" stroke="var(--garden-ink)" stroke-width="1.2" stroke-linecap="round" opacity="0.6" /></svg></span> ${EMPTY_RESULTS_TEXT}</p>`;
 

@@ -37,7 +37,6 @@
     padding-left: var(--space-4);
     font-style: italic;
     color: var(--fg-muted);
-    position: relative;
   }
   .prose hr {
     border: none;
