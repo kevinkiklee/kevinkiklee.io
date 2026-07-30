@@ -109,6 +109,10 @@
     padding: var(--space-3);
     font-style: italic;
   }
+  .results :global(.empty .garden-leaf) {
+    vertical-align: -3px;
+    margin-right: var(--space-2);
+  }
   .palette-hint {
     margin-top: var(--space-3);
     padding-top: var(--space-3);
@@ -212,6 +216,12 @@
   // doesn't trigger 6 in-flight Pagefind queries while typing "astro".
   const SEARCH_DEBOUNCE_MS = 120;
 
+  // Mirrors the static markup of <LeafMarker /> (src/components/garden/LeafMarker.astro).
+  // A client script can't render an Astro component, so the glyph is inlined here —
+  // keep the two in sync if the leaf path ever changes.
+  const EMPTY_RESULTS_HTML =
+    '<p class="empty"><span class="garden garden-leaf" aria-hidden="true"><svg viewBox="0 0 20 20" width="18" height="18"><path d="M10 17 C10 11 11 7 16 3 M10 17 C10 12 8 8 4 5" fill="none" stroke="var(--garden-ink)" stroke-width="1.2" stroke-linecap="round" opacity="0.6" /></svg></span> Nothing sprouted for that query.</p>';
+
   const dlg = document.getElementById('search-palette') as HTMLDialogElement | null;
   const input = document.getElementById('palette-input') as HTMLInputElement | null;
   const results = document.getElementById('palette-results') as HTMLDivElement | null;
@@ -295,7 +305,7 @@
         }
         const search = await pf.search(q);
         if (search.results.length === 0) {
-          results!.innerHTML = '<p class="empty">No results.</p>';
+          results!.innerHTML = EMPTY_RESULTS_HTML;
           document.getElementById('palette-status')!.textContent = `No results for ${q}`;
           return;
         }
@@ -313,7 +323,7 @@
           })
           .filter((r): r is string => r !== null);
         if (safeRows.length === 0) {
-          results!.innerHTML = '<p class="empty">No results.</p>';
+          results!.innerHTML = EMPTY_RESULTS_HTML;
           document.getElementById('palette-status')!.textContent = `No results for ${q}`;
           return;
         }

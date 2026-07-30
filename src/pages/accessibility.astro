@@ -48,6 +48,17 @@ const graph = buildPageGraph([
       <li><strong>Pagefind UI</strong> — default styles on <code>/search</code>; we scope-override where needed.</li>
     </ul>
 
+    <h2>The garden's motion</h2>
+    <p>Small line-drawn motifs — birds, seedlings, leaves — appear throughout the site. Most sway,
+      fly, or grow into place gently; none of it carries information, so it's marked
+      <code>aria-hidden</code> and never blocks reading.</p>
+    <p>If you'd rather it held still, a <strong>Pause the garden</strong> control sits in the
+      site footer, and the same toggle is mirrored in the keyboard-shortcuts overlay
+      (press <kbd>?</kbd> to open it). Your choice is saved and restored on every visit,
+      no re-toggling required. And if your system is set to
+      <code>prefers-reduced-motion: reduce</code>, the garden renders static automatically —
+      no toggle needed.</p>
+
     <h2>Known limits</h2>
     <KnownLimits />
 
