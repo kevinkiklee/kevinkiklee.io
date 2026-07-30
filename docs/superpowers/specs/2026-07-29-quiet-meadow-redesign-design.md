@@ -301,6 +301,11 @@ and gaps.
 - Page-level motion: view transitions, title morph, theme crossfade, and
   scroll reveals carry over; easing softens; reveals shrink to 8px rise +
   fade; ≤ 250ms cap on transitions stands.
+- **Implementation deviation (Task 12):** the reveal fade floor is `0.92`,
+  not `0` (`transitions.css`, `@keyframes reveal-fade`), so `--accent`
+  text never rests below 4.5:1 mid-reveal on the taller hero layout, where
+  a card can straddle the fold at first paint. This makes the fade subtle
+  by design; re-verify contrast at the new floor before deepening it.
 
 ### 3.4 Seasons
 

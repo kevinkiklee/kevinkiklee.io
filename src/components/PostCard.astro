@@ -125,7 +125,10 @@ const { title, description, pubDate, tags } = post.data;
   /* Keyboard parity: tab-focusing the card link should darken the top rule
      the same way hovering does, so the active row is visually anchored. */
   .post-card:focus-within { border-top-color: var(--rule); }
-  .post-card:focus-within .cta { transform: translateX(4px); }
+  /* :has(), not :focus-within, on purpose: the CTA nudge should track the
+     TITLE link specifically, not any focus in the card (a tag link, say) —
+     an unrelated action shouldn't nudge an arrow that isn't its own. */
+  .post-card:has(h3 a:focus-visible) .cta { transform: translateX(4px); }
   @media (max-width: 640px) {
     .post-card p {
       display: -webkit-box;
