@@ -2,7 +2,7 @@
 
 @import "./tokens.css" layer(tokens);
 @import "./progress.css" layer(components);
-@import "./garden.css" layer(components);
+@import "./garden.css";
 @import "./prose.css" layer(prose);
 @import "./code.css" layer(prose);
 @import "./transitions.css" layer(utilities);
