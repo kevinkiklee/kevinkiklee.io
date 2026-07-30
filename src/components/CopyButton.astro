@@ -13,21 +13,6 @@
  * collapse the duration to 1ms (invisible), text-only feedback remains.
  */
 ---
-
-<style>
-  :global(.copy-btn) {
-    background: none;
-    border: 1px solid var(--rule-soft);
-    color: var(--fg-muted);
-    font-family: var(--font-sans);
-  }
-  :global(.copy-btn:hover),
-  :global(.copy-btn:focus-visible) {
-    color: var(--fg);
-    border-color: var(--fg-muted);
-  }
-</style>
-
 <script>
   import { scaledDuration, withWillChange, EASE_SPRING } from '~/lib/motion';
 
