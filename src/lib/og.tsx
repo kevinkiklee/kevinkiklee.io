@@ -25,6 +25,11 @@ export function ogTemplate(args: { title: string; date: string; tags: string[] }
         </div>
         <div style="display:flex;font-size:18px;letter-spacing:0.04em;border-top:1px solid #ccd3bd;padding-top:16px;color:#49523f;">${footerCopy}</div>
       </div>
+      <svg style="position:absolute;right:40px;bottom:32px;" viewBox="0 0 60 70" width="72" height="84">
+        <g fill="none" stroke="#3f4c3a" stroke-width="1.3" stroke-linecap="round" opacity="0.42">
+          <path d="M30 68 C28 50 21 36 12 26 M30 68 C31 48 36 34 46 22 M30 68 C29 52 27 40 25 30 M30 68 C33 54 38 46 44 40" />
+        </g>
+      </svg>
     </div>
   `);
 }
