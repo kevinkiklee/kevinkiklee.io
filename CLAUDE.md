@@ -5,18 +5,27 @@ Guidance for Claude Code / AI assistants working in this repo.
 ## TL;DR
 
 Personal site for Kevin Lee (Chrome DevRel). Astro 5 + MDX, deployed
-to Vercel as a static site with one OG image edge function. Brutalist
-mono-typeface design. AEO-friendly content layout. 6 KB / chunk JS
-budget.
+to Vercel as a static site with one OG image edge function. **Quiet
+Meadow** identity: serif-led editorial-organic design on sage paper
+(forest-night in dark mode), with an illustrated garden system of
+line-drawn plants and birds. AEO-friendly content layout. 6 KB / chunk
+JS budget.
 
 ## Where to read first
 
-- **Spec** — [`docs/superpowers/specs/2026-04-29-personal-blog-design.md`](./docs/superpowers/specs/2026-04-29-personal-blog-design.md)
-  has the design rationale and an "Implementation status" appendix that
-  maps spec features to source files.
+- **Spec** — [`docs/superpowers/specs/2026-07-29-quiet-meadow-redesign-design.md`](./docs/superpowers/specs/2026-07-29-quiet-meadow-redesign-design.md)
+  is the current design spec: the Quiet Meadow visual identity, the
+  garden system, and the migration/verification plan that replaced the
+  prior brutalist terminal look.
+- **Prior spec** — [`docs/superpowers/specs/2026-04-29-personal-blog-design.md`](./docs/superpowers/specs/2026-04-29-personal-blog-design.md)
+  is the original design spec. Its visual sections are superseded by
+  Quiet Meadow (see the note at the top of that file), but its
+  architecture, content model, SEO/AEO, analytics, comments, CI, and
+  hosting decisions remain in force — keep it as a historical/
+  architecture reference.
 - **Plan** — [`docs/superpowers/plans/2026-04-29-personal-blog-implementation.md`](./docs/superpowers/plans/2026-04-29-personal-blog-implementation.md)
-  is the original implementation plan; treat the spec's status section as
-  more current.
+  is the original implementation plan; treat the current spec as more
+  current for anything visual.
 - **README.md** — install + scripts + project layout for humans.
 - **AUTHORING.md** — how to write a post.
 
@@ -77,8 +86,11 @@ vercel.ts        # typed CSP, cache headers, crons
 
 ## When in doubt
 
-Read the spec's "Implementation status" section to find which file
-implements a given feature, then read that file before changing it.
+For a visual/garden-system feature, check the current spec's numbered
+sections (§1 identity, §2 layout, §3 garden system) to find the
+relevant component, then read that file before changing it. For an
+architecture/content/SEO feature, the prior spec's "Implementation
+status" appendix still maps those features to source files.
 
 ## Accessibility
 

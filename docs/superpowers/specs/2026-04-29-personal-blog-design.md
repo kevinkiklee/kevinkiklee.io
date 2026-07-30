@@ -1,5 +1,9 @@
 # kevinkiklee.io — Personal Blog Design
 
+> **Note (2026-07-30):** the visual sections of this spec are superseded by
+> [2026-07-29-quiet-meadow-redesign-design.md](./2026-07-29-quiet-meadow-redesign-design.md);
+> architecture/SEO/CI decisions remain in force.
+
 **Author:** Kevin Lee
 **Date:** 2026-04-29
 **Status:** Approved (brainstorming complete)
