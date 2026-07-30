@@ -18,8 +18,14 @@
      characters (spec §1.2) — not ported from the mono-era 68ch. */
   --measure: 33em;
 
-  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
-  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
 
   --ease: cubic-bezier(0.33, 1, 0.68, 1);
   --header-h-mobile: 96px;
@@ -35,7 +41,7 @@
   --rule: #2c352b;
   --rule-soft: #ccd3bd;
   --panel: #f6f7ef;
-  --pill-bg: var(--panel);      /* legacy alias until TagPill dies in Task 8 */
+  --pill-bg: var(--panel); /* legacy alias until TagPill dies in Task 8 */
   --pill-fg: var(--fg);
   --code-bg: #e6e9da;
   --selection-bg: #2c352b;
@@ -44,9 +50,15 @@
   --accent-rule: #8f4a26;
   --garden-ink: #3f4c3a;
 }
-:root[data-theme="light"][data-season="spring"] { --bg: #eef2e4; }
-:root[data-theme="light"][data-season="autumn"] { --bg: #f2f0e3; }
-:root[data-theme="light"][data-season="winter"] { --bg: #edefe9; }
+:root[data-theme="light"][data-season="spring"] {
+  --bg: #eef2e4;
+}
+:root[data-theme="light"][data-season="autumn"] {
+  --bg: #f2f0e3;
+}
+:root[data-theme="light"][data-season="winter"] {
+  --bg: #edefe9;
+}
 
 :root[data-theme="dark"] {
   --bg: #161b14;
@@ -65,15 +77,27 @@
   --accent-rule: #d9a05b;
   --garden-ink: #7d8a6e;
 }
-:root[data-theme="dark"][data-season="spring"] { --bg: #151c12; }
-:root[data-theme="dark"][data-season="autumn"] { --bg: #191b12; }
-:root[data-theme="dark"][data-season="winter"] { --bg: #14181a; }
+:root[data-theme="dark"][data-season="spring"] {
+  --bg: #151c12;
+}
+:root[data-theme="dark"][data-season="autumn"] {
+  --bg: #191b12;
+}
+:root[data-theme="dark"][data-season="winter"] {
+  --bg: #14181a;
+}
 
 @media (forced-colors: active) {
-  :root { --accent: LinkText; --accent-rule: LinkText; }
+  :root {
+    --accent: LinkText;
+    --accent-rule: LinkText;
+  }
 }
 @media (prefers-contrast: more) {
-  :root { --accent: var(--fg); --accent-rule: var(--fg); }
+  :root {
+    --accent: var(--fg);
+    --accent-rule: var(--fg);
+  }
 }
 
 /*
@@ -84,20 +108,35 @@
 @font-face {
   font-family: "Source Serif 4";
   src: url("/fonts/source-serif-4-roman-400.woff2") format("woff2");
-  font-weight: 400; font-style: normal; font-display: swap;
-  size-adjust: 106%; ascent-override: 66%; descent-override: 21%; line-gap-override: 0%;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 106%;
+  ascent-override: 66%;
+  descent-override: 21%;
+  line-gap-override: 0%;
 }
 @font-face {
   font-family: "Source Serif 4";
   src: url("/fonts/source-serif-4-roman-600.woff2") format("woff2");
-  font-weight: 600; font-style: normal; font-display: swap;
-  size-adjust: 106%; ascent-override: 66%; descent-override: 21%; line-gap-override: 0%;
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 106%;
+  ascent-override: 66%;
+  descent-override: 21%;
+  line-gap-override: 0%;
 }
 @font-face {
   font-family: "Source Serif 4";
   src: url("/fonts/source-serif-4-italic-400.woff2") format("woff2");
-  font-weight: 400; font-style: italic; font-display: swap;
-  size-adjust: 106%; ascent-override: 66%; descent-override: 21%; line-gap-override: 0%;
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  size-adjust: 106%;
+  ascent-override: 66%;
+  descent-override: 21%;
+  line-gap-override: 0%;
 }
 
 /* JetBrains Mono — code blocks only. Both subsets retained; existing posts
@@ -105,15 +144,23 @@
 @font-face {
   font-family: "JetBrains Mono";
   src: url("/fonts/jetbrains-mono.woff2") format("woff2-variations");
-  font-weight: 100 800; font-display: swap;
+  font-weight: 100 800;
+  font-display: swap;
   unicode-range: U+0000-007F, U+00A0-00FF, U+2192, U+2197;
-  size-adjust: 102%; ascent-override: 80%; descent-override: 20%; line-gap-override: 0%;
+  size-adjust: 102%;
+  ascent-override: 80%;
+  descent-override: 20%;
+  line-gap-override: 0%;
 }
 @font-face {
   font-family: "JetBrains Mono";
   src: url("/fonts/jetbrains-mono-ext.woff2") format("woff2-variations");
-  font-weight: 100 800; font-display: swap;
+  font-weight: 100 800;
+  font-display: swap;
   unicode-range: U+2010-2027, U+2030, U+2032-2033, U+2070, U+2074-2079, U+20A0-20BF, U+2122, U+2191,
     U+2193-2196, U+2198-2199, U+2500-257F, U+2580-259F;
-  size-adjust: 102%; ascent-override: 80%; descent-override: 20%; line-gap-override: 0%;
+  size-adjust: 102%;
+  ascent-override: 80%;
+  descent-override: 20%;
+  line-gap-override: 0%;
 }
