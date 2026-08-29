@@ -5,6 +5,9 @@ export const config: VercelConfig = {
   framework: 'astro',
   buildCommand: 'pnpm build',
   installCommand: 'pnpm install --frozen-lockfile',
+  // Fleet build gate. KEEP_PREVIEWS=1 because this site genuinely uses preview
+  // deploys; the gate still skips builds where only inert paths changed.
+  ignoreCommand: 'KEEP_PREVIEWS=1 bash scripts/ci/vercel-ignore.sh',
   outputDirectory: 'dist',
   redirects: [
     // strip trailing slash
